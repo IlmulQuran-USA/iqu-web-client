@@ -95,7 +95,6 @@ const variantNotes: Record<ButtonVariant, string> = {
   danger: "Destructive. Always behind a confirm dialog.",
   link: "A standalone text action in --link. In prose, use a plain <a>.",
   band: "Primary action on the dark band: coral fill, slate label.",
-  "band-outline": "Non-primary action on the dark band: white outline (Subscribe).",
 };
 
 const variantLabel: Record<ButtonVariant, string> = {
@@ -106,7 +105,6 @@ const variantLabel: Record<ButtonVariant, string> = {
   danger: "Delete record",
   link: "Request a correction",
   band: "Start free trial",
-  "band-outline": "Subscribe",
 };
 
 export default function ComponentsPage() {
@@ -235,12 +233,12 @@ export default function ComponentsPage() {
               </SubTitle>
               <ul
                 className={`mt-4 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-6 ${
-                  variant.startsWith("band") ? "band rounded-card p-6" : ""
+                  variant === "band" ? "band rounded-card p-6" : ""
                 }`}
               >
                 {states.map(([state, props]) => (
                   <li key={state} className="flex flex-col items-start gap-2">
-                    <span className={`text-ui-sm ${variant.startsWith("band") ? "text-on-band-muted" : "text-ink-muted"}`}>
+                    <span className={`text-ui-sm ${variant === "band" ? "text-on-band-muted" : "text-ink-muted"}`}>
                       {state}
                     </span>
                     <Button variant={variant} {...props}>

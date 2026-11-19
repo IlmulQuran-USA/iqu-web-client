@@ -18,7 +18,7 @@
 
 Coloured bands are not used for section separation. The only exceptions:
 - Home nonprofit band: `--surface-2`.
-- Footer newsletter: no longer a band. It is a card at the top of the footer: `--band-card` (slate-800) on `--band`, 12 px radius, a 3 px `--accent` left edge, 32 px padding (24 px on phones), 48 px above the link columns (owner decisions, 19 and 20 Nov 2026).
+- Footer newsletter: no longer a band. It is a white card (`--paper`) at the top of the footer, inside its container: 12 px radius, 32 px padding (24 px on phones), no edge, 48 px above the link columns. Light-surface rules inside it (`--ink`, `--ink-muted`, the `--focus` ring); the field border is `--field-border-subtle` (slate-500, 4.8:1); Subscribe is the coral `band` button (owner decisions, 19 and 20 Nov 2026).
 - Footer and Home final CTA band: `--band` (dark slate).
 
 ---
@@ -38,6 +38,7 @@ Coloured bands are not used for section separation. The only exceptions:
 | `--surface-2` | `#F8FAFC` | Alternate sections, nested surfaces, `ReadOnlyFact` ground |
 | `--surface`   | `#F1F5F9` | Cards, wells, table stripes                                |
 | `--rule`      | `#E2E8F0` | Hairlines, borders (decorative; never the only boundary of a control) |
+| `--field-border-subtle` | `#64748B` | slate-500, 4.8:1 on `--paper`: the field border inside the footer newsletter card (owner decision, 20 Nov 2026) |
 
 **Actions**
 
@@ -69,10 +70,6 @@ Coloured bands are not used for section separation. The only exceptions:
 | --------------- | --------- | ------------------------------------------------------------------- |
 | `--band`        | `#0F172A` | Footer and final CTA band. Text `#FFFFFF` (17.9:1); secondary `#CBD5E1` (12.0:1); accents `#F96C48` (6.2:1). |
 | Primary on band | `#F96C48` | Fill `--accent`, label `--ink` (6.2:1)                             |
-| Card on band    | `#1E293B` | `--band-card`: the newsletter card. White 14.6:1, `#CBD5E1` secondary 9.9:1, `--accent` left edge and focus ring 5.1:1 |
-| Field on band   | `#0F172A` / `#64748B` | `--band-field` fill (slate-900), `--band-field-border` (slate-500: 3.07:1 on the card, 3.75:1 on the fill; slate-600 fails at 1.9:1), white text 17.9:1. Used by the newsletter card |
-| Status on band  | `#F97066` / `#47CD89` | `--danger-on-band` (6.4:1 on the band, 5.3:1 on the card) and `--success-on-band` (8.8:1 / 7.2:1): inline error and success text, where `--danger` / `--success` fail |
-| Outline on band | white     | 1 px `--on-band` border, `--on-band` label, transparent fill (Subscribe): the band's non-primary action |
 
 **Focus**
 
@@ -185,11 +182,11 @@ Every screen is built and checked at **375** and **1440**; **768** where layout 
 | Donate    | Giving, on public pages            | Double border drawn inside the 44 px box, so Donate is exactly the size of the buttons beside it: the outer line is the 1 px `--accent-strong` border, the inner line an inset 1 px `--accent-strong` line 3 px in (2 px of the button's fill between them). On keyboard focus the outer border turns `--ink` (no outside ring; owner decision, 20 Nov 2026); under forced colours focus draws a Highlight ring inside the box. `--link` label, Lucide `HandHeart` (1.5 px, `--accent-strong`) before it, 8 px radius, 44 px. Never filled. A coral (`--accent`) light travels along the outer border with a `--glow-accent` glow: 3 laps on load (4.5 s), one on hover and focus (the heart beats once on hover), then a static border; nothing moves under reduced motion |
 | Danger    | Destructive                        | Filled `--danger`, white label, always behind a confirm dialog |
 | Link      | Inline in prose                    | `--link`, underlined, 2 px offset                             |
-| On band   | Primary action on `--band`         | Filled `--accent`, `--ink` label                              |
+| On band   | Primary action on `--band`; the newsletter Subscribe in its white card | Filled `--accent`, `--ink` label (6.2:1)                    |
 
 All buttons: 44 × 44 px minimum hit area · focus ring 2 px `--focus` (`--accent` on `--band`), 2 px offset · loading state replaces the label with a spinner and keeps the width fixed · no double submit.
 
-On public pages **Donate** is an outlined button with a short animated border (it stops after 3 laps and is static under reduced motion). Log in is a tonal button. Enrolment keeps the only filled button. In footer link lists Donate stays a coral text row on `--band`.
+On public pages **Donate** is an outlined button with a short animated border (it stops after 3 laps and is static under reduced motion). Log in is a tonal button. Enrolment keeps the only filled button; the one exception is the newsletter Subscribe, a filled coral button inside its own white card in the footer (owner decision, 20 Nov 2026). In footer link lists Donate stays a coral text row on `--band`.
 
 ---
 

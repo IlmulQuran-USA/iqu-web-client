@@ -35,16 +35,9 @@
   --band: #0f172a;
   --on-band: #ffffff;
   --on-band-muted: #cbd5e1;
-  /* The footer newsletter card and its form (owner decisions 19 and 20 Nov 2026).
-     Card: slate-800 on --band. Field: slate-900 fill, slate-500 border (3.07:1
-     on the card, 3.75:1 on the fill; slate-600 would fail WCAG 1.4.11).
-     --danger and --success fail on these darks, so lighter steps carry errors
-     and success there. */
-  --band-card: #1e293b; /* white 14.6:1, --on-band-muted 9.9:1, --accent 5.1:1 */
-  --band-field: #0f172a; /* white text 17.9:1 */
-  --band-field-border: #64748b;
-  --danger-on-band: #f97066; /* 5.3:1 on --band-card, 6.4:1 on --band-field */
-  --success-on-band: #47cd89; /* 7.2:1 on --band-card */
+  /* slate-500, 4.8:1 on --paper: the field border inside the footer's white
+     newsletter card (owner decision, 20 Nov 2026). */
+  --field-border-subtle: #64748b;
 
   /* Focus ring. Redefined to --accent inside .band. */
   --focus: #0f172a;
@@ -119,11 +112,6 @@
   --color-band: var(--band);
   --color-on-band: var(--on-band);
   --color-on-band-muted: var(--on-band-muted);
-  --color-band-card: var(--band-card);
-  --color-band-field: var(--band-field);
-  --color-band-field-border: var(--band-field-border);
-  --color-danger-on-band: var(--danger-on-band);
-  --color-success-on-band: var(--success-on-band);
   --color-focus: var(--focus);
   --color-success: var(--success);
   --color-success-tint: var(--success-tint);

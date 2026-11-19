@@ -1,18 +1,21 @@
+import { BellRing } from "lucide-react";
 import { site } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { NewsletterForm } from "./NewsletterForm";
 
 /**
  * Newsletter card at the top of the footer (owner decision, 20 Nov 2026).
- * A slate-800 card (--band-card) on the --band footer: 12 px radius, a 3 px
- * --accent left edge, 32 px padding (24 px on phones). The serif heading and
- * one line on the left, the form on the right from lg; stacked below.
- * Inside: white text, slate-300 secondary, a slate-900 field with a slate-500
- * border (3.07:1 on the card, 3.75:1 on the fill) and the outline Subscribe.
+ * A white card (--paper) on the --band footer: 12 px radius, 32 px padding
+ * (24 px on phones), no edge. Inside, the light-surface rules apply: --ink
+ * text, --ink-muted secondary, the --focus (#0F172A) ring, and a field with a
+ * 1 px slate-500 border (--field-border-subtle, 4.8:1). Subscribe is a filled
+ * coral button: an allowed exception to "one filled button per view", because
+ * it sits inside its own card (CLAUDE.md §4).
  *
  * `open` is decided by the caller: the footer passes whether every Brevo
  * setting is present, so the live site never shows a form that cannot work;
- * /dev/components shows both states for review.
+ * /dev/components shows both states for review. Closed, the right side shows
+ * a BellRing with "Sign-up opens soon.", centred against the heading block.
  */
 export function NewsletterCard({
   open,
@@ -27,18 +30,25 @@ export function NewsletterCard({
   return (
     <section
       aria-labelledby={headingId}
-      className={cn("rounded-card border-l-3 border-accent bg-band-card p-6 sm:p-8", className)}
+      className={cn(
+        // Light-surface focus ring and the slate-500 field border inside the card.
+        "rounded-card bg-paper p-6 text-ink [--field-border:var(--field-border-subtle)] [--focus:var(--ink)] sm:p-8",
+        className,
+      )}
     >
-      <div className="grid gap-6 lg:grid-cols-12">
+      <div className={cn("grid gap-6 lg:grid-cols-12", !open && "lg:items-center")}>
         <div className="lg:col-span-5">
-          <h2 id={headingId} className="font-display text-heading-lg font-semibold text-on-band">
+          <h2 id={headingId} className="font-display text-heading-lg font-semibold text-ink">
             News from{" "}
-            {/* The name never breaks at its hyphens. */}
-            <span translate="no" className="whitespace-nowrap">
+            {/* --ink on --mark 13.2:1; the name never breaks at its hyphens. */}
+            <mark
+              translate="no"
+              className="rounded-chip bg-mark px-1 whitespace-nowrap text-ink [box-decoration-break:clone]"
+            >
               {site.name}
-            </span>
+            </mark>
           </h2>
-          <p className="mt-2 max-w-measure text-body text-on-band-muted">
+          <p className="mt-2 max-w-measure text-body text-ink-muted">
             New classes, program dates and what your support makes possible.
           </p>
         </div>
@@ -46,7 +56,10 @@ export function NewsletterCard({
           {open ? (
             <NewsletterForm />
           ) : (
-            <p className="text-body font-medium text-on-band lg:pt-2">Sign-up opens soon.</p>
+            <p className="flex items-center gap-3 text-body-lg font-medium text-ink">
+              <BellRing aria-hidden="true" strokeWidth={1.5} className="size-6 shrink-0 text-accent-strong" />
+              Sign-up opens soon.
+            </p>
           )}
         </div>
       </div>

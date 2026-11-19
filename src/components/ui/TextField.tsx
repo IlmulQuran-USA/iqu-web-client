@@ -27,9 +27,6 @@ import { cn } from "@/lib/cn";
  * - Field text is 16 px, so iOS does not zoom when the field takes focus.
  * - A disabled field is a muted input. A system-supplied value is not a
  *   disabled field; it renders as ReadOnlyFact (spec §7C.3).
- * - tone="band" for fields on the dark --band (footer newsletter): slate-900
- *   fill, slate-500 border (3:1+), white text and label, errors in
- *   --danger-on-band (DESIGN.md §2 "Dark band").
  */
 
 export type TextFieldProps = Omit<ComponentPropsWithoutRef<"input">, "id" | "size"> & {
@@ -49,8 +46,6 @@ export type TextFieldProps = Omit<ComponentPropsWithoutRef<"input">, "id" | "siz
   validate?: (value: string) => string | undefined;
   /** Use the field's name as its anchor id, so an error summary can link to it. */
   id?: string;
-  /** "band" restyles the field for the dark --band surface. */
-  tone?: "light" | "band";
 };
 
 export function TextField({
@@ -61,7 +56,6 @@ export function TextField({
   error,
   validate,
   id,
-  tone = "light",
   className,
   onBlur,
   disabled,
@@ -110,17 +104,16 @@ export function TextField({
   }
 
   const describedBy = [hint ? hintId : null, invalid ? errorId : null].filter(Boolean).join(" ");
-  const band = tone === "band";
 
   return (
     <div className={cn("flex flex-col", className)}>
-      <label htmlFor={inputId} className={cn("text-ui font-medium", band ? "text-on-band" : "text-ink")}>
+      <label htmlFor={inputId} className="text-ui font-medium text-ink">
         {label}
-        {optional ? <span className={cn("font-normal", band ? "text-on-band-muted" : "text-ink-muted")}> (optional)</span> : null}
+        {optional ? <span className="font-normal text-ink-muted"> (optional)</span> : null}
       </label>
 
       {hint ? (
-        <p id={hintId} className={cn("mt-1 max-w-measure text-ui", band ? "text-on-band-muted" : "text-ink-muted")}>
+        <p id={hintId} className="mt-1 max-w-measure text-ui text-ink-muted">
           {hint}
         </p>
       ) : null}
@@ -137,19 +130,14 @@ export function TextField({
         onBlur={handleBlur}
         className={cn(
           "mt-2 min-h-12 w-full rounded-input text-body",
-          band ? "bg-band-field text-on-band placeholder:text-on-band-muted" : "bg-paper text-ink placeholder:text-ink-muted",
+          "bg-paper text-ink placeholder:text-ink-muted",
           "transition-[border-color] duration-(--duration-micro) ease-riwaq",
           // The error border is 2 px, so an error differs from the hover and focus
           // states in weight as well as colour. Padding drops 1 px to match,
           // so the box doesn't move.
           invalid
-            ? cn("border-2 px-2.75 py-2.25", band ? "border-danger-on-band" : "border-danger")
-            : cn(
-                "border px-3 py-2.5",
-                band
-                  ? "border-band-field-border hov:not-disabled:border-on-band-muted"
-                  : "border-field-border hov:not-disabled:border-ink",
-              ),
+            ? "border-2 border-danger px-2.75 py-2.25"
+            : "border border-field-border px-3 py-2.5 hov:not-disabled:border-ink",
           "disabled:cursor-not-allowed disabled:border-rule disabled:bg-surface disabled:text-ink-muted",
         )}
       />
@@ -157,7 +145,7 @@ export function TextField({
       {/* Always rendered so the live region exists before the first error. */}
       <div aria-live="polite">
         {invalid ? (
-          <p id={errorId} className={cn("mt-2 flex items-start gap-1.5 text-ui", band ? "text-danger-on-band" : "text-danger")}>
+          <p id={errorId} className="mt-2 flex items-start gap-1.5 text-ui text-danger">
             <CircleAlert aria-hidden="true" strokeWidth={1.5} className="mt-px size-4 shrink-0" />
             <span>{message}</span>
           </p>

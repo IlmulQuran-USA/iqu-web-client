@@ -19,9 +19,8 @@ import { Spinner } from "./Spinner";
  *              For a link inside running prose, use a plain <a> so the line
  *              box isn't padded out.
  *   band       The primary action on the dark --band: coral fill, --ink label.
- *              Never on a light surface.
- *   band-outline  A non-primary action on --band (Subscribe): 1 px white
- *              border, white label, transparent fill. Never on a light surface.
+ *              On a light surface only as the newsletter Subscribe inside its
+ *              own white card (owner decision, 20 Nov 2026; CLAUDE.md §4).
  *
  * Every variant except link has a 1 px border (transparent on filled and tonal variants),
  * border-box sizing and an explicit height per size (md 44 px, lg 52 px for
@@ -31,7 +30,7 @@ import { Spinner } from "./Spinner";
  * and clicks are swallowed, so a form is never submitted twice.
  */
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "tonal" | "danger" | "link" | "band" | "band-outline";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "tonal" | "danger" | "link" | "band";
 export type ButtonSize = "md" | "lg";
 
 type StyleProps = {
@@ -72,14 +71,10 @@ const variants: Record<ButtonVariant, string> = {
   link:
     "rounded-chip text-link underline decoration-1 underline-offset-2 hov:not-disabled:decoration-2 " +
     "act:not-disabled:text-ink disabled:text-ink-muted disabled:decoration-rule",
-  // --ink on --accent 6.2:1, on --accent-hover 7.6:1, pressed on --accent-strong 4.6:1.
+  // --ink on --accent 6.2:1, on --accent-hover 7.4:1, pressed on --accent-strong 4.6:1.
   band:
     "rounded-button border border-transparent bg-accent text-ink hov:not-disabled:bg-accent-hover act:not-disabled:bg-accent-strong " +
     "disabled:bg-ink-body disabled:text-on-band-muted",
-  // White 1 px border and label (17.9:1); hover and press add a faint white wash.
-  "band-outline":
-    "rounded-button border border-on-band text-on-band hov:not-disabled:bg-on-band/10 act:not-disabled:bg-on-band/20 " +
-    "disabled:border-on-band-muted disabled:text-on-band-muted",
 };
 
 const sizes: Record<ButtonVariant, Record<ButtonSize, string>> = {
@@ -90,7 +85,6 @@ const sizes: Record<ButtonVariant, Record<ButtonSize, string>> = {
   tonal: { md: "h-11 px-4 text-body", lg: "h-13 px-5 text-body-lg" },
   link: { md: "px-0.5 py-2.5 text-body", lg: "min-h-13 px-0.5 py-3 text-body-lg" },
   band: { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
-  "band-outline": { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
 };
 
 export function buttonClasses({
