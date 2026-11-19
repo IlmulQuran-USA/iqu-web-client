@@ -14,9 +14,10 @@ import { cn } from "@/lib/cn";
  *
  * States:
  *   image     the photograph, masked to the arch opening
- *   loading   the opening shows --surface until the image paints; its box is
+ *   loading   the opening shows --tint until the image paints; its box is
  *             fixed by aspect-ratio, so nothing shifts
- *   missing   no photo yet (spec §8): an initial monogram on --surface.
+ *   missing   no photo yet (spec §8): --accent-strong initials on --tint
+ *             (large text, 3.5:1; the name is the accessible label).
  *             Stock imagery is never substituted.
  *   error     the image failed to load: falls back to the monogram
  */
@@ -75,7 +76,7 @@ export function ArchFrame({
       className={cn("@container relative w-full", className)}
       style={{ aspectRatio: geometry.aspectRatio }}
     >
-      <div className="absolute inset-0 bg-surface" style={maskStyle}>
+      <div className="absolute inset-0 bg-tint" style={maskStyle}>
         {showImage && src ? (
           <Image
             src={src}
@@ -96,7 +97,7 @@ export function ArchFrame({
           >
             {/* Monogram size scales with the frame (container query units),
                 so one rule serves every scale of the arch. */}
-            <span className="font-display text-[30cqi] leading-none font-medium tracking-tight text-primary select-none">
+            <span className="font-display text-[30cqi] leading-none font-medium tracking-tight text-accent-strong select-none">
               {initialsOf(name)}
             </span>
           </div>
@@ -113,7 +114,7 @@ export function ArchFrame({
           <path
             d={geometry.hairline}
             fill="none"
-            stroke="var(--rule)"
+            stroke="var(--accent)"
             strokeWidth={1}
             vectorEffect="non-scaling-stroke"
           />

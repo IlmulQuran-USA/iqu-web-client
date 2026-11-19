@@ -10,7 +10,7 @@ Ilm-ul-Quran USA · AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300.
 1. `PRODUCT.md` — the owner's product decisions (19 Nov 2026). Where they conflict with the spec, they win.
 2. `docs/spec/PLUGIN-INVENTORY.md` — how IQU works today: pricing, billing, Zakat ledger, statuses, admin capabilities, data. Wins on business rules and data. Rebuild the behaviour; never port its PHP.
 3. `docs/spec/README.md` — the UI specification: pages, content, states, visual intent. `docs/spec/` is a git submodule of `IlmulQuran-USA/iqu-web-platform`: read it, never edit it from this repo.
-4. `DESIGN.md` — tokens and visual rules (derived from spec §5).
+4. `DESIGN.md` — tokens and visual rules (derived from spec §5). **Exception:** its §2 colour tokens (Slate + Coral) supersede spec §5.1 by owner decision, 19 Nov 2026. For colour, DESIGN.md wins over the spec.
 5. Wireframes — https://iqu-wireframes.netlify.app/ — a **draft**, not a layout to copy. Use it to see which screens exist and what each must contain. Layout, flow and interaction may be better than the wireframe, as long as no content, state or rule required by 1–4 is lost. Section anchors: `#home #catalog #course #instructor #about #trust #donate #programs #content #contact #enroll #auth #engine #student #parent #teacher #admin`.
 6. Skill output (Impeccable, web-design-guidelines) — advisory only.
 
@@ -44,11 +44,12 @@ If a skill or detector suggestion contradicts 1–4, keep that choice and record
 **Accessibility & UX**
 - 44 × 44 px minimum hit target on every interactive element, all viewports.
 - Never disable zoom (`user-scalable=no` and `maximum-scale=1` forbidden).
-- Visible focus ring, 2 px `--accent`, 2 px offset — never removed.
+- Visible focus ring, 2 px `--focus`, 2 px offset (`--accent` on `--band`) — never removed.
 - Persistent visible labels; validate on blur, never on keystroke; error summary with anchors; `aria-live`.
 - Modals trap and restore focus; Escape closes.
 - Async buttons: spinner replaces label, width stays fixed, no double submit.
-- One primary (filled) button per view. On public pages Donate is an `--accent` text link.
+- One primary (filled) button per view. On public pages Donate is a `--link` text link (`--accent` on `--band`).
+- Coral `--accent` is never text or an icon on a light surface (2.9:1): use `--link` for text and `--accent-strong` for large text and icons. Status colours are always soft badges (tint + strong text), never solid fills. No green except the success status. No gradients.
 
 **Content & trust**
 - No stock photos. Missing portrait → arch-framed monogram.

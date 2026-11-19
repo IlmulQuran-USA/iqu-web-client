@@ -24,7 +24,7 @@ import { Wordmark } from "./Wordmark";
  * - Sticky, 72 px, --paper. The 1 px --rule bottom border appears only after
  *   40 px of scroll.
  * - Desktop: Courses ▾ (mega panel), Programs ▾, Instructors, About ▾,
- *   Donate (an --accent text link, never filled), then Log in (ghost) and
+ *   Donate (a --link text link, never filled), then Log in (ghost) and
  *   Start free trial (primary, the header's only filled button).
  * - The desktop row needs about 960 px, so it appears from lg (1024). Below
  *   that the drawer takes over. The spec says md (768); see the build notes.
@@ -91,7 +91,7 @@ export function Header() {
     >
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-button focus:bg-paper focus:px-4 focus:text-body focus:font-medium focus:text-primary focus:shadow-overlay"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-3 focus:left-4 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-button focus:bg-paper focus:px-4 focus:text-body focus:font-medium focus:text-ink focus:shadow-overlay"
       >
         Skip to main content
       </a>
@@ -183,7 +183,12 @@ export function Header() {
 
 const topItem =
   "inline-flex min-h-11 items-center gap-1 rounded-button px-3 text-body font-medium " +
-  "transition-colors duration-(--duration-micro) ease-riwaq decoration-1 underline-offset-[6px]";
+  "transition-colors duration-(--duration-micro) ease-riwaq underline-offset-[6px]";
+
+// Current and open items: --ink with a 2 px --accent-strong underline
+// (3.9:1, above the 3:1 needed for a state indicator). Idle items are
+// --ink-body and darken to --ink on hover.
+const currentMark = "text-ink underline decoration-2 decoration-accent-strong";
 
 function MenuTrigger({
   label,
@@ -209,8 +214,8 @@ function MenuTrigger({
       onClick={onToggle}
       className={cn(
         topItem,
-        expanded || current ? "text-primary" : "text-ink hov:text-primary",
-        current && "underline",
+        expanded || current ? "text-ink" : "text-ink-body hov:text-ink hov:underline hov:decoration-1 hov:decoration-accent-strong",
+        current && currentMark,
       )}
     >
       {label}
@@ -246,8 +251,12 @@ function TopLink({
       onClick={onNavigate}
       className={cn(
         topItem,
-        tone === "accent" ? "text-accent hov:underline" : current ? "text-primary" : "text-ink hov:text-primary",
-        current && "underline",
+        tone === "accent"
+          ? "text-link decoration-1 hov:underline"
+          : current
+            ? currentMark
+            : "text-ink-body hov:text-ink hov:underline hov:decoration-1 hov:decoration-accent-strong",
+        current && tone === "accent" && "underline",
       )}
     >
       {children}
@@ -256,9 +265,10 @@ function TopLink({
 }
 
 const panelLink =
-  "flex min-h-11 items-center rounded-button px-3 text-body text-ink " +
-  "transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface-2 hov:text-primary " +
-  "aria-[current=page]:font-medium aria-[current=page]:text-primary";
+  "flex min-h-11 items-center rounded-button px-3 text-body text-ink-body " +
+  "transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface hov:text-ink " +
+  "hov:underline hov:decoration-1 hov:decoration-accent-strong underline-offset-4 " +
+  "aria-[current=page]:bg-tint aria-[current=page]:font-medium aria-[current=page]:text-ink";
 
 function LinkList({
   links,
@@ -337,7 +347,7 @@ function CoursesPanel({
           <Link
             href="/courses"
             onClick={onNavigate}
-            className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 text-body font-medium text-primary underline decoration-1 underline-offset-2 hov:decoration-2"
+            className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
           >
             All courses
             <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
@@ -355,12 +365,12 @@ function CoursesPanel({
           <Link
             href={featuredProgram.href}
             onClick={onNavigate}
-            className="group block rounded-card border border-rule bg-surface-2 p-6 transition-colors duration-(--duration-default) ease-riwaq hov:border-primary"
+            className="group block rounded-card border border-transparent bg-tint p-6 transition-colors duration-(--duration-default) ease-riwaq hov:border-accent-strong"
           >
             <p className="font-display text-heading-lg font-semibold text-ink">{featuredProgram.label}</p>
-            <p className="mt-1 text-body font-medium text-primary">{featuredProgram.note}</p>
-            <p className="mt-3 max-w-measure text-body text-ink-muted">{featuredProgram.summary}</p>
-            <span className="mt-5 inline-flex items-center gap-1.5 text-body font-medium text-primary underline decoration-1 underline-offset-2 group-hover:decoration-2">
+            <p className="mt-1 text-body font-medium text-ink">{featuredProgram.note}</p>
+            <p className="mt-3 max-w-measure text-body text-ink-body">{featuredProgram.summary}</p>
+            <span className="mt-5 inline-flex items-center gap-1.5 text-body font-medium text-link underline decoration-1 underline-offset-2 group-hover:decoration-2">
               About the program
               <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
             </span>

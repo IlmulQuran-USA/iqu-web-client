@@ -115,8 +115,8 @@ export function TextField({
           "mt-2 min-h-12 w-full rounded-input bg-paper text-body text-ink",
           "transition-[border-color] duration-(--duration-micro) ease-riwaq",
           "placeholder:text-ink-muted",
-          // The error border is 2 px, so it differs from the --accent focus ring
-          // (a close hue) in weight as well as colour. Padding drops 1 px to match,
+          // The error border is 2 px, so an error differs from the hover and focus
+          // states in weight as well as colour. Padding drops 1 px to match,
           // so the box doesn't move.
           invalid
             ? "border-2 border-danger px-2.75 py-2.25"

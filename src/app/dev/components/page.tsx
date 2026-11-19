@@ -21,20 +21,47 @@ export const metadata: Metadata = {
  * globals.css also match it.
  */
 
-const colours = [
-  ["--ink", "#14231F", "Body text, headings"],
-  ["--ink-muted", "#5A6862", "Secondary text, captions"],
-  ["--paper", "#FCFCFA", "Page background"],
-  ["--surface", "#E8EAE4", "Cards, wells, table stripes"],
-  ["--surface-2", "#F4F5F1", "Nested surfaces, ReadOnlyFact"],
-  ["--primary", "#0A4034", "Primary buttons, links, active nav"],
-  ["--primary-hover", "#0D5443", "Hover state"],
-  ["--accent", "#A8451F", "One emphasis per screen, focus ring, Donate"],
-  ["--rule", "#C8CCC2", "Hairlines, borders, dividers"],
-  ["--success", "#1F6F4A", "Present, payment received"],
-  ["--warning", "#8A6415", "Partial, pending, closing soon"],
-  ["--danger", "#8C2F1E", "Absent, no-show, failed, destructive"],
-  ["--info", "#1F5A75", "Technical issue, system messages"],
+/* Slate + Coral (DESIGN.md §2). Ratio is against --paper unless noted. */
+const colourGroups = [
+  {
+    title: "Neutrals",
+    tokens: [
+      ["--ink", "#0F172A", "Headings, display · 17.9:1"],
+      ["--ink-body", "#334155", "Body text · 10.4:1"],
+      ["--ink-muted", "#475569", "Captions, secondary · 7.6:1"],
+      ["--paper", "#FFFFFF", "Page"],
+      ["--surface-2", "#F8FAFC", "Alternate sections, ReadOnlyFact"],
+      ["--surface", "#F1F5F9", "Cards, wells, table stripes"],
+      ["--rule", "#E2E8F0", "Hairlines, borders (decorative)"],
+    ],
+  },
+  {
+    title: "Actions and focus",
+    tokens: [
+      ["--primary", "#0F172A", "Filled primary, white label · 17.9:1"],
+      ["--primary-hover", "#1E293B", "Primary hover · 14.6:1"],
+      ["--focus", "#0F172A", "2 px ring; coral on --band"],
+      ["--band", "#0F172A", "Footer, final CTA band"],
+    ],
+  },
+  {
+    title: "Coral",
+    tokens: [
+      ["--accent", "#F96C48", "Marks, shapes; text only on --band (6.2:1)"],
+      ["--accent-strong", "#D45C3D", "Large text and icons · 3.9:1"],
+      ["--link", "#AE4C32", "Text links, Donate · 5.4:1"],
+      ["--tint", "#FEF0ED", "Soft coral sections, selected"],
+      ["--mark", "#FDD5CA", "Highlighter behind a key phrase"],
+    ],
+  },
+] as const;
+
+/* Soft badges: tint background + strong text, never a solid fill. */
+const statusBadges = [
+  ["Success", "bg-success-tint text-success", "5.4:1"],
+  ["Warning", "bg-warning-tint text-warning", "5.2:1"],
+  ["Danger", "bg-danger-tint text-danger", "6.1:1"],
+  ["Info", "bg-info-tint text-info", "5.6:1"],
 ] as const;
 
 const typeScale = [
@@ -64,7 +91,8 @@ const variantNotes: Record<ButtonVariant, string> = {
   secondary: "An alternative action.",
   ghost: "Tertiary or in-table. Underline on hover.",
   danger: "Destructive. Always behind a confirm dialog.",
-  link: "A standalone text action. In prose, use a plain <a>.",
+  link: "A standalone text action in --link. In prose, use a plain <a>.",
+  band: "Primary action on the dark band: coral fill, slate label.",
 };
 
 const variantLabel: Record<ButtonVariant, string> = {
@@ -73,6 +101,7 @@ const variantLabel: Record<ButtonVariant, string> = {
   ghost: "View details",
   danger: "Delete record",
   link: "Request a correction",
+  band: "Start free trial",
 };
 
 export default function ComponentsPage() {
@@ -85,39 +114,86 @@ export default function ComponentsPage() {
         <div>
           <h1 className="text-display-md md:text-display-lg">Component reference</h1>
           <p className="mt-4 max-w-measure text-body-lg text-ink-muted">
-            Development only. This page shows the Riwāq tokens and every primitive in every state, at
-            375 and 1440. It returns 404 in production.
+            Development only. This page shows the Riwāq tokens (Slate + Coral palette) and every primitive in
+            every state, at 375 and 1440. It returns 404 in production.
           </p>
         </div>
 
         <Section id="tokens" title="Tokens">
           <SubTitle>Colour</SubTitle>
-          <ul className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-            {colours.map(([token, hex, use]) => (
-              <li key={token} className="flex items-center gap-4">
-                <span
-                  aria-hidden="true"
-                  className="size-12 shrink-0 rounded-chip border border-rule"
-                  style={{ backgroundColor: `var(${token})` }}
-                />
-                <span className="min-w-0">
-                  <span className="block font-mono text-mono text-ink">{token}</span>
-                  <span className="block text-ui text-ink-muted">
-                    <span className="font-mono">{hex}</span> · {use}
-                  </span>
-                </span>
+          {colourGroups.map((group) => (
+            <div key={group.title}>
+              <p className="eyebrow mb-3">{group.title}</p>
+              <ul className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+                {group.tokens.map(([token, hex, use]) => (
+                  <li key={token} className="flex items-center gap-4">
+                    <span
+                      aria-hidden="true"
+                      className="size-12 shrink-0 rounded-chip border border-rule"
+                      style={{ backgroundColor: `var(${token})` }}
+                    />
+                    <span className="min-w-0">
+                      <span className="block font-mono text-mono text-ink">{token}</span>
+                      <span className="block text-ui text-ink-muted">
+                        <span className="font-mono">{hex}</span> · {use}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+
+          <SubTitle>Status (soft badges)</SubTitle>
+          <ul className="flex flex-wrap gap-3">
+            {statusBadges.map(([label, cls, ratio]) => (
+              <li key={label} className={`inline-flex min-h-8 items-center rounded-pill px-3 text-ui font-medium ${cls}`}>
+                {label} <span className="ml-2 font-normal tabular-nums">{ratio}</span>
               </li>
             ))}
           </ul>
+
+          <SubTitle>Dark band</SubTitle>
+          <div className="band rounded-card p-6 md:p-8">
+            <p className="font-display text-heading-lg font-semibold">Text on the band is white</p>
+            <p className="mt-2 max-w-measure text-body text-on-band-muted">
+              Secondary text is slate-300 (12.0:1). Coral is allowed here as{" "}
+              <a href="#footer" className="text-accent underline decoration-1 underline-offset-2">
+                link text
+              </a>{" "}
+              (6.2:1). Focus inside the band shows a coral ring.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-4">
+              <Button variant="band">Start free trial</Button>
+              <Button variant="band" data-force="focus">
+                Focus-visible
+              </Button>
+            </div>
+          </div>
 
           <SubTitle>Type</SubTitle>
           <ul className="flex flex-col divide-y divide-rule border-y border-rule">
             {typeScale.map(([label, cls, sample]) => (
               <li key={label} className="grid gap-2 py-5 lg:grid-cols-12 lg:gap-6">
                 <span className="text-ui text-ink-muted lg:col-span-3">{label}</span>
-                <span className={`${cls} max-w-measure break-words text-ink lg:col-span-9`}>{sample}</span>
+                <span className={`${cls} max-w-measure break-words ${cls.includes("font-display") ? "text-ink" : "text-ink-body"} lg:col-span-9`}>
+                  {sample}
+                </span>
               </li>
             ))}
+            <li className="grid gap-2 py-5 lg:grid-cols-12 lg:gap-6">
+              <span className="text-ui text-ink-muted lg:col-span-3">Highlight · --mark behind a key phrase</span>
+              <span className="font-display text-display-md font-semibold text-ink lg:col-span-9">
+                Nearly half our students study{" "}
+                <mark className="rounded-chip bg-mark px-1 text-ink [box-decoration-break:clone]">at no cost</mark>
+              </span>
+            </li>
+            <li className="grid gap-2 py-5 lg:grid-cols-12 lg:gap-6">
+              <span className="text-ui text-ink-muted lg:col-span-3">Large coral · --accent-strong · 24 px+</span>
+              <span className="font-display text-heading-lg font-semibold text-accent-strong lg:col-span-9">
+                Sabaq · Sabqi · Manzil
+              </span>
+            </li>
             <li className="grid gap-2 py-5 lg:grid-cols-12 lg:gap-6">
               <span className="text-ui text-ink-muted lg:col-span-3">Eyebrow · 13 · 0.08em</span>
               <span className="eyebrow lg:col-span-9">By level</span>
@@ -142,7 +218,8 @@ export default function ComponentsPage() {
 
         <Section id="button" title="Button">
           <p className="max-w-measure text-body text-ink-muted">
-            Every variant has a hit area of at least 44 × 44 px. Focus is a 2 px accent ring with a 2 px offset.
+            Every variant has a hit area of at least 44 × 44 px. Focus is a 2 px slate ring with a 2 px offset (coral on
+            the dark band).
             While loading, the spinner replaces the label at a fixed width and repeat clicks are ignored.
           </p>
           {(Object.keys(variantNotes) as ButtonVariant[]).map((variant) => (
@@ -151,10 +228,16 @@ export default function ComponentsPage() {
                 <span className="capitalize">{variant}</span>
                 <span className="ml-3 font-sans text-ui font-normal text-ink-muted">{variantNotes[variant]}</span>
               </SubTitle>
-              <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-6">
+              <ul
+                className={`mt-4 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-6 ${
+                  variant === "band" ? "band rounded-card p-6" : ""
+                }`}
+              >
                 {states.map(([state, props]) => (
                   <li key={state} className="flex flex-col items-start gap-2">
-                    <span className="text-ui-sm text-ink-muted">{state}</span>
+                    <span className={`text-ui-sm ${variant === "band" ? "text-on-band-muted" : "text-ink-muted"}`}>
+                      {state}
+                    </span>
                     <Button variant={variant} {...props}>
                       {variantLabel[variant]}
                     </Button>
@@ -292,7 +375,7 @@ export default function ComponentsPage() {
             <Frame caption="Broken src → monogram" width="w-40">
               <ArchFrame name="Ustadha Khadija Begum" src="/dev/missing-photo.jpg" width={800} height={800} sizes="160px" />
             </Frame>
-            <Frame caption="Loading: the opening holds --surface" width="w-40">
+            <Frame caption="Loading: the opening holds --tint" width="w-40">
               <ArchFrame name="" decorative />
             </Frame>
             <Frame caption="Without the hairline" width="w-40">

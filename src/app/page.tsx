@@ -14,7 +14,7 @@ export default function HomePage() {
         <h1 className="text-display-md md:text-display-lg">Ilm-ul-Quran USA</h1>
         <p className="mt-4 max-w-measure text-body-lg text-ink-muted">
           The new site is being built. In development, see the{" "}
-          <Link href="/dev/components" className="text-primary underline decoration-1 underline-offset-2">
+          <Link href="/dev/components" className="text-link underline decoration-1 underline-offset-2">
             component reference
           </Link>
           .

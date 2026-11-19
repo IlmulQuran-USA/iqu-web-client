@@ -114,7 +114,7 @@ export function MobileNav({ pathname, className }: { pathname: string; className
                   <Link
                     href="/courses"
                     onClick={closeDrawer}
-                    className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 text-body font-medium text-primary underline decoration-1 underline-offset-2"
+                    className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 text-body font-medium text-link underline decoration-1 underline-offset-2"
                   >
                     All courses
                     <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
@@ -122,12 +122,12 @@ export function MobileNav({ pathname, className }: { pathname: string; className
                   <Link
                     href={featuredProgram.href}
                     onClick={closeDrawer}
-                    className="mt-3 mb-2 block rounded-card border border-rule bg-surface-2 p-4"
+                    className="mt-3 mb-2 block rounded-card bg-tint p-4"
                   >
                     <span className="block font-display text-heading-md font-semibold text-ink">
                       {featuredProgram.label}
                     </span>
-                    <span className="mt-1 block text-ui text-ink-muted">{featuredProgram.summary}</span>
+                    <span className="mt-1 block text-ui text-ink-body">{featuredProgram.summary}</span>
                     <span className="mt-2 block text-ui font-medium text-ink">{featuredProgram.note}</span>
                   </Link>
                 </Section>
@@ -169,6 +169,10 @@ export function MobileNav({ pathname, className }: { pathname: string; className
   );
 }
 
+// Current section or page: --ink with a 2 px --accent-strong underline (3.9:1),
+// the same marker the desktop header uses.
+const currentMark = "text-ink underline decoration-2 decoration-accent-strong underline-offset-[6px]";
+
 const rowClass =
   "flex min-h-13 w-full items-center justify-between gap-3 rounded-button px-3 text-body-lg font-medium " +
   "transition-colors duration-(--duration-micro) ease-riwaq";
@@ -184,7 +188,7 @@ function Section({ label, current, children }: { label: string; current: boolean
         aria-expanded={expanded}
         aria-controls={regionId}
         onClick={() => setExpanded((v) => !v)}
-        className={cn(rowClass, current ? "text-primary" : "text-ink", "hov:bg-surface-2")}
+        className={cn(rowClass, current ? currentMark : "text-ink", "hov:bg-surface-2")}
       >
         {label}
         <ChevronDown
@@ -220,7 +224,11 @@ function PlainLink({
         href={href}
         onClick={onNavigate}
         aria-current={current ? "page" : undefined}
-        className={cn(rowClass, tone === "accent" ? "text-accent" : "text-ink", "hov:bg-surface-2")}
+        className={cn(
+          rowClass,
+          tone === "accent" ? "text-link" : current ? currentMark : "text-ink",
+          "hov:bg-surface-2",
+        )}
       >
         {children}
       </Link>
@@ -247,7 +255,7 @@ function DrawerLinks({
               href={link.href}
               onClick={onNavigate}
               aria-current={current ? "page" : undefined}
-              className="flex min-h-11 items-center rounded-button px-3 text-body text-ink transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface-2 aria-[current=page]:font-medium aria-[current=page]:text-primary"
+              className="flex min-h-11 items-center rounded-button px-3 text-body text-ink-body transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface hov:text-ink hov:underline hov:decoration-1 hov:decoration-accent-strong underline-offset-4 aria-[current=page]:bg-tint aria-[current=page]:font-medium aria-[current=page]:text-ink"
             >
               {link.label}
             </Link>

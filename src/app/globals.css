@@ -1,44 +1,70 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   Riwāq design tokens: DESIGN.md §2–§6 and spec §5.
+   Riwāq design tokens: DESIGN.md §2–§6.
+   Colour is the Slate + Coral palette (DESIGN.md §2), which supersedes spec
+   §5.1 by owner decision, 19 Nov 2026.
    Raw values live on :root. The @theme block maps them into Tailwind and
    removes Tailwind's default palette, type scale, radii and shadows, so a
    utility outside the token set fails to compile.
    ========================================================================== */
 
 :root {
-  /* Colour (DESIGN.md §2) */
-  --ink: #14231f;
-  --ink-muted: #5a6862;
-  --paper: #fcfcfa;
-  --surface: #e8eae4;
-  --surface-2: #f4f5f1;
-  --primary: #0a4034;
-  --primary-hover: #0d5443;
-  --accent: #a8451f;
-  --rule: #c8ccc2;
-  --success: #1f6f4a;
-  --warning: #8a6415;
-  --danger: #8c2f1e;
-  --info: #1f5a75;
+  /* Neutrals (Tailwind slate) */
+  --ink: #0f172a; /* headings, display */
+  --ink-body: #334155; /* body text */
+  --ink-muted: #475569; /* captions, secondary text */
+  --paper: #ffffff;
+  --surface-2: #f8fafc; /* alternate sections, nested, ReadOnlyFact */
+  --surface: #f1f5f9; /* cards, wells, table stripes */
+  --rule: #e2e8f0; /* hairlines, borders (decorative) */
 
-  /* Text on filled --primary / --danger buttons ("white text", DESIGN.md §8). */
+  /* Actions */
+  --primary: #0f172a;
+  --primary-hover: #1e293b;
   --on-primary: #ffffff;
 
-  /* Derived state tones. These are mixed from the tokens above, not new hues. */
-  --primary-active: color-mix(in oklab, var(--primary) 60%, var(--ink));
-  --danger-hover: color-mix(in oklab, var(--danger) 84%, var(--ink));
+  /* Coral. --accent is never text or an icon on a light surface (2.9:1). */
+  --accent: #f96c48; /* marks, shapes, illustration; text/icons on --band */
+  --accent-strong: #d45c3d; /* large text (>= 24 px) and icons on light surfaces */
+  --link: #ae4c32; /* text links, the Donate link */
+  --tint: #fef0ed; /* soft coral sections, selected states */
+  --mark: #fdd5ca; /* highlighter behind a key phrase */
+
+  /* Dark band (footer, final CTA band) */
+  --band: #0f172a;
+  --on-band: #ffffff;
+  --on-band-muted: #cbd5e1;
+
+  /* Focus ring. Redefined to --accent inside .band. */
+  --focus: #0f172a;
+
+  /* Status: soft badges (tint + strong text), never solid fills.
+     The strong colour also serves inline errors and success messages. */
+  --success: #067647;
+  --success-tint: #ecfdf3;
+  --warning: #b54708;
+  --warning-tint: #fffaeb;
+  --danger: #b42318; /* also the danger button fill, white label */
+  --danger-tint: #fef3f2;
+  --info: #175cd3;
+  --info-tint: #eff8ff;
+
+  /* Derived state tones, mixed from the tokens above rather than new hues.
+     Pressed primary lifts to slate-700 (white label 10.4:1). */
+  --primary-active: var(--ink-body);
+  --danger-hover: color-mix(in oklab, var(--danger) 85%, var(--ink));
   --danger-active: color-mix(in oklab, var(--danger) 70%, var(--ink));
+  --accent-hover: color-mix(in oklab, var(--accent) 85%, var(--on-band));
   --scrim: color-mix(in srgb, var(--ink) 45%, transparent);
 
-  /* Form field boundaries need 3:1 against --paper (WCAG 1.4.11).
-     --rule is about 1.6:1, so fields use --ink-muted (about 5.9:1). */
+  /* Form field boundaries need 3:1 (WCAG 1.4.11). --rule is 1.2:1, so fields
+     use --ink-muted (7.6:1). */
   --field-border: var(--ink-muted);
 
   /* Elevation: two levels only (DESIGN.md §4) */
-  --elevation-card: 0 1px 2px rgb(20 35 31 / 0.06);
-  --elevation-overlay: 0 8px 24px rgb(20 35 31 / 0.12);
+  --elevation-card: 0 1px 2px rgb(15 23 42 / 0.06);
+  --elevation-overlay: 0 8px 24px rgb(15 23 42 / 0.12);
 
   /* Motion (DESIGN.md §6) */
   --duration-micro: 120ms;
@@ -54,22 +80,36 @@
   /* Colours: the token set only. */
   --color-*: initial;
   --color-ink: var(--ink);
+  --color-ink-body: var(--ink-body);
   --color-ink-muted: var(--ink-muted);
   --color-paper: var(--paper);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-rule: var(--rule);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-active: var(--primary-active);
+  --color-on-primary: var(--on-primary);
   --color-accent: var(--accent);
-  --color-rule: var(--rule);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-strong: var(--accent-strong);
+  --color-link: var(--link);
+  --color-tint: var(--tint);
+  --color-mark: var(--mark);
+  --color-band: var(--band);
+  --color-on-band: var(--on-band);
+  --color-on-band-muted: var(--on-band-muted);
+  --color-focus: var(--focus);
   --color-success: var(--success);
+  --color-success-tint: var(--success-tint);
   --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
   --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
   --color-danger-hover: var(--danger-hover);
   --color-danger-active: var(--danger-active);
   --color-info: var(--info);
-  --color-on-primary: var(--on-primary);
+  --color-info-tint: var(--info-tint);
   --color-field-border: var(--field-border);
   --color-scrim: var(--scrim);
 
@@ -178,7 +218,8 @@
     -webkit-text-size-adjust: 100%;
     scroll-padding-top: calc(var(--header-height) + 1rem);
     accent-color: var(--primary);
-    scrollbar-color: var(--rule) var(--paper);
+    /* Thumb uses the slate-300 on-band secondary: visible but quiet on white. */
+    scrollbar-color: var(--on-band-muted) var(--paper);
   }
 
   /* Body scroll lock while a modal dialog (mobile drawer) is open. */
@@ -188,7 +229,7 @@
 
   body {
     background-color: var(--paper);
-    color: var(--ink);
+    color: var(--ink-body);
     font-family: var(--font-sans);
     font-size: var(--text-body);
     line-height: 1.6;
@@ -205,6 +246,7 @@
     font-weight: 600;
     font-optical-sizing: auto;
     text-wrap: balance;
+    color: var(--heading-color, var(--ink));
   }
 
   p,
@@ -215,8 +257,8 @@
   }
 
   ::selection {
-    background-color: var(--primary);
-    color: var(--on-primary);
+    background-color: var(--mark);
+    color: var(--ink);
   }
 
   input,
@@ -225,10 +267,11 @@
     caret-color: var(--primary);
   }
 
-  /* Focus ring (CLAUDE.md §4): 2 px --accent, 2 px offset, never removed. */
+  /* Focus ring (CLAUDE.md §4): 2 px --focus, 2 px offset, never removed.
+     Inside .band, --focus becomes --accent. */
   :focus-visible,
   [data-force~="focus"] {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--focus);
     outline-offset: 2px;
   }
 
@@ -242,6 +285,20 @@
 }
 
 @layer components {
+  /* Dark band (footer, final CTA band): white text, slate-300 secondary,
+     coral accents, coral focus ring (DESIGN.md §2). */
+  .band {
+    --focus: var(--accent);
+    --heading-color: var(--on-band);
+    --eyebrow-color: var(--on-band-muted);
+    background-color: var(--band);
+    color: var(--on-band);
+  }
+  .band ::selection {
+    background-color: var(--accent);
+    color: var(--ink);
+  }
+
   /* Page container: 1200 px content, 24 px gutter (16 px below sm). */
   .container-content {
     width: 100%;
@@ -263,7 +320,7 @@
     font-weight: 500;
     letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
-    color: var(--ink-muted);
+    color: var(--eyebrow-color, var(--ink-muted));
   }
 
   /* Mobile drawer: native <dialog>, slides from the right (spec §6.1). */
