@@ -48,8 +48,8 @@ If a skill or detector suggestion contradicts 1–4, keep that choice and record
 - Persistent visible labels; validate on blur, never on keystroke; error summary with anchors; `aria-live`.
 - Modals trap and restore focus; Escape closes.
 - Async buttons: spinner replaces label, width stays fixed, no double submit.
-- One primary (filled) button per view. On public pages Donate is a `--link` text link (`--accent` on `--band`).
-- Coral `--accent` is never text or an icon on a light surface (2.9:1): use `--link` for text and `--accent-strong` for large text and icons. Status colours are always soft badges (tint + strong text), never solid fills. No green except the success status. No gradients.
+- One primary (filled) button per view. On public pages Donate is an outlined button with a short animated border (it stops after 3 laps and is static under reduced motion). Log in is a tonal button. Enrolment keeps the only filled button.
+- Coral `--accent` is never text or an icon on a light surface (2.9:1): use `--link` for text and `--accent-strong` for large text and icons. Status colours are always soft badges (tint + strong text), never solid fills. No green except the success status. No gradients — the one exception is the Donate button's animated border and its glow (owner decision, 19 Nov 2026).
 
 **Content & trust**
 - The name is always written Ilm-Ul-Quran USA (capital U).

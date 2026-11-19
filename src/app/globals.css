@@ -65,6 +65,9 @@
   /* Elevation: two levels only (DESIGN.md §4) */
   --elevation-card: 0 1px 2px rgb(15 23 42 / 0.06);
   --elevation-overlay: 0 8px 24px rgb(15 23 42 / 0.12);
+  /* Donate border animation only (owner decision, 19 Nov 2026; DESIGN.md §2, §4):
+     the soft coral glow that follows the travelling light. */
+  --glow-accent: color-mix(in srgb, var(--accent) 30%, transparent);
 
   /* Motion (DESIGN.md §6) */
   --duration-micro: 120ms;
@@ -294,6 +297,122 @@
 
   [hidden] {
     display: none !important;
+  }
+}
+
+/*
+ * Donate button: a coral light segment travels along the border (a conic
+ * gradient on a rotating @property angle) with a soft glow that follows it.
+ * Owner decision, 19 Nov 2026; the only gradient and glow in the system
+ * (DESIGN.md §2, §4, §8). The component runs 3 laps on load (4.5 s, inside
+ * WCAG 2.2.2's 5 s), one more on hover and focus, then rests with a static
+ * border. Nothing moves under prefers-reduced-motion.
+ */
+@property --donate-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes donate-orbit {
+  to {
+    --donate-angle: 360deg;
+  }
+}
+
+/* Hides the light the moment its laps end, so the border rests even before
+   the page hydrates (fill-mode forwards keeps it hidden). */
+@keyframes donate-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes donate-beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.2);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  75% {
+    transform: scale(1.08);
+  }
+}
+
+@layer components {
+  .donate {
+    position: relative;
+  }
+  /* The light: a ring exactly over the 1 px border, painted with a short conic segment. */
+  .donate::before,
+  .donate::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    background: conic-gradient(
+      from var(--donate-angle),
+      transparent 0turn 0.82turn,
+      var(--accent) 0.95turn,
+      transparent 1turn
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
+    opacity: 0;
+  }
+  .donate::before {
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
+  }
+  /* The glow: the same segment, blurred, in a 6 px ring just outside the border. */
+  .donate::after {
+    inset: -7px;
+    padding: 6px;
+    border-radius: calc(var(--radius-button) + 6px);
+    background: conic-gradient(
+      from var(--donate-angle),
+      transparent 0turn 0.82turn,
+      var(--glow-accent) 0.95turn,
+      transparent 1turn
+    );
+    filter: blur(4px);
+  }
+  .donate[data-orbit="load"]::before,
+  .donate[data-orbit="load"]::after {
+    opacity: 1;
+    animation:
+      donate-orbit 1.5s linear 3,
+      donate-fade 4.5s steps(1, end) forwards;
+  }
+  .donate[data-orbit="lap"]::before,
+  .donate[data-orbit="lap"]::after {
+    opacity: 1;
+    animation:
+      donate-orbit 1.5s linear 1,
+      donate-fade 1.5s steps(1, end) forwards;
+  }
+  @media (hover: hover) {
+    .donate:hover .donate-heart {
+      animation: donate-beat 600ms var(--ease-riwaq) 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .donate::before,
+    .donate::after {
+      animation: none !important;
+      opacity: 0 !important;
+    }
+    .donate .donate-heart {
+      animation: none !important;
+    }
   }
 }
 

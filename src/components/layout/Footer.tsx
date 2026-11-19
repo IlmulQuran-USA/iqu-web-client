@@ -1,25 +1,34 @@
 import { ArrowUpRight } from "lucide-react";
 import { cacheLife } from "next/cache";
 import Link from "next/link";
+import { Fragment, type ReactNode } from "react";
 import { footerColumns, legalLinks, socialLinks, type NavLink } from "@/content/navigation";
 import { PENDING, site } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { Logo } from "./Logo";
 
 /**
- * Public footer (spec §6.2).
- * - The columns and legal strip sit on the dark --band: white text,
- *   slate-300 secondary, coral accents and a coral focus ring (DESIGN.md
- *   §1–§2). A top hairline separates the footer from a --band section above
- *   it (the Home final CTA).
- * - Newsletter sign-up: hidden site-wide until Brevo is connected (owner
- *   decision, 19 Nov 2026). NewsletterForm keeps its "not open yet" state.
- *   When it returns it goes inside this footer, not as a separate band.
- * - Four columns: Identity · Learn · Organization · Support us. The EIN sits
- *   under the giving column (DESIGN.md §10).
- * - Legal strip: © year AL HASANAH FOUNDATION · Privacy · Terms · Refund
- *   policy · Accessibility statement, with social links on the right
- *   (Facebook only, labelled; see navigation.ts).
+ * Public footer (spec §6.2; owner decision, 19 Nov 2026).
+ * - Dark --band: white text, slate-300 secondary, coral accents and a coral
+ *   focus ring (DESIGN.md §1–§2). A top hairline separates it from a --band
+ *   section above it (the Home final CTA).
+ * - The content uses the header's container exactly: the brand group starts
+ *   on the header logo's left edge and Support us ends on the right edge of
+ *   the header's Start free trial button. From lg the four groups spread
+ *   across that width (first flush left, last flush right, equal space
+ *   between) and share one height (the brand group's content sits at its
+ *   top). Below lg: brand, then Learn and
+ *   Organization side by side, then Support us.
+ * - Brand group: the logo at the header's 40 px, a one- or two-line
+ *   description, Phone and Email. Each link column has exactly six rows; the
+ *   sixth row of Support us is the 501(c)(3) · EIN line, the only place the
+ *   EIN appears.
+ * - Bottom bar on the same edges: © year, legal name and the street address
+ *   on the left; legal links and Facebook on the right, on one row from xl
+ *   (where both fit); stacked below.
+ * - Newsletter sign-up: hidden site-wide until Brevo is connected.
+ *   NewsletterForm keeps its "not open yet" state; when it returns it goes
+ *   inside this footer, not as a separate band.
  * - The language toggle waits for a Bangla locale (spec §10.3 Q6).
  * - A contact value that is null shows [pending] (CLAUDE.md §4).
  */
@@ -35,7 +44,7 @@ async function copyrightYear() {
 // Colour is set per link, never in the shared base, so Donate's coral is not
 // fighting a base text colour (cn() joins classes; it does not resolve conflicts).
 const columnLink =
-  "inline-flex min-h-11 min-w-11 items-center gap-1 rounded-chip text-body " +
+  "-mx-1 inline-flex min-h-11 min-w-11 items-center gap-1 rounded-chip px-1 text-body " +
   "decoration-1 underline-offset-2 hov:underline";
 
 const stripLink =
@@ -66,108 +75,112 @@ function FooterLink({ link, className }: { link: NavLink; className: string }) {
 
 export async function Footer() {
   const year = await copyrightYear();
+  const [learn, organization, support] = footerColumns;
 
   return (
     <footer className="mt-auto">
       <div className="band border-t border-ink-body">
-        <div className="container-content grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:py-16 lg:grid-cols-12 lg:gap-6">
-          <div className="col-span-2 lg:col-span-4">
-            <Logo variant="footer" />
-            <p className="mt-3 max-w-measure text-body text-on-band-muted">{site.mission}</p>
-            <p className="mt-4 text-ui font-medium text-on-band">
-              {site.legalName} is a {site.taxStatus}.{" "}
-              <span className="whitespace-nowrap">
-                EIN <span className="tabular-nums">{site.ein}</span>.
-              </span>
-            </p>
-            <address className="mt-4 text-ui text-on-band-muted not-italic">
-              {site.address.line1}
-              <br />
-              {site.address.line2}
-            </address>
-            <dl className="mt-2 grid grid-cols-[auto_1fr] items-center gap-x-3 text-ui">
-              <dt className="text-on-band-muted">Phone</dt>
-              <dd>
-                {site.phone ? (
-                  <a href={site.phone.href} className={cn(contactLink, "tabular-nums")}>
-                    {site.phone.display}
-                  </a>
-                ) : (
-                  <span className="text-on-band">{PENDING}</span>
-                )}
-              </dd>
-              <dt className="text-on-band-muted">Email</dt>
-              <dd>
-                {site.email ? (
-                  <a href={`mailto:${site.email}`} className={contactLink}>
-                    {site.email}
-                  </a>
-                ) : (
-                  <span className="text-on-band">{PENDING}</span>
-                )}
-              </dd>
-            </dl>
-          </div>
+        <div className="container-content py-12 md:py-16">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:flex lg:items-stretch lg:justify-between lg:gap-x-8">
+            {/* Brand group: logo, description, then Phone and Email directly beneath. */}
+            <div className="col-span-2">
+              <div>
+                <Logo variant="footer" />
+                <p className="mt-3 max-w-72 text-body text-on-band-muted">{site.footerLine}</p>
+              </div>
+              <dl className="mt-6 grid grid-cols-[auto_1fr] items-center gap-x-3 text-ui">
+                <dt className="text-on-band-muted">Phone</dt>
+                <dd>
+                  {site.phone ? (
+                    <a href={site.phone.href} className={cn(contactLink, "tabular-nums whitespace-nowrap")}>
+                      {site.phone.display}
+                    </a>
+                  ) : (
+                    <span className="text-on-band">{PENDING}</span>
+                  )}
+                </dd>
+                <dt className="text-on-band-muted">Email</dt>
+                <dd>
+                  {site.email ? (
+                    <a href={`mailto:${site.email}`} className={contactLink}>
+                      {site.email}
+                    </a>
+                  ) : (
+                    <span className="text-on-band">{PENDING}</span>
+                  )}
+                </dd>
+              </dl>
+            </div>
 
-          {footerColumns.map((column) => {
-            const headingId = `footer-${column.title.toLowerCase().replace(/\s+/g, "-")}`;
-            return (
-              <nav key={column.title} aria-labelledby={headingId} className="lg:col-span-2 lg:first-of-type:col-start-6">
-                <h2 id={headingId} className="eyebrow">
-                  {column.title}
-                </h2>
-                <ul className="mt-2 flex flex-col">
-                  {column.links.map((link) => (
-                    <li key={link.href}>
-                      <FooterLink
-                        link={link}
-                        className={cn(
-                          columnLink,
-                          link.href === "/donate" ? "font-medium text-accent" : "text-on-band",
-                        )}
-                      />
-                    </li>
-                  ))}
-                </ul>
-                {column.giving ? (
-                  // DESIGN.md §10: the EIN sits next to every giving ask.
-                  <p className="mt-3 text-ui text-on-band-muted">
-                    {site.taxStatus}
-                    <br />
-                    <span className="whitespace-nowrap">
-                      EIN <span className="tabular-nums">{site.ein}</span>
-                    </span>
-                  </p>
-                ) : null}
-              </nav>
-            );
-          })}
+            <Column column={learn} />
+            <Column column={organization} />
+            <Column column={support} className="col-span-2">
+              {/* The sixth row of Support us: the only place the EIN appears (DESIGN.md §10). */}
+              <li className="flex min-h-11 items-center text-ui text-on-band-muted">
+                {site.taxStatus} ·&nbsp;
+                <span className="whitespace-nowrap">
+                  EIN <span className="tabular-nums">{site.ein}</span>
+                </span>
+              </li>
+            </Column>
+          </div>
         </div>
 
         <div className="border-t border-ink-body">
-          <div className="container-content flex flex-col gap-2 py-6 md:flex-row md:items-center md:justify-between">
+          {/* One row from xl, where both halves fit; stacked below, so nothing wraps mid-line. */}
+          <div className="container-content flex flex-col gap-2 py-6 xl:flex-row xl:items-center xl:justify-between xl:gap-6">
             <p className="text-ui text-on-band-muted">
-              © {year} {site.legalName}
+              © {year} {site.legalName} · {site.address.line1},{" "}
+              <span className="whitespace-nowrap">{site.address.line2}</span>
             </p>
-            <div className="-mx-2 flex flex-wrap items-center gap-x-4">
-              <ul aria-label="Legal" className="flex flex-wrap items-center">
-                {legalLinks.map((link) => (
-                  <li key={link.href}>
+            <ul aria-label="Legal and social" className="-mx-2 flex flex-wrap items-center xl:justify-end">
+              {[...legalLinks, ...socialLinks].map((link, i) => (
+                <Fragment key={link.href}>
+                  {i > 0 ? (
+                    // Separators only where the bar is one line (xl), so a dot never dangles at a wrap.
+                    <li aria-hidden="true" className="hidden text-ui text-on-band-muted xl:block">
+                      ·
+                    </li>
+                  ) : null}
+                  <li>
                     <FooterLink link={link} className={stripLink} />
                   </li>
-                ))}
-              </ul>
-              <ul aria-label="Social media" className="flex flex-wrap items-center">
-                {socialLinks.map((link) => (
-                  <li key={link.href}>
-                    <FooterLink link={link} className={stripLink} />
-                  </li>
-                ))}
-              </ul>
-            </div>
+                </Fragment>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function Column({
+  column,
+  className,
+  children,
+}: {
+  column: (typeof footerColumns)[number];
+  className?: string;
+  children?: ReactNode;
+}) {
+  const headingId = `footer-${column.title.toLowerCase().replace(/\s+/g, "-")}`;
+  return (
+    <nav aria-labelledby={headingId} className={className}>
+      <h2 id={headingId} className="eyebrow">
+        {column.title}
+      </h2>
+      <ul className="mt-2 flex flex-col">
+        {column.links.map((link) => (
+          <li key={link.href}>
+            <FooterLink
+              link={link}
+              className={cn(columnLink, link.href === "/donate" ? "font-medium text-accent" : "text-on-band")}
+            />
+          </li>
+        ))}
+        {children}
+      </ul>
+    </nav>
   );
 }

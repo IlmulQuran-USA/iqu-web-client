@@ -14,9 +14,9 @@ import { cn } from "@/lib/cn";
  *           recolouring, same proportions. Light surfaces: the header and the
  *           mobile drawer. Height 32 px below 768, 36 px to 1023, 40 px from
  *           1024 (owner decision, 19 Nov 2026); width follows (≈183/206/229).
- *   footer  public/brand/logo-footer.png: the owner's white logo with its
- *           tagline (design/brand-source/White.png with its transparent
- *           padding trimmed), for --band. 585 × 111.
+ *   footer  public/brand/logo-footer.svg: the header artwork with only its
+ *           two fills set to white (owner decision, 19 Nov 2026), for --band.
+ *           40 px tall at every width, the header's desktop height.
  *
  * The link carries the accessible name; the image itself is decorative.
  */
@@ -46,14 +46,7 @@ export function Logo({
           className="h-8 w-auto md:h-9 lg:h-10"
         />
       ) : (
-        <Image
-          src="/brand/logo-footer.png"
-          alt=""
-          width={585}
-          height={111}
-          sizes="(min-width: 64rem) 384px, calc(100vw - 2rem)"
-          className="h-auto w-full max-w-96"
-        />
+        <Image src="/brand/logo-footer.svg" alt="" width={526} height={92} className="h-10 w-auto" />
       )}
     </Link>
   );

@@ -10,6 +10,8 @@ export const site = {
   domain: "ilmulquranus.org",
   mission:
     "Live Qur’an and Islamic classes taught by qualified Huffaz, Ulama and Mufti, for families in the United States and Canada.",
+  /** Footer brand line, at most two lines (owner decision, 19 Nov 2026). The full mission stays for metadata. */
+  footerLine: "Live Qur’an and Islamic classes with qualified Huffaz, Ulama and Mufti.",
   taxStatus: "501(c)(3) nonprofit",
   ein: "93-3902300",
   address: {

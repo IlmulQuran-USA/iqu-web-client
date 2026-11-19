@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ChevronDown, Menu, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Menu, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
@@ -15,6 +15,7 @@ import {
 } from "@/content/navigation";
 import { cn } from "@/lib/cn";
 import { isCurrent, isExactPage } from "@/lib/nav";
+import { DonateButton } from "./DonateButton";
 import { Logo } from "./Logo";
 
 /**
@@ -30,6 +31,8 @@ import { Logo } from "./Logo";
  */
 export function MobileNav({ pathname, className }: { pathname: string; className?: string }) {
   const [open, setOpen] = useState(false);
+  // The drawer's Donate plays its 3 laps the first time the drawer opens, not on every open.
+  const [opened, setOpened] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -41,6 +44,7 @@ export function MobileNav({ pathname, className }: { pathname: string; className
     // Start on Close, not the home link, so a stray Enter can't navigate away.
     closeRef.current?.focus();
     setOpen(true);
+    setOpened(true);
   };
   const closeDrawer = () => dialogRef.current?.close();
 
@@ -148,15 +152,28 @@ export function MobileNav({ pathname, className }: { pathname: string; className
                 </Section>
               </li>
               <li>
-                <PlainLink href={primaryLinks.donate.href} pathname={pathname} onNavigate={closeDrawer} tone="accent">
-                  {primaryLinks.donate.label}
-                </PlainLink>
+                {/* The same Donate button as the header. Remounted each time the
+                    drawer first opens, so its 3 laps play once, when it can be seen. */}
+                <DonateButton
+                  key={opened ? "shown" : "hidden"}
+                  href={primaryLinks.donate.href}
+                  label={primaryLinks.donate.label}
+                  current={isCurrent(pathname, primaryLinks.donate.href)}
+                  onNavigate={closeDrawer}
+                  className="mt-2 ml-3"
+                />
               </li>
             </ul>
           </nav>
 
           <div className="flex shrink-0 flex-col gap-2 border-t border-rule bg-paper px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-            <ButtonLink href={primaryLinks.login.href} variant="ghost" fullWidth onClick={closeDrawer}>
+            <ButtonLink
+              href={primaryLinks.login.href}
+              variant="tonal"
+              fullWidth
+              onClick={closeDrawer}
+              iconStart={<UserRound aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />}
+            >
               {primaryLinks.login.label}
             </ButtonLink>
             <ButtonLink href={primaryLinks.enrol.href} variant="primary" fullWidth onClick={closeDrawer}>

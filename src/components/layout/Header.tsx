@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/cn";
 import { isCurrent, isExactPage } from "@/lib/nav";
 import { Logo } from "./Logo";
+import { DonateButton } from "./DonateButton";
 import { MobileNav } from "./MobileNav";
 
 /**
@@ -24,8 +25,10 @@ import { MobileNav } from "./MobileNav";
  * - Sticky, --paper, 64 px tall (72 px from lg). The 1 px --rule bottom border appears only after
  *   40 px of scroll.
  * - Desktop: Courses ▾ (mega panel), Programs ▾, Instructors, About ▾,
- *   Donate (a --link text link, never filled), then Log in (ghost) and
- *   Start free trial (primary, the header's only filled button).
+ *   Donate (an outlined button with a short animated border, never filled),
+ *   then Log in (tonal; icon-only from 1024 to 1279 so the row fits, full
+ *   label from 1280) and Start free trial (the header's only filled button;
+ *   outlined while the page's own CTA is on screen). Owner, 19 Nov 2026.
  * - The desktop row needs about 945 px (logo 229 + nav + CTAs, with gaps and nav padding tightened from lg to xl), so it appears from lg (1024). Below
  *   that the drawer takes over. The spec says md (768); see the build notes.
  * - Menus open on click, not hover, so keyboard and touch work the same way.
@@ -192,21 +195,26 @@ export function Header({
               <Dropdown id={panelId("about")} hidden={openMenu !== "about"} links={about} pathname={pathname} onNavigate={close} />
             </li>
             <li>
-              <TopLink
+              <DonateButton
                 href={primaryLinks.donate.href}
+                label={primaryLinks.donate.label}
                 current={isCurrent(pathname, primaryLinks.donate.href)}
                 onNavigate={close}
-                tone="accent"
-              >
-                {primaryLinks.donate.label}
-              </TopLink>
+              />
             </li>
           </ul>
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          <ButtonLink href={primaryLinks.login.href} variant="ghost">
-            {primaryLinks.login.label}
+          <ButtonLink
+            href={primaryLinks.login.href}
+            variant="tonal"
+            // Icon-only below xl: exactly 44 × 44 (the important flag beats the size padding).
+            className="max-xl:w-11 max-xl:px-0!"
+            iconStart={<UserRound aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />}
+          >
+            {/* Icon-only from 1024 to 1279 so the row fits; the label stays for screen readers. */}
+            <span className="sr-only xl:not-sr-only">{primaryLinks.login.label}</span>
           </ButtonLink>
           <ButtonLink href={primaryLinks.enrol.href} variant={ctaYielded ? "secondary" : "primary"}>
             {primaryLinks.enrol.label}

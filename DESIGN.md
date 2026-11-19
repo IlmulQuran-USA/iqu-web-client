@@ -25,7 +25,7 @@ Coloured bands are not used for section separation. The only exceptions:
 
 ## 2. Colors (colour tokens)
 
-> **Slate + Coral palette — supersedes spec §5.1, owner decision 19 Nov 2026.** No green anywhere except the success status. No gradients. Ratios are WCAG 2.x contrast against the background named.
+> **Slate + Coral palette — supersedes spec §5.1, owner decision 19 Nov 2026.** No green anywhere except the success status. No gradients (one exception: the Donate border animation, §8). Ratios are WCAG 2.x contrast against the background named.
 
 **Neutrals (Tailwind slate)**
 
@@ -94,7 +94,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 - `--accent` is never text or an icon on a light surface; use `--accent-strong` (large or icons) or `--link` (text).
 - **`--tint` fills at most one section per page** (owner decision, 19 Nov 2026). A section is a full-width page region or band. Selected and current states (nav current page) are not sections and do not count. The footer newsletter band, which used that allowance on every page, is hidden until Brevo is connected and will return inside the footer, so the allowance is currently unused. The arch monogram is never on `--tint` (§7).
 - Form field boundaries use `--ink-muted` (7.6:1), not `--rule`.
-- No gradients anywhere.
+- No gradients anywhere, with one exception (owner decision, 19 Nov 2026): the Donate button's travelling border light, a conic gradient, and its glow (§8).
 
 ---
 
@@ -129,6 +129,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 - Elevation — two levels only:
   - Card: `0 1px 2px rgba(15,23,42,.06)`
   - Overlay: `0 8px 24px rgba(15,23,42,.12)`
+  - Exception: `--glow-accent`, the soft coral glow that follows the Donate border light (§8). Not an elevation; used nowhere else.
 
 ---
 
@@ -173,16 +174,18 @@ Every screen is built and checked at **375** and **1440**; **768** where layout 
 
 | Variant   | Use                                | Style                                                         |
 | --------- | ---------------------------------- | ------------------------------------------------------------- |
-| Primary   | One per view. Enrol, Donate, Save. | Filled `--primary`, white text, 8 px radius, 44 px min height |
+| Primary   | One per view. Enrol, Save.         | Filled `--primary`, white text, 8 px radius, 44 px min height |
 | Secondary | Alternative action                 | 1 px `--ink-body` outline, `--ink-body` label, transparent fill |
 | Ghost     | Tertiary, in-table actions         | `--ink` text only, underline on hover                         |
+| Tonal     | Log in                             | `--surface` fill, `--ink` label, font-medium, no border, 8 px radius, 44 px; `--rule` on hover; Lucide `UserRound` before the label (icon-only from 1024 to 1279) |
+| Donate    | Giving, on public pages            | Outlined: 1 px `--accent-strong` border, `--link` label, Lucide `HandHeart` (1.5 px, `--accent-strong`) before it, 8 px radius, 44 px. Never filled. A coral (`--accent`) light travels along the border with a `--glow-accent` glow: 3 laps on load (4.5 s), one on hover and focus (the heart beats once on hover), then a static border; nothing moves under reduced motion |
 | Danger    | Destructive                        | Filled `--danger`, white label, always behind a confirm dialog |
 | Link      | Inline in prose                    | `--link`, underlined, 2 px offset                             |
 | On band   | Primary action on `--band`         | Filled `--accent`, `--ink` label                              |
 
 All buttons: 44 × 44 px minimum hit area · focus ring 2 px `--focus` (`--accent` on `--band`), 2 px offset · loading state replaces the label with a spinner and keeps the width fixed · no double submit.
 
-On public pages, **Donate is a text link in `--link` (`--accent` on `--band`), never a filled button** — the filled slot belongs to enrolment.
+On public pages **Donate** is an outlined button with a short animated border (it stops after 3 laps and is static under reduced motion). Log in is a tonal button. Enrolment keeps the only filled button. In footer link lists Donate stays a coral text row on `--band`.
 
 ---
 

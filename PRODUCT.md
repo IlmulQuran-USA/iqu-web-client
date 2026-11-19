@@ -98,7 +98,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 - **Voice:** warm, respectful and professional, suited to an Islamic educational nonprofit. Clear, simple English. Dignified about money: asking for help must never make a family feel audited, and must never affect a child's place.
 - **Islamic etiquette:** Quran and Hadith appear as typography with a full citation, in their own right-to-left block, never as decoration and never over a photo. Islamic topics are treated with respect.
 - **Honesty:** no countdowns or false scarcity (the one exception is a real Summer Camp registration deadline). No stock photos of a child at a laptop. Nothing that looks like an SEO-farm academy.
-- **Enrolment and giving stay apart:** On public pages, enrolment owns the filled button and Donate is a text link.
+- **Enrolment and giving stay apart:** On public pages Donate is an outlined button with a short animated border (it stops after 3 laps and is static under reduced motion). Log in is a tonal button. Enrolment keeps the only filled button.
 
 ## Evidence on Hand
 

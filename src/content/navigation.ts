@@ -92,16 +92,20 @@ export const primaryLinks = {
 export const ZEFFY_GIVING_URL =
   "https://www.zeffy.com/en-US/fundraising/d912691e-fbd0-4140-9453-a7b230b333eb";
 
-/** Footer columns (spec §6.2). */
+/**
+ * Footer columns (spec §6.2; owner decision, 19 Nov 2026): exactly six rows
+ * each. Support us has five links; its sixth row is the 501(c)(3) · EIN line,
+ * drawn by the footer, so the EIN appears only once.
+ */
 export const footerColumns: { title: string; links: NavLink[]; giving?: boolean }[] = [
   {
     title: "Learn",
     links: [
       { label: "All courses", href: "/courses" },
-      { label: pricedPrograms.summer.label, href: pricedPrograms.summer.href },
-      { label: pricedPrograms.weekend.label, href: pricedPrograms.weekend.href },
       course("hifz"),
       course("arabic"),
+      { label: pricedPrograms.weekend.label, href: pricedPrograms.weekend.href },
+      { label: pricedPrograms.summer.label, href: pricedPrograms.summer.href },
       { label: "Free trial", href: "/enroll" },
     ],
   },
@@ -110,10 +114,9 @@ export const footerColumns: { title: string; links: NavLink[]; giving?: boolean 
     links: [
       { label: "About", href: "/about" },
       { label: "Instructors", href: "/instructors" },
-      { label: "Transparency & finances", href: "/about/transparency" },
       { label: "Impact", href: "/impact" },
-      { label: "Blog", href: "/blog" },
       { label: "Teach with us", href: "/teach" },
+      { label: "Blog", href: "/blog" },
       { label: "Contact", href: "/contact" },
     ],
   },
@@ -129,6 +132,7 @@ export const footerColumns: { title: string; links: NavLink[]; giving?: boolean 
       { label: "Monthly sustainer", href: "/donate/sustainer" },
       { label: "Zakat scholarship fund", href: "/donate/zakat" },
       { label: "Give on Zeffy", href: ZEFFY_GIVING_URL, external: true },
+      { label: "Transparency & finances", href: "/about/transparency" },
     ],
   },
 ];
