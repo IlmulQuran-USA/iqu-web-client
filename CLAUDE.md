@@ -7,19 +7,20 @@ Ilm-ul-Quran USA · AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300.
 
 ## 1. Source of truth (highest first)
 
-1. `docs/spec/README.md` — the specification. Wins every conflict. `docs/spec/` is a git submodule of `IlmulQuran-USA/iqu-web-platform`: read it, never edit it from this repo.
-2. Wireframes — https://iqu-wireframes.netlify.app/ — section order and layout per screen. Section anchors: `#home #catalog #course #instructor #about #trust #donate #programs #content #contact #enroll #auth #engine #student #parent #teacher #admin`.
-3. `DESIGN.md` — tokens and visual rules (derived from spec §5).
-4. `PRODUCT.md` — audience and brand context (written by `/impeccable init`).
-5. Skill output (Impeccable, web-design-guidelines) — advisory only.
+1. `PRODUCT.md` — the owner's product decisions (19 Nov 2026). Where they conflict with the spec, they win.
+2. `docs/spec/PLUGIN-INVENTORY.md` — how IQU works today: pricing, billing, Zakat ledger, statuses, admin capabilities, data. Wins on business rules and data. Rebuild the behaviour; never port its PHP.
+3. `docs/spec/README.md` — the UI specification: pages, content, states, visual intent. `docs/spec/` is a git submodule of `IlmulQuran-USA/iqu-web-platform`: read it, never edit it from this repo.
+4. `DESIGN.md` — tokens and visual rules (derived from spec §5).
+5. Wireframes — https://iqu-wireframes.netlify.app/ — a **draft**, not a layout to copy. Use it to see which screens exist and what each must contain. Layout, flow and interaction may be better than the wireframe, as long as no content, state or rule required by 1–4 is lost. Section anchors: `#home #catalog #course #instructor #about #trust #donate #programs #content #contact #enroll #auth #engine #student #parent #teacher #admin`.
+6. Skill output (Impeccable, web-design-guidelines) — advisory only.
 
-If a skill or detector suggestion contradicts 1–3, keep the spec's choice and record the exception (see §5). Never import a third-party brand DESIGN.md (Stripe, Linear, etc.). Do not let `/impeccable document` overwrite `DESIGN.md` without review.
+If a skill or detector suggestion contradicts 1–4, keep that choice and record the exception (see §5). Never import a third-party brand DESIGN.md (Stripe, Linear, etc.). Do not let `/impeccable document` overwrite `DESIGN.md` without review.
 
 ---
 
 ## 2. Before any UI work
 
-- Read `DESIGN.md`, the spec section for the screen (§7.x / §7B / §7C / §7D) and the matching wireframe section.
+- Read `DESIGN.md`, the spec section for the screen (§7.x / §7B / §7C / §7D), the matching wireframe section, and — for anything touching enrolment, fees, billing, coupons, Zakat, donations or admin — the matching part of `docs/spec/PLUGIN-INVENTORY.md`.
 - Use the component names from spec §6.3. Check `src/components` before creating a new one.
 - Build mobile-first at 375, then 1440.
 
@@ -30,7 +31,7 @@ If a skill or detector suggestion contradicts 1–3, keep the spec's choice and 
 1. **Plan** — `/impeccable shape <screen>`: section order from the spec, list every state.
 2. **Build** — tokens only from CSS variables; no hard-coded hex, px font sizes or shadows outside the token set.
 3. **Review** — `/impeccable critique <screen>`, then run the `web-design-guidelines` skill on the changed files.
-4. **Browser QA (Playwright MCP)** — open `http://localhost:3000/<route>` at 375 and 1440. Take screenshots, compare against the wireframe section, click every CTA, tab through for focus order, check that nothing overflows its card or overlaps text. Fix before continuing.
+4. **Browser QA (Playwright MCP)** — open `http://localhost:3000/<route>` at 375 and 1440. Take screenshots, check that every piece of content and every state the spec and inventory require is present (the wireframe is a content checklist, not a pixel target), click every CTA, tab through for focus order, check that nothing overflows its card or overlaps text. Fix before continuing.
 5. **Detector** — `npx impeccable detect http://localhost:3000/<route>`.
 6. **Finish** — `/impeccable polish <screen>`; for forms and the donation widget also `/impeccable harden <screen>`.
 
