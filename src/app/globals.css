@@ -1,26 +1,333 @@
 @import "tailwindcss";
 
+/* ==========================================================================
+   Riwāq design tokens: DESIGN.md §2–§6 and spec §5.
+   Raw values live on :root. The @theme block maps them into Tailwind and
+   removes Tailwind's default palette, type scale, radii and shadows, so a
+   utility outside the token set fails to compile.
+   ========================================================================== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Colour (DESIGN.md §2) */
+  --ink: #14231f;
+  --ink-muted: #5a6862;
+  --paper: #fcfcfa;
+  --surface: #e8eae4;
+  --surface-2: #f4f5f1;
+  --primary: #0a4034;
+  --primary-hover: #0d5443;
+  --accent: #a8451f;
+  --rule: #c8ccc2;
+  --success: #1f6f4a;
+  --warning: #8a6415;
+  --danger: #8c2f1e;
+  --info: #1f5a75;
+
+  /* Text on filled --primary / --danger buttons ("white text", DESIGN.md §8). */
+  --on-primary: #ffffff;
+
+  /* Derived state tones. These are mixed from the tokens above, not new hues. */
+  --primary-active: color-mix(in oklab, var(--primary) 60%, var(--ink));
+  --danger-hover: color-mix(in oklab, var(--danger) 84%, var(--ink));
+  --danger-active: color-mix(in oklab, var(--danger) 70%, var(--ink));
+  --scrim: color-mix(in srgb, var(--ink) 45%, transparent);
+
+  /* Form field boundaries need 3:1 against --paper (WCAG 1.4.11).
+     --rule is about 1.6:1, so fields use --ink-muted (about 5.9:1). */
+  --field-border: var(--ink-muted);
+
+  /* Elevation: two levels only (DESIGN.md §4) */
+  --elevation-card: 0 1px 2px rgb(20 35 31 / 0.06);
+  --elevation-overlay: 0 8px 24px rgb(20 35 31 / 0.12);
+
+  /* Motion (DESIGN.md §6) */
+  --duration-micro: 120ms;
+  --duration-default: 200ms;
+  --duration-panel: 320ms;
+  --ease-riwaq: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Layout (DESIGN.md §4, spec §6.1) */
+  --header-height: 72px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Colours: the token set only. */
+  --color-*: initial;
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-accent: var(--accent);
+  --color-rule: var(--rule);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-active: var(--danger-active);
+  --color-info: var(--info);
+  --color-on-primary: var(--on-primary);
+  --color-field-border: var(--field-border);
+  --color-scrim: var(--scrim);
+
+  /* Families (CLAUDE.md §6: marketing routes load Newsreader + IBM Plex Sans only).
+     --font-mono stays on the system stack until IBM Plex Mono loads on portal routes. */
+  --font-*: initial;
+  --font-display: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Type scale (DESIGN.md §3) */
+  --text-*: initial;
+  --text-display-xl: 4rem;
+  --text-display-xl--line-height: 1.15;
+  --text-display-xl--letter-spacing: -0.02em;
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 1.15;
+  --text-display-lg--letter-spacing: -0.015em;
+  --text-display-md: 2.25rem;
+  --text-display-md--line-height: 1.15;
+  --text-display-md--letter-spacing: -0.01em;
+  --text-heading-xl: 1.875rem;
+  --text-heading-xl--line-height: 1.2;
+  --text-heading-lg: 1.5rem;
+  --text-heading-lg--line-height: 1.25;
+  --text-heading-md: 1.25rem;
+  --text-heading-md--line-height: 1.3;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.6;
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+  --text-ui: 0.875rem;
+  --text-ui--line-height: 1.45;
+  --text-ui-sm: 0.8125rem;
+  --text-ui-sm--line-height: 1.45;
+  --text-mono: 0.875rem;
+  --text-mono--line-height: 1.5;
+
+  /* Eyebrow tracking (spec §5.2) */
+  --tracking-*: initial;
+  --tracking-eyebrow: 0.08em;
+
+  /* Radius (DESIGN.md §4) */
+  --radius-*: initial;
+  --radius-input: 4px;
+  --radius-chip: 4px;
+  --radius-button: 8px;
+  --radius-card: 12px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --shadow-card: var(--elevation-card);
+  --shadow-overlay: var(--elevation-overlay);
+
+  /* Breakpoints (DESIGN.md §5) */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 30rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* Widths */
+  --container-*: initial;
+  --container-content: 75rem; /* 1200 px max content width */
+  --container-page: 90rem; /* 1440 px max container */
+  /* Body prose measure: about 68 characters (DESIGN.md §3). 1ch is the width
+     of "0", which is wider than an average Plex Sans letter, so 68ch would be
+     about 92 characters; 52ch measures about 68. */
+  --container-measure: 52ch;
+  --container-drawer: 25rem;
+
+  /* Motion */
+  --ease-*: initial;
+  --ease-riwaq: var(--ease-riwaq);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* State variants. Each also matches [data-force~=…], which is set only by the
+   /dev/components state matrix so a resting state can be shown on demand. */
+@custom-variant hov {
+  @media (hover: hover) {
+    &:hover {
+      @slot;
+    }
+  }
+  &[data-force~="hover"] {
+    @slot;
+  }
+}
+@custom-variant act {
+  &:active {
+    @slot;
+  }
+  &[data-force~="active"] {
+    @slot;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: calc(var(--header-height) + 1rem);
+    accent-color: var(--primary);
+    scrollbar-color: var(--rule) var(--paper);
+  }
+
+  /* Body scroll lock while a modal dialog (mobile drawer) is open. */
+  html:has(dialog[open]:modal) {
+    overflow: hidden;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-optical-sizing: auto;
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd,
+  figcaption {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: var(--primary);
+    color: var(--on-primary);
+  }
+
+  input,
+  textarea,
+  select {
+    caret-color: var(--primary);
+  }
+
+  /* Focus ring (CLAUDE.md §4): 2 px --accent, 2 px offset, never removed. */
+  :focus-visible,
+  [data-force~="focus"] {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  :where(a) {
+    text-underline-offset: 2px;
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+}
+
+@layer components {
+  /* Page container: 1200 px content, 24 px gutter (16 px below sm). */
+  .container-content {
+    width: 100%;
+    max-width: calc(var(--container-content) + 2 * 1.5rem);
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+  @media (min-width: 30rem) {
+    .container-content {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  /* Eyebrow / group label: uppercase, 0.08em tracking (spec §5.2, CLAUDE.md §5). */
+  .eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--text-ui-sm);
+    line-height: 1.45;
+    font-weight: 500;
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* Mobile drawer: native <dialog>, slides from the right (spec §6.1). */
+  .drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    margin: 0;
+    width: min(100vw, var(--container-drawer));
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: none;
+    padding: 0;
+    border: 0;
+    background-color: var(--paper);
+    color: var(--ink);
+    box-shadow: var(--elevation-overlay);
+    transform: translateX(100%);
+    transition:
+      transform var(--duration-panel) var(--ease-riwaq),
+      overlay var(--duration-panel) allow-discrete,
+      display var(--duration-panel) allow-discrete;
+  }
+  .drawer[open] {
+    transform: translateX(0);
+  }
+  @starting-style {
+    .drawer[open] {
+      transform: translateX(100%);
+    }
+  }
+  .drawer::backdrop {
+    background-color: transparent;
+    transition:
+      background-color var(--duration-panel) var(--ease-riwaq),
+      overlay var(--duration-panel) allow-discrete,
+      display var(--duration-panel) allow-discrete;
+  }
+  .drawer[open]::backdrop {
+    background-color: var(--scrim);
+  }
+  @starting-style {
+    .drawer[open]::backdrop {
+      background-color: transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drawer {
+      transform: none;
+      opacity: 0;
+      transition:
+        opacity var(--duration-default) linear,
+        overlay var(--duration-default) allow-discrete,
+        display var(--duration-default) allow-discrete;
+    }
+    .drawer[open] {
+      transform: none;
+      opacity: 1;
+    }
+    @starting-style {
+      .drawer[open] {
+        transform: none;
+        opacity: 0;
+      }
+    }
+  }
 }

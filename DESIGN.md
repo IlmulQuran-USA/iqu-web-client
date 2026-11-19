@@ -83,12 +83,14 @@ Coloured bands are not used for section separation. Exceptions are only the band
 | Name  | Min width | Notes                                |
 | ----- | --------- | ------------------------------------ |
 | `sm`  | 480       | Large phone                          |
-| `md`  | 768       | Tablet; public nav collapses below   |
-| `lg`  | 1024      | Portal sidebar appears               |
+| `md`  | 768       | Tablet                               |
+| `lg`  | 1024      | Public nav expands; portal sidebar appears |
 | `xl`  | 1280      | Desktop                              |
 | `2xl` | 1536      | Max container caps here              |
 
 Every screen is built and checked at **375** and **1440**; **768** where layout genuinely changes.
+
+**Deliberate exception: public nav collapses below `lg`, not `md`.** Spec §5.4 collapses the public nav below 768. The desktop header row (wordmark, five nav items, Log in, Start free trial) needs about 960 px, so it cannot fit at 768 without truncating. Below 1024 the mobile drawer is used instead. The owner approved this on 19 Nov 2026.
 
 ---
 
