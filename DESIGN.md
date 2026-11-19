@@ -1,6 +1,6 @@
 # DESIGN.md — Ilm-ul-Quran USA · "Riwāq"
 
-> Derived from `docs/UI-SPEC.md` §4.1, §5, §6.4, §9. If this file and the spec ever disagree, the spec wins — fix this file, not the spec.
+> Derived from `docs/spec/README.md` §4.1, §5, §6.4, §9. If this file and the spec ever disagree, the spec wins — fix this file, not the spec.
 > Format follows the awesome-design-md structure. This is IQU's own system; no third-party brand file is used.
 
 ---

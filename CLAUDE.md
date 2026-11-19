@@ -1,4 +1,4 @@
-# CLAUDE.md — iqu-web-platform
+# CLAUDE.md — iqu-web-client
 
 Next.js rebuild of ilmulquranus.org: public site, staged enrolment funnel, authenticated portal with Zoom-measured attendance.
 Ilm-ul-Quran USA · AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300.
@@ -7,7 +7,7 @@ Ilm-ul-Quran USA · AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300.
 
 ## 1. Source of truth (highest first)
 
-1. `docs/UI-SPEC.md` — the specification. Wins every conflict.
+1. `docs/spec/README.md` — the specification. Wins every conflict. `docs/spec/` is a git submodule of `IlmulQuran-USA/iqu-web-platform`: read it, never edit it from this repo.
 2. Wireframes — https://iqu-wireframes.netlify.app/ — section order and layout per screen. Section anchors: `#home #catalog #course #instructor #about #trust #donate #programs #content #contact #enroll #auth #engine #student #parent #teacher #admin`.
 3. `DESIGN.md` — tokens and visual rules (derived from spec §5).
 4. `PRODUCT.md` — audience and brand context (written by `/impeccable init`).
