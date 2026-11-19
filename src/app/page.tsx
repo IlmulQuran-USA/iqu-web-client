@@ -1,22 +1,77 @@
+import { FAQAccordion } from "@/components/home/FAQAccordion";
+import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
+import { GivingBand } from "@/components/home/GivingBand";
 import { HERO_CTAS_ID, HomeHero } from "@/components/home/HomeHero";
+import { ProgramsLedger } from "@/components/home/ProgramsLedger";
+import { ScheduleSection } from "@/components/home/ScheduleSection";
+import { StepList } from "@/components/home/StepList";
+import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { finalCta } from "@/content/home";
+import { socialLinks } from "@/content/navigation";
+import { site } from "@/content/site";
 import { getHomeHero } from "@/lib/content/home-hero";
 
 /*
- * Home (spec §7.1). Section 1, the hero, reads its content only through
- * getHomeHero(). Sections 2–9 are not built yet.
+ * Home (spec §7.1), as approved by the owner on 19 Nov 2026:
+ *   1 Hero · 2 Scheduling · 3 Programs · 4 How it works · 8 Giving ·
+ *   9 Common questions · 10 Final call to action.
+ * Sections 5 (instructors: the hero already shows them), 6 (progress: no
+ * parent portal yet) and 7 (testimonials: none with consent) are left out
+ * until real content exists. No section uses --tint: the footer newsletter
+ * band already takes the page's one tint section (DESIGN.md §2).
  */
+
+/** Organization structured data (spec §7.1 SEO), built only from site facts. */
+function organizationJsonLd() {
+  const url = `https://${site.domain}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": ["Organization", "EducationalOrganization"],
+    name: site.name,
+    legalName: site.legalName,
+    url,
+    logo: `${url}/brand/logo-header.svg`,
+    description: site.mission,
+    nonprofitStatus: "Nonprofit501c3",
+    taxID: site.ein,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: site.address.line1,
+      addressLocality: site.address.locality,
+      addressRegion: site.address.region,
+      postalCode: site.address.postalCode,
+      addressCountry: site.address.country,
+    },
+    ...(site.phone ? { telephone: site.phone.href.replace("tel:", "") } : {}),
+    ...(site.email ? { email: site.email } : {}),
+    sameAs: socialLinks.filter((l) => l.external).map((l) => l.href),
+  };
+}
+
 export default async function HomePage() {
   const hero = await getHomeHero();
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        // Escape "<" so the JSON can never close the script element.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()).replace(/</g, "\\u003c") }}
+      />
       <Header yieldCtaTo={HERO_CTAS_ID} />
       <main id="main-content" className="flex flex-col">
         <HomeHero hero={hero} />
+        <ScheduleSection />
+        <ProgramsLedger />
+        <StepList />
+        <GivingBand />
+        <FAQAccordion />
+        <FinalCta />
       </main>
       <Footer />
+      <StickyCTA label={finalCta.button.label} href={finalCta.button.href} afterId={HERO_CTAS_ID} beforeId={FINAL_CTA_ID} />
     </>
   );
 }

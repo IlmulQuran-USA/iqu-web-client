@@ -4,7 +4,15 @@
  *
  * Every item below is DECIDED (owner, 19 Nov 2026) unless marked OPEN.
  * Change items here, once, and the header, drawer and footer all follow.
+ * Course names and routes come from src/content/pricing.ts.
  */
+
+import { monthlyCourses, programs as pricedPrograms } from "./pricing";
+
+const course = (key: (typeof monthlyCourses)[number]["key"]): NavLink => {
+  const c = monthlyCourses.find((m) => m.key === key)!;
+  return { label: c.label, href: c.href };
+};
 
 export type NavLink = {
   label: string;
@@ -20,13 +28,7 @@ export type NavLink = {
  * §6.1 list. Qa'idah and Nazirah are one priced course. The slugs are still
  * provisional until course pages exist.
  */
-export const coursesByLevel: NavLink[] = [
-  { label: "Qa’idah & Nazirah", href: "/courses/qaidah-nazirah" },
-  { label: "Quran Hifz", href: "/courses/hifz" },
-  { label: "Arabic Language", href: "/courses/arabic" },
-  { label: "Tarjumatul Quran", href: "/courses/tarjumatul-quran" },
-  { label: "Islamic Studies", href: "/courses/islamic-studies" },
-];
+export const coursesByLevel: NavLink[] = monthlyCourses.map((c) => ({ label: c.label, href: c.href }));
 
 /**
  * Courses ▾ › By age. Filter state lives in the URL (CLAUDE.md §7).
@@ -96,10 +98,10 @@ export const footerColumns: { title: string; links: NavLink[]; giving?: boolean 
     title: "Learn",
     links: [
       { label: "All courses", href: "/courses" },
-      { label: "Summer Ilm Camp", href: "/programs/summer-ilm-camp" },
-      { label: "Weekend Ilm Program", href: "/programs/weekend-school" },
-      { label: "Quran Hifz", href: "/courses/hifz" },
-      { label: "Arabic Language", href: "/courses/arabic" },
+      { label: pricedPrograms.summer.label, href: pricedPrograms.summer.href },
+      { label: pricedPrograms.weekend.label, href: pricedPrograms.weekend.href },
+      course("hifz"),
+      course("arabic"),
       { label: "Free trial", href: "/enroll" },
     ],
   },

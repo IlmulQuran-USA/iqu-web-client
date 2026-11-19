@@ -15,6 +15,11 @@ export const site = {
   address: {
     line1: "100 N Central Expy Suite 914",
     line2: "Richardson, TX 75080",
+    // The same address in parts, for structured data. Keep in step with line2.
+    locality: "Richardson",
+    region: "TX",
+    postalCode: "75080",
+    country: "US",
   },
   // Supplied by the owner, 19 Nov 2026.
   phone: { display: "+1 (214) 529-3544", href: "tel:+12145293544" } as { display: string; href: string } | null,
