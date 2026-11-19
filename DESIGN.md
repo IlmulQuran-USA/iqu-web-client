@@ -19,7 +19,7 @@ Coloured bands are not used for section separation. Exceptions are only the band
 
 ---
 
-## 2. Colour tokens
+## 2. Colors (colour tokens)
 
 | Token             | Hex       | Use                                  |
 | ----------------- | --------- | ------------------------------------ |
@@ -61,7 +61,7 @@ Coloured bands are not used for section separation. Exceptions are only the band
 - Sentence case everywhere, except eyebrow labels: uppercase, 0.08em tracking.
 - Arabic and Latin never share a line box. Quranic text sits in its own block with `dir="rtl"`.
 - Never set a form label, button or table header in Newsreader.
-- Loading: self-hosted via `next/font`, `font-display: swap`, subset. Performance budget is 2 families / 4 weights on marketing routes (see open decision in CLAUDE.md).
+- Loading: self-hosted with Next.js font loading, `font-display: swap`, subset. Performance budget is 2 families / 4 weights on marketing routes (see open decision in CLAUDE.md).
 
 ---
 
@@ -131,7 +131,7 @@ On public pages, **Donate is a text link in `--accent`, never a filled button** 
 
 ---
 
-## 9. Component-level rules
+## 9. Components (component-level rules)
 
 - **States:** every component ships default / hover / focus-visible / active / disabled / loading / error / empty.
 - **`ReadOnlyFact`:** `--surface-2` ground, no border, no focus ring, small system glyph. Must never look like a disabled input.
