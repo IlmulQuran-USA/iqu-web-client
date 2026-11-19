@@ -50,7 +50,7 @@ const colourGroups = [
       ["--accent", "#F96C48", "Marks, shapes; text only on --band (6.2:1)"],
       ["--accent-strong", "#D45C3D", "Large text and icons · 3.9:1"],
       ["--link", "#AE4C32", "Text links, Donate · 5.4:1"],
-      ["--tint", "#FEF0ED", "Soft coral sections, selected"],
+      ["--tint", "#FEF0ED", "One section per page at most; selected"],
       ["--mark", "#FDD5CA", "Highlighter behind a key phrase"],
     ],
   },
@@ -333,7 +333,8 @@ export default function ComponentsPage() {
         <Section id="arch-frame" title="ArchFrame">
           <p className="max-w-measure text-body text-ink-muted">
             One construction at three scales: a card, a profile, and a hero or auth photograph. A missing portrait
-            shows an initial monogram, never a stock photo. A failed image falls back to the monogram.
+            shows an initial monogram, never a stock photo: Newsreader initials in --ink-body on --surface, with a 1 px
+            --accent hairline on the arch edge. A failed image falls back to the monogram.
           </p>
 
           <SubTitle>Image at three scales</SubTitle>
@@ -375,11 +376,19 @@ export default function ComponentsPage() {
             <Frame caption="Broken src → monogram" width="w-40">
               <ArchFrame name="Ustadha Khadija Begum" src="/dev/missing-photo.jpg" width={800} height={800} sizes="160px" />
             </Frame>
-            <Frame caption="Loading: the opening holds --tint" width="w-40">
+            <Frame caption="Empty opening: --surface (the loading fill)" width="w-40">
               <ArchFrame name="" decorative />
             </Frame>
-            <Frame caption="Without the hairline" width="w-40">
-              <ArchFrame name="Qari Yusuf Ali" hairline={false} />
+            <Frame caption="Photo without the hairline" width="w-40">
+              <ArchFrame
+                name="Sample"
+                alt="Sample tonal study (dev only)"
+                src="/dev/arch-sample.svg"
+                width={800}
+                height={800}
+                sizes="160px"
+                hairline={false}
+              />
             </Frame>
           </div>
         </Section>

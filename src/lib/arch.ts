@@ -38,6 +38,8 @@ export function archGeometry(ratio: number, gap = 4) {
     viewBox: `0 0 100 ${h}`,
     /** Closed opening; used as the image mask. */
     opening: `M${gap} ${h}L${gap} ${s}A${r} ${r} 0 0 1 50 ${c}A${r} ${r} 0 0 1 ${right} ${s}L${right} ${h}Z`,
+    /** The opening's own edge, open at the base; the monogram's hairline. */
+    edge: `M${gap} ${h}L${gap} ${s}A${r} ${r} 0 0 1 50 ${c}A${r} ${r} 0 0 1 ${right} ${s}L${right} ${h}`,
     /** Open hairline (no base line); used as the stroke. */
     hairline: `M0 ${h}L0 ${s}A${R} ${R} 0 0 1 50 0A${R} ${R} 0 0 1 100 ${s}L100 ${h}`,
     aspectRatio: `100 / ${h}`,

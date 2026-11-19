@@ -28,7 +28,7 @@
   --accent: #f96c48; /* marks, shapes, illustration; text/icons on --band */
   --accent-strong: #d45c3d; /* large text (>= 24 px) and icons on light surfaces */
   --link: #ae4c32; /* text links, the Donate link */
-  --tint: #fef0ed; /* soft coral sections, selected states */
+  --tint: #fef0ed; /* at most one section per page (DESIGN.md §2); selected states */
   --mark: #fdd5ca; /* highlighter behind a key phrase */
 
   /* Dark band (footer, final CTA band) */

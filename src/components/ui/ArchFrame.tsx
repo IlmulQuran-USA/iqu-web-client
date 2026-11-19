@@ -14,11 +14,14 @@ import { cn } from "@/lib/cn";
  *
  * States:
  *   image     the photograph, masked to the arch opening
- *   loading   the opening shows --tint until the image paints; its box is
+ *   loading   the opening shows --surface until the image paints; its box is
  *             fixed by aspect-ratio, so nothing shifts
- *   missing   no photo yet (spec §8): --accent-strong initials on --tint
- *             (large text, 3.5:1; the name is the accessible label).
- *             Stock imagery is never substituted.
+ *   missing   no photo yet (spec §8): Newsreader initials in --ink-body on
+ *             --surface (9.6:1; the name is the accessible label), with a
+ *             1 px --accent hairline on the opening's edge, since --surface
+ *             alone barely separates from --paper. Never --tint, never coral
+ *             letters (DESIGN.md §2, §7; spec §7.1). Stock imagery is never
+ *             substituted.
  *   error     the image failed to load: falls back to the monogram
  */
 
@@ -38,7 +41,11 @@ export type ArchFrameProps = ImageSource & {
   sizes?: string;
   /** Hero image only (CLAUDE.md §4). */
   preload?: boolean;
-  /** The concentric hairline. On by default. */
+  /**
+   * The concentric hairline around a photograph. On by default. The
+   * monogram always has its single edge hairline instead, so this has no
+   * effect on it.
+   */
   hairline?: boolean;
   className?: string;
 };
@@ -76,7 +83,7 @@ export function ArchFrame({
       className={cn("@container relative w-full", className)}
       style={{ aspectRatio: geometry.aspectRatio }}
     >
-      <div className="absolute inset-0 bg-tint" style={maskStyle}>
+      <div className="absolute inset-0 bg-surface" style={maskStyle}>
         {showImage && src ? (
           <Image
             src={src}
@@ -97,14 +104,16 @@ export function ArchFrame({
           >
             {/* Monogram size scales with the frame (container query units),
                 so one rule serves every scale of the arch. */}
-            <span className="font-display text-[30cqi] leading-none font-medium tracking-tight text-accent-strong select-none">
+            <span className="font-display text-[30cqi] leading-none font-medium tracking-tight text-ink-body select-none">
               {initialsOf(name)}
             </span>
           </div>
         )}
       </div>
 
-      {hairline ? (
+      {/* One coral line: concentric around a photograph (the arcade
+          moulding), on the opening's own edge around the monogram. */}
+      {hairline || !showImage ? (
         <svg
           aria-hidden="true"
           viewBox={geometry.viewBox}
@@ -112,7 +121,7 @@ export function ArchFrame({
           className="pointer-events-none absolute inset-0 size-full overflow-visible"
         >
           <path
-            d={geometry.hairline}
+            d={showImage ? geometry.hairline : geometry.edge}
             fill="none"
             stroke="var(--accent)"
             strokeWidth={1}

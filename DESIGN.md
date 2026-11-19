@@ -60,7 +60,7 @@ Coloured bands are not used for section separation. The only exceptions:
 | `--accent`        | `#F96C48` | Brand coral: highlight marks, decorative shapes, illustrations, and any text or icon on `--band` (6.2:1). **Never** as text or an icon on a light surface (2.9:1). |
 | `--accent-strong` | `#D45C3D` | Coral for large text (≥ 24 px) and icons on light surfaces (3.9:1)   |
 | `--link`          | `#AE4C32` | Text links and the Donate text link (5.4:1)                          |
-| `--tint`          | `#FEF0ED` | Soft coral sections, selected states                                 |
+| `--tint`          | `#FEF0ED` | One soft coral section per page at most (see Rules); selected states |
 | `--mark`          | `#FDD5CA` | Highlighter mark behind a key phrase in a headline (`--ink` on it 13.2:1) |
 
 **Dark band**
@@ -92,6 +92,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 **Rules**
 - All text/background pairs ≥ 4.5:1 (WCAG AA). Large text (≥ 24 px, or ≥ 18.7 px bold) and UI boundaries ≥ 3:1.
 - `--accent` is never text or an icon on a light surface; use `--accent-strong` (large or icons) or `--link` (text).
+- **`--tint` fills at most one section per page** (owner decision, 19 Nov 2026). A section is a full-width page region or band. Selected and current states (nav current page) are not sections and do not count. The footer newsletter band is on `--tint` and appears on every public page, so it already uses that allowance: any other section that wants a soft ground uses `--surface-2` or `--surface`. The arch monogram is never on `--tint` (§7).
 - Form field boundaries use `--ink-muted` (7.6:1), not `--rule`.
 - No gradients anywhere.
 
@@ -159,7 +160,7 @@ Every screen is built and checked at **375** and **1440**; **768** where layout 
 
 ## 7. Imagery & iconography
 
-- Real photography only. No stock image of a generic child at a laptop. Missing photo → arch-framed initial monogram: `--accent-strong` initials on `--tint`.
+- Real photography only. No stock image of a generic child at a laptop. Missing photo → arch-framed initial monogram (spec §7.1: "monogram placeholders in `--surface` with the arch mask"): `--surface` fill, Newsreader initials in `--ink-body` (9.6:1), and a 1 px `--accent` hairline on the arch edge, which replaces the concentric hairline a photograph has. No `--tint` fill and no coral letters.
 - Instructor portraits: 1:1 source, riwāq arch mask, warm neutral background.
 - Quran/Hadith never used as decoration and never overlaid on a photo — typography only, with full citation.
 - Illustration: line-only, `--ink` or `--accent`, 1.5 px. No filled cartoon styles.
