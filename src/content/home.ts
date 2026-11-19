@@ -142,13 +142,13 @@ export const faq = {
     },
     {
       q: "What is the youngest age you teach?",
-      // PLUGIN-INVENTORY §1 (Weekend 5–12, Summer 5–15). Monthly classes: not documented.
-      a: `Children can join the ${programs.weekend.label} (ages ${programs.weekend.ages}) and the ${programs.summer.label} (ages ${programs.summer.ages}) from age 5. Minimum age for monthly classes: ${PENDING}.`,
+      // Owner, 19 Nov 2026. Program ages: PLUGIN-INVENTORY §1 via ./pricing.
+      a: `Monthly classes usually start from age 6 or 7, depending on the child’s readiness. The ${programs.weekend.label} (ages ${programs.weekend.ages}) and the ${programs.summer.label} (ages ${programs.summer.ages}) welcome children from age 5.`,
     },
     {
       q: "What do we need for classes?",
-      // PRODUCT.md "Operating Context": classes run on Zoom. Device details: not documented.
-      a: `Classes are live on Zoom, so you need a device that can run Zoom and a steady internet connection. Recommended devices and setup: ${PENDING}.`,
+      // Owner, 19 Nov 2026.
+      a: "Classes are live on Zoom. We recommend a laptop or tablet with a steady internet connection. A phone works, but we don’t recommend it: the screen is too small for reading the Qur’an comfortably.",
     },
   ],
 } as const;
