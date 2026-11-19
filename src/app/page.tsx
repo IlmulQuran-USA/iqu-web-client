@@ -60,7 +60,7 @@ export default async function HomePage() {
         // Escape "<" so the JSON can never close the script element.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()).replace(/</g, "\\u003c") }}
       />
-      <Header yieldCtaTo={HERO_CTAS_ID} />
+      <Header yieldCtaTo={[HERO_CTAS_ID, FINAL_CTA_ID]} />
       <main id="main-content" className="flex flex-col">
         <HomeHero hero={hero} />
         <ScheduleSection />

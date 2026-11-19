@@ -5,13 +5,16 @@ import { footerColumns, legalLinks, socialLinks, type NavLink } from "@/content/
 import { PENDING, site } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { Logo } from "./Logo";
-import { NewsletterForm } from "./NewsletterForm";
 
 /**
  * Public footer (spec §6.2).
- * - The newsletter band sits above the columns on --tint. The columns and
- *   legal strip sit on the dark --band: white text, slate-300 secondary,
- *   coral accents and a coral focus ring (DESIGN.md §1–§2).
+ * - The columns and legal strip sit on the dark --band: white text,
+ *   slate-300 secondary, coral accents and a coral focus ring (DESIGN.md
+ *   §1–§2). A top hairline separates the footer from a --band section above
+ *   it (the Home final CTA).
+ * - Newsletter sign-up: hidden site-wide until Brevo is connected (owner
+ *   decision, 19 Nov 2026). NewsletterForm keeps its "not open yet" state.
+ *   When it returns it goes inside this footer, not as a separate band.
  * - Four columns: Identity · Learn · Organization · Support us. The EIN sits
  *   under the giving column (DESIGN.md §10).
  * - Legal strip: © year AL HASANAH FOUNDATION · Privacy · Terms · Refund
@@ -66,23 +69,7 @@ export async function Footer() {
 
   return (
     <footer className="mt-auto">
-      <section aria-labelledby="newsletter-title" className="bg-tint">
-        <div className="container-content grid gap-6 py-12 md:grid-cols-12 md:gap-6 md:py-16">
-          <div className="md:col-span-5">
-            <h2 id="newsletter-title" className="text-heading-lg text-ink">
-              News from Ilm-Ul-Quran USA
-            </h2>
-            <p className="mt-2 max-w-measure text-body text-ink-body">
-              New classes, program dates and what your support makes possible.
-            </p>
-          </div>
-          <div className="md:col-span-7 lg:col-span-6 lg:col-start-7">
-            <NewsletterForm />
-          </div>
-        </div>
-      </section>
-
-      <div className="band">
+      <div className="band border-t border-ink-body">
         <div className="container-content grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:py-16 lg:grid-cols-12 lg:gap-6">
           <div className="col-span-2 lg:col-span-4">
             <Logo variant="footer" />

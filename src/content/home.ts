@@ -65,8 +65,8 @@ export const howItWorks = {
   steps: [
     {
       title: "Tell us about your student",
-      // Spec §7.1 section 4 ("3-minute form"). "No payment" removed: PRODUCT.md decision 4.
-      body: "A three-minute form: who is learning, which course, and the days that suit you.",
+      // Owner, 19 Nov 2026: never state a duration nobody has measured. "No payment" removed: PRODUCT.md decision 4.
+      body: "A short form: who is learning, which course, and the days that suit you.",
     },
     {
       title: "We match you with a teacher",
@@ -123,7 +123,7 @@ export const faq = {
       a: `Monthly classes are priced by course and by the number of days a week. ${twentyCourses
         .map((c) => c.label)
         .join(", ")
-        .replace(/, ([^,]*)$/, " and $1")} start from ${monthlyFrom("qaidah")} a month, and Qur’an Hifz from ${monthlyFrom("hifz")} a month at its minimum of three days. Session length does not change the price, and fees are in US dollars. The ${programs.weekend.label} is free, and the ${programs.summer.label} is ${usd(programs.summer.fee)} one-time, with a reduced option. On a paid plan your first month is free. Families asking for a scholarship are contacted by our team.`,
+        .replace(/, ([^,]*)$/, " and $1")} start from ${monthlyFrom("qaidah")} a month, and Qur’an Hifz from ${monthlyFrom("hifz")} a month at its minimum of three days. Session length does not change the price, and fees are in US dollars. The ${programs.weekend.label} is free, and the ${programs.summer.label} is ${usd(programs.summer.fee)} one-time, with a reduced option. On monthly classes your first month is free. Families asking for a scholarship are contacted by our team.`,
     },
     {
       q: "Is the first month really free?",

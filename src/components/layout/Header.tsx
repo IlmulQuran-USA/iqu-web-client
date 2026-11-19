@@ -41,31 +41,43 @@ export function Header({
   yieldCtaTo,
 }: {
   /**
-   * Id of an on-page element holding the page's own filled CTA (the Home
-   * hero). While it is on screen the header CTA drops to secondary, so only
-   * one filled button is in view (CLAUDE.md §4; spec §6.1 and §7.1 each ask
-   * for a filled "Start free trial").
+   * Ids of on-page elements holding the page's own filled CTAs (the Home hero
+   * buttons and the final CTA band). While any of them is on screen the
+   * header CTA drops to secondary, so only one filled button is in view
+   * (CLAUDE.md §4; spec §6.1 and §7.1 each ask for a filled "Start free trial").
    */
-  yieldCtaTo?: string;
+  yieldCtaTo?: string | string[];
 } = {}) {
   const pathname = usePathname() ?? "/";
   const [scrolled, setScrolled] = useState(false);
+  const yieldIds = (Array.isArray(yieldCtaTo) ? yieldCtaTo : yieldCtaTo ? [yieldCtaTo] : []).join(" ");
   // Start yielded when a target is named, so the server render never shows two filled CTAs.
-  const [ctaYielded, setCtaYielded] = useState(Boolean(yieldCtaTo));
+  const [ctaYielded, setCtaYielded] = useState(yieldIds !== "");
 
   useEffect(() => {
-    if (!yieldCtaTo) return;
-    const target = document.getElementById(yieldCtaTo);
-    // Only pass yieldCtaTo on a page that renders the target.
-    if (!target) return;
+    if (!yieldIds) return;
+    // Only pass ids that the page renders.
+    const targets = yieldIds
+      .split(" ")
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (targets.length === 0) return;
     // The sticky header covers the top of the viewport: 64 px below lg, 72 px from lg.
-    const headerHeight = Math.round(target.ownerDocument.querySelector("header")?.getBoundingClientRect().height ?? 72);
-    const observer = new IntersectionObserver(([entry]) => setCtaYielded(entry.isIntersecting), {
-      rootMargin: `-${headerHeight}px 0px 0px 0px`,
-    });
-    observer.observe(target);
+    const headerHeight = Math.round(document.querySelector("header")?.getBoundingClientRect().height ?? 72);
+    const visible = new Set<Element>();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) visible.add(entry.target);
+          else visible.delete(entry.target);
+        }
+        setCtaYielded(visible.size > 0);
+      },
+      { rootMargin: `-${headerHeight}px 0px 0px 0px` },
+    );
+    targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, [yieldCtaTo]);
+  }, [yieldIds]);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const triggerRefs = useRef<Partial<Record<MenuKey, HTMLButtonElement | null>>>({});

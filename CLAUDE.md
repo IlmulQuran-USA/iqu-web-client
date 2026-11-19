@@ -53,6 +53,7 @@ If a skill or detector suggestion contradicts 1–4, keep that choice and record
 
 **Content & trust**
 - The name is always written Ilm-Ul-Quran USA (capital U).
+- Write “Qur’an” with the typographic apostrophe in all UI copy and metadata. The only exception is the organisation name Ilm-Ul-Quran USA.
 - No stock photos. Missing portrait → arch-framed monogram.
 - Never invent fees, testimonials, ratings, credentials or statistics. Use `$XX` and `[pending]` placeholders until spec §8 content arrives.
 - No fabricated review counts — honest empty state instead.

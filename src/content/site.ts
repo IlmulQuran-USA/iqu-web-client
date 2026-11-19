@@ -9,7 +9,7 @@ export const site = {
   legalName: "AL HASANAH FOUNDATION",
   domain: "ilmulquranus.org",
   mission:
-    "Live Quran and Islamic classes taught by qualified Huffaz, Ulama and Mufti, for families in the United States and Canada.",
+    "Live Qur’an and Islamic classes taught by qualified Huffaz, Ulama and Mufti, for families in the United States and Canada.",
   taxStatus: "501(c)(3) nonprofit",
   ein: "93-3902300",
   address: {

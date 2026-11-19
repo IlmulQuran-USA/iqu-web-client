@@ -15,7 +15,7 @@ export const homeHero: HomeHeroContent = {
   // Owner decision 5: Concept B is the default. "editorial" (A) and
   // "spacious" (C) are the alternatives.
   layout: "teachers",
-  eyebrow: "Online Quran education · Serving families in the US & Canada",
+  eyebrow: "Online Qur’an education · Serving families in the US & Canada",
   // Spec §7.1's headline is 86 characters; the owner chose this 66-character
   // version on 19 Nov 2026. "Live" and "one-on-one" are in the subhead.
   headline: "Learn the Qur’an from home with qualified Huffaz, Ulama and Mufti.",
