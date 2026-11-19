@@ -15,8 +15,9 @@ import { useEffect, useRef, useState, type CSSProperties, type FocusEvent, type 
  *   ≥ 640 px  all cards in one row of equal columns, never wrapping; gap
  *             12 px, 24 px from 1024.
  *
- * Each card spans three subgrid rows (portrait, name, role), so names and
- * roles line up across the row. The focus ring is never clipped: the
+ * Cards align to the top of the row, so the tops of the names line up;
+ * the role sits 4 px under each name and card bottoms may differ (owner
+ * decision, 19 Nov 2026). The focus ring is never clipped: the
  * scroller has 4 px of vertical padding and the bleed padding sideways.
  *
  * Exception to CLAUDE.md §4 "no carousels for primary content": the owner
@@ -70,7 +71,7 @@ export function InstructorRow({ count, children }: { count: number; children: Re
         style={{ "--cols": count } as CSSProperties}
         className={
           // Phones: swipe row, full bleed, snap, native scrollbar hidden (the indicator replaces it).
-          "-mx-4 grid auto-cols-[40vw] grid-flow-col grid-rows-[repeat(3,auto)] gap-x-3 overflow-x-auto overscroll-x-contain px-4 py-1 " +
+          "-mx-4 grid auto-cols-[40vw] grid-flow-col items-start gap-x-3 overflow-x-auto overscroll-x-contain px-4 py-1 " +
           "snap-x snap-mandatory scroll-px-4 [scrollbar-width:none] sm:-mx-6 sm:scroll-px-6 sm:px-6 [&::-webkit-scrollbar]:hidden " +
           // ≥ 640: one row of equal columns, no scrolling.
           "min-[40rem]:mx-0 min-[40rem]:snap-none min-[40rem]:grid-flow-row min-[40rem]:grid-cols-[repeat(var(--cols),minmax(0,1fr))] " +

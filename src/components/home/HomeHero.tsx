@@ -53,7 +53,7 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
           {/* One row, in order: a swipe row below 640 px, equal columns from 640. */}
           <InstructorRow count={people.length}>
             {people.map((person) => (
-              <li key={person.id} className="row-span-3 grid snap-start grid-rows-subgrid">
+              <li key={person.id} className="snap-start">
                 <InstructorCard person={person} />
               </li>
             ))}
@@ -259,8 +259,10 @@ function HeroImage({ hero, ratio, sizes }: { hero: HomeHeroData; ratio: "portrai
 
 /**
  * One link per instructor: portrait, name and role together, to the profile.
- * The link spans the card's three subgrid rows, so names and roles line up
- * across the row. Sizes (owner decision, 19 Nov 2026): name 14 / role 13 px
+ * The card is a plain stack: portrait, name, then the role 4 px under the
+ * name at every width (owner decision, 19 Nov 2026). The arches share one
+ * height and the row aligns to the top, so the tops of the names line up;
+ * nothing else is aligned, and card bottoms may differ. Sizes: name 14 / role 13 px
  * below 640, 13 / 12 px at 640–1023, 15 / 13 px from 1024. Text wraps to at
  * most two lines at these sizes and is never truncated; long words break
  * rather than overflow the card. The role (<= 24 characters) never repeats the
@@ -272,7 +274,7 @@ function InstructorCard({ person }: { person: Instructor }) {
     <Link
       href={`/instructors/${person.id}`}
       aria-label={`${person.name}, ${person.role}`}
-      className="group row-span-3 grid grid-rows-subgrid rounded-card pb-2 text-center"
+      className="group flex flex-col rounded-card pb-2 text-center"
     >
       <InstructorArch person={person} />
       <span
@@ -281,7 +283,7 @@ function InstructorCard({ person }: { person: Instructor }) {
       >
         {person.name}
       </span>
-      <span className="mt-0.5 text-ui-sm text-balance wrap-break-word text-ink-muted min-[40rem]:text-ui-xs lg:text-ui-sm">
+      <span className="mt-1 text-ui-sm text-balance wrap-break-word text-ink-muted min-[40rem]:text-ui-xs lg:text-ui-sm">
         {person.role}
       </span>
     </Link>
