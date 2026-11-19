@@ -152,6 +152,12 @@
   --text-ui--line-height: 1.45;
   --text-ui-sm: 0.8125rem;
   --text-ui-sm--line-height: 1.45;
+  /* Instructor card captions only (owner decision, 19 Nov 2026):
+     15 px names from 1024, 12 px roles at 640–1023. */
+  --text-ui-md: 0.9375rem;
+  --text-ui-md--line-height: 1.4;
+  --text-ui-xs: 0.75rem;
+  --text-ui-xs--line-height: 1.45;
   --text-mono: 0.875rem;
   --text-mono--line-height: 1.5;
 

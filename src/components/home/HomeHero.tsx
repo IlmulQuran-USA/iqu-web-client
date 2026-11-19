@@ -6,6 +6,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import type { HomeHero as HomeHeroData, HomeHeroLayout, Instructor } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { wholePhraseIndex } from "@/lib/text";
+import { InstructorRow } from "./InstructorRow";
 
 /**
  * Home hero (spec §7.1 section 1; PRODUCT.md owner decision 5).
@@ -49,22 +50,15 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
       {people.length > 0 ? (
         <div className="container-content mt-8 md:mt-16">
           <h2 className="sr-only">Some of our instructors</h2>
-          {/* All featured instructors stay visible at every width (no carousel,
-              CLAUDE.md §4): 3 + 2 on phones and tablets, one row from lg.
-              Each card spans three subgrid rows (portrait, name, role), so
-              names and roles line up across every visual row whatever their
-              length, and a short last row stays centred. */}
-          <ul className="grid grid-cols-6 gap-x-3 sm:gap-x-6 lg:grid-cols-10 lg:gap-x-8">
-            {people.map((person, i) => (
-              <li
-                key={person.id}
-                className={cn("col-span-2 row-span-3 grid grid-rows-subgrid", placement(i, people.length))}
-              >
+          {/* One row, in order: a swipe row below 640 px, equal columns from 640. */}
+          <InstructorRow count={people.length}>
+            {people.map((person) => (
+              <li key={person.id} className="row-span-3 grid snap-start grid-rows-subgrid">
                 <InstructorCard person={person} />
               </li>
             ))}
-          </ul>
-          <p className="mt-2 text-center sm:mt-4">
+          </InstructorRow>
+          <p className="mt-2 text-center">
             <Link
               href="/instructors"
               className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
@@ -265,10 +259,11 @@ function HeroImage({ hero, ratio, sizes }: { hero: HomeHeroData; ratio: "portrai
 
 /**
  * One link per instructor: portrait, name and role together, to the profile.
- * The link spans the card's three subgrid rows. On phones the name is 14 px
- * and the role 13 px. A name is never cut off: it may take three lines on a
- * 375 px phone (owner decision, 19 Nov 2026; "Mufti Muhammad Faijullah" does).
- * The role (<= 24 characters) stays within two lines and never repeats the
+ * The link spans the card's three subgrid rows, so names and roles line up
+ * across the row. Sizes (owner decision, 19 Nov 2026): name 14 / role 13 px
+ * below 640, 13 / 12 px at 640–1023, 15 / 13 px from 1024. Text wraps to at
+ * most two lines at these sizes and is never truncated; long words break
+ * rather than overflow the card. The role (<= 24 characters) never repeats the
  * title already in the name. The link's accessible name is the visible
  * name and role; the portrait keeps its "Portrait of <name>" alt text.
  */
@@ -277,49 +272,25 @@ function InstructorCard({ person }: { person: Instructor }) {
     <Link
       href={`/instructors/${person.id}`}
       aria-label={`${person.name}, ${person.role}`}
-      className="group row-span-3 grid grid-rows-subgrid rounded-card pb-6 text-center lg:pb-2"
+      className="group row-span-3 grid grid-rows-subgrid rounded-card pb-2 text-center"
     >
       <InstructorArch person={person} />
       <span
         translate="no"
-        className="mt-3 text-ui font-medium text-balance text-ink decoration-1 decoration-accent-strong underline-offset-4 group-hover:underline sm:text-body"
+        className="mt-3 text-ui font-medium text-balance wrap-break-word text-ink decoration-1 decoration-accent-strong underline-offset-4 group-hover:underline min-[40rem]:text-ui-sm lg:text-ui-md"
       >
         {person.name}
       </span>
-      <span className="mt-0.5 line-clamp-2 text-ui-sm text-balance text-ink-muted sm:text-ui">{person.role}</span>
+      <span className="mt-0.5 text-ui-sm text-balance wrap-break-word text-ink-muted min-[40rem]:text-ui-xs lg:text-ui-sm">
+        {person.role}
+      </span>
     </Link>
   );
 }
 
-/*
- * Grid placement. Cards span two tracks of a 6-track grid (3 per row) below
- * lg and a 10-track grid (5 in one row) from lg; a row with fewer cards
- * starts further in so it stays centred. Class names are written out in full
- * so Tailwind can see them.
- */
-const START = ["col-start-1", "col-start-2", "col-start-3", "col-start-4", "col-start-5"];
-const LG_START = [
-  "lg:col-start-1",
-  "lg:col-start-2",
-  "lg:col-start-3",
-  "lg:col-start-4",
-  "lg:col-start-5",
-  "lg:col-start-6",
-  "lg:col-start-7",
-  "lg:col-start-8",
-  "lg:col-start-9",
-];
-
-function placement(i: number, count: number): string {
-  const rowStart = Math.floor(i / 3) * 3;
-  const inRow = Math.min(3, count - rowStart);
-  const start = 3 - inRow + 2 * (i - rowStart); // 0-based track
-  const lgStart = 5 - count + 2 * i;
-  return `${START[start]} ${LG_START[lgStart]}`;
-}
-
 function InstructorArch({ person }: { person: Instructor }) {
-  if (!person.photo) return <ArchFrame name={person.name} decorative />;
+  // The arch scales with its column, up to 200 px wide (owner decision).
+  if (!person.photo) return <ArchFrame name={person.name} decorative className="mx-auto max-w-50" />;
   return (
     <ArchFrame
       name={person.name}
@@ -327,7 +298,8 @@ function InstructorArch({ person }: { person: Instructor }) {
       src={person.photo.src}
       width={person.photo.width}
       height={person.photo.height}
-      sizes="(min-width: 64rem) 214px, 30vw"
+      sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw"
+      className="mx-auto max-w-50"
       // All five are in the first view at 1440, so none is lazy. None is
       // preloaded or raised in priority: on a phone they sit below the
       // fold, and the H1 is the LCP element. 370 × 370, about 100 KB in all.

@@ -105,7 +105,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 | Display     | Newsreader 500/600                | 64 / 48 / 36                             |
 | Heading     | Newsreader 600                    | 30 / 24 / 20                             |
 | Body        | IBM Plex Sans 400                 | 18 / 16                                  |
-| UI / label  | IBM Plex Sans 500                 | 14 / 13                                  |
+| UI / label  | IBM Plex Sans 500                 | 14 / 13 (+ 15 / 12 for instructor card captions only: name ≥ 1024, role 640–1023; owner decision 19 Nov 2026) |
 | Data / mono | IBM Plex Mono 400                 | 14 — invoices, IDs, transaction refs     |
 | Arabic      | Kitab or Amiri Quran              | +2 px vs Latin at same rank              |
 
