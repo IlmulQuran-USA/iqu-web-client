@@ -1,7 +1,7 @@
 # CLAUDE.md — iqu-web-client
 
 Next.js rebuild of ilmulquranus.org: public site, staged enrolment funnel, authenticated portal with Zoom-measured attendance.
-Ilm-ul-Quran USA · AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300.
+Ilm-Ul-Quran USA · AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300.
 
 ---
 
@@ -52,6 +52,7 @@ If a skill or detector suggestion contradicts 1–4, keep that choice and record
 - Coral `--accent` is never text or an icon on a light surface (2.9:1): use `--link` for text and `--accent-strong` for large text and icons. Status colours are always soft badges (tint + strong text), never solid fills. No green except the success status. No gradients.
 
 **Content & trust**
+- The name is always written Ilm-Ul-Quran USA (capital U).
 - No stock photos. Missing portrait → arch-framed monogram.
 - Never invent fees, testimonials, ratings, credentials or statistics. Use `$XX` and `[pending]` placeholders until spec §8 content arrives.
 - No fabricated review counts — honest empty state instead.
@@ -80,7 +81,7 @@ Riwāq deliberately uses some patterns generic detectors flag (uppercase eyebrow
 
 | Rule id | Scope | Reason (spec §) |
 | ------- | ----- | --------------- |
-|         |       |                 |
+| `hero-eyebrow-chip` | Home hero eyebrow (`src/components/home/HomeHero.tsx`; ignore in `.impeccable/config.json`) | Spec §7.1. The ignore covers source scans only; `detect <url>` still lists it at desktop widths. |
 
 ---
 

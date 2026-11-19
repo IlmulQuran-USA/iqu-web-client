@@ -1,24 +1,20 @@
-import Link from "next/link";
+import { HERO_CTAS_ID, HomeHero } from "@/components/home/HomeHero";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { getHomeHero } from "@/lib/content/home-hero";
 
 /*
- * Placeholder. Home page content (spec §7.1) is not built yet; this keeps the
- * route on the design system instead of the create-next-app template.
+ * Home (spec §7.1). Section 1, the hero, reads its content only through
+ * getHomeHero(). Sections 2–9 are not built yet.
  */
-export default function HomePage() {
+export default async function HomePage() {
+  const hero = await getHomeHero();
+
   return (
     <>
-      <Header />
-      <main id="main-content" className="container-content py-16 md:py-24">
-        <h1 className="text-display-md md:text-display-lg">Ilm-ul-Quran USA</h1>
-        <p className="mt-4 max-w-measure text-body-lg text-ink-muted">
-          The new site is being built. In development, see the{" "}
-          <Link href="/dev/components" className="text-link underline decoration-1 underline-offset-2">
-            component reference
-          </Link>
-          .
-        </p>
+      <Header yieldCtaTo={HERO_CTAS_ID} />
+      <main id="main-content" className="flex flex-col">
+        <HomeHero hero={hero} />
       </main>
       <Footer />
     </>

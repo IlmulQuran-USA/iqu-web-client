@@ -4,7 +4,7 @@
 
 > Product truth for ilmulquranus.org. Derived from `docs/spec/README.md` (spec v2.0, Aug 2026) and confirmed by the document owner on 19 Nov 2026. Visual rules live in `DESIGN.md`, not here.
 >
-> **Spec divergence.** The owner's answers on 19 Nov 2026 change four things in the spec. They are listed under *Decisions that supersede the spec*. Until `IlmulQuran-USA/iqu-web-platform` is updated to match, those four items follow this file, and the spec wins everywhere else.
+> **Spec divergence.** The owner's answers on 19 Nov 2026 change five things in the spec. They are listed under *Decisions that supersede the spec*. Until `IlmulQuran-USA/iqu-web-platform` is updated to match, those five items follow this file, and the spec wins everywhere else.
 
 ## Platform
 
@@ -23,7 +23,7 @@ web
 
 A Next.js rebuild of ilmulquranus.org that replaces WordPress. It has three parts: a public site, a staged enrolment funnel, and an authenticated portal for four roles.
 
-Ilm-ul-Quran USA is **a charity that teaches, not a commercial academy that happens to be Islamic.** The site has to bring in enrolments and donations side by side without either one weakening the other. A parent researching Hifz should never feel asked for money.
+Ilm-Ul-Quran USA is **a charity that teaches, not a commercial academy that happens to be Islamic.** The site has to bring in enrolments and donations side by side without either one weakening the other. A parent researching Hifz should never feel asked for money.
 
 Success means:
 1. Browsing parents become enrolled students.
@@ -69,6 +69,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 2. **No sibling discount.** Every child pays the full fee. *This conflicts with* spec §7.3 section 7, §7.11, §7.17 Step 4 and §7D.4 Billing. Do not build a sibling discount line, an auto-apply, or a sibling column in the fee table.
 3. **Tuition is in USD only.** *This conflicts with* spec §9.2 ("note where CAD is accepted") for tuition. The donor FAQ question about giving in CAD (§7.10) is a Zeffy matter and is separate from this.
 4. **The trial is the first month free.** After *Enroll for Free*, the guardian adds a card at Stripe checkout. Regular monthly billing follows, charged on the 1st of each month. *This conflicts with* spec §7.17 ("No payment is taken in this flow") and the Step 1 reassurance line *"No payment is required to start."* Copy must not claim that no card is needed. Say that nothing is charged during the free month.
+5. **Home hero: Concept B is the default; A and C are selectable.** Admins edit the hero's layout, text, image and featured instructors without code, in the Next.js admin portal at /a/settings/home, built with the portal after the public site. Until then the hero is changed only in src/content/home-hero.ts.
 
 **Hard constraints carried from the spec:**
 - WCAG 2.1 AA.
@@ -93,7 +94,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 
 ## Brand Commitments
 
-- **Name and entity:** Ilm-ul-Quran USA, the trading name of AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300 · 100 N Central Expy Suite 914, Richardson, TX 75080 · ilmulquranus.org. The tax ID sits next to every donation ask and appears in the footer identity column.
+- **Name and entity:** Ilm-Ul-Quran USA, the trading name of AL HASANAH FOUNDATION · 501(c)(3) · EIN 93-3902300 · 100 N Central Expy Suite 914, Richardson, TX 75080 · ilmulquranus.org. The tax ID sits next to every donation ask and appears in the footer identity column.
 - **Voice:** warm, respectful and professional, suited to an Islamic educational nonprofit. Clear, simple English. Dignified about money: asking for help must never make a family feel audited, and must never affect a child's place.
 - **Islamic etiquette:** Quran and Hadith appear as typography with a full citation, in their own right-to-left block, never as decoration and never over a photo. Islamic topics are treated with respect.
 - **Honesty:** no countdowns or false scarcity (the one exception is a real Summer Camp registration deadline). No stock photos of a child at a laptop. Nothing that looks like an SEO-farm academy.

@@ -1,3 +1,18 @@
 {
-  "stalenessCheck": false
+  "stalenessCheck": false,
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "hero-eyebrow-chip",
+        "value": "*",
+        "files": [
+          "src/components/home/HomeHero.tsx"
+        ],
+        "createdAt": "2026-11-19T12:44:33.799Z",
+        "reason": "Spec §7.1 section 1 mandates the Home hero eyebrow above the H1; CLAUDE.md §5"
+      }
+    ]
+  }
 }

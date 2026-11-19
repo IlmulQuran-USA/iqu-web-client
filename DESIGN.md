@@ -1,4 +1,4 @@
-# DESIGN.md — Ilm-ul-Quran USA · "Riwāq"
+# DESIGN.md — Ilm-Ul-Quran USA · "Riwāq"
 
 > Derived from `docs/spec/README.md` §4.1, §5, §6.4, §9. If this file and the spec ever disagree, the spec wins — fix this file, not the spec. **One exception:** the colour tokens in §2 (Slate + Coral) supersede spec §5.1 by owner decision, 19 Nov 2026.
 > Format follows the awesome-design-md structure. This is IQU's own system; no third-party brand file is used.

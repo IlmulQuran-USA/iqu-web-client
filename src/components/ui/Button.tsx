@@ -48,7 +48,7 @@ const base =
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "rounded-button bg-primary text-on-primary hov:not-disabled:bg-primary-hover act:not-disabled:bg-primary-active " +
+    "rounded-button border border-transparent bg-primary text-on-primary hov:not-disabled:bg-primary-hover act:not-disabled:bg-primary-active " +
     "disabled:bg-surface disabled:text-ink-muted",
   secondary:
     "rounded-button border border-ink-body text-ink-body hov:not-disabled:bg-ink/6 act:not-disabled:bg-ink/12 " +
@@ -57,14 +57,14 @@ const variants: Record<ButtonVariant, string> = {
     "rounded-button text-ink decoration-1 underline-offset-4 hov:not-disabled:underline " +
     "act:not-disabled:text-ink-body act:not-disabled:underline disabled:text-ink-muted",
   danger:
-    "rounded-button bg-danger text-on-primary hov:not-disabled:bg-danger-hover act:not-disabled:bg-danger-active " +
+    "rounded-button border border-transparent bg-danger text-on-primary hov:not-disabled:bg-danger-hover act:not-disabled:bg-danger-active " +
     "disabled:bg-surface disabled:text-ink-muted",
   link:
     "rounded-chip text-link underline decoration-1 underline-offset-2 hov:not-disabled:decoration-2 " +
     "act:not-disabled:text-ink disabled:text-ink-muted disabled:decoration-rule",
   // --ink on --accent 6.2:1, on --accent-hover 7.6:1, pressed on --accent-strong 4.6:1.
   band:
-    "rounded-button bg-accent text-ink hov:not-disabled:bg-accent-hover act:not-disabled:bg-accent-strong " +
+    "rounded-button border border-transparent bg-accent text-ink hov:not-disabled:bg-accent-hover act:not-disabled:bg-accent-strong " +
     "disabled:bg-ink-body disabled:text-on-band-muted",
 };
 

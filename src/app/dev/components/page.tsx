@@ -358,23 +358,23 @@ export default function ComponentsPage() {
             </Frame>
           </div>
 
-          <SubTitle>Missing portrait: monogram</SubTitle>
+          <SubTitle>Missing portrait: monogram (real names, photo withheld to show the fallback)</SubTitle>
           <div className="flex flex-wrap items-end gap-6">
-            <Frame caption="Mufti Abdur Rahman Khan → AK" width="w-40">
-              <ArchFrame name="Mufti Abdur Rahman Khan" />
+            <Frame caption="Mufti Ariful Islam → AI" width="w-40">
+              <ArchFrame name="Mufti Ariful Islam" />
             </Frame>
-            <Frame caption="Hafiza Maryam Sultana → MS" width="w-72">
-              <ArchFrame name="Hafiza Maryam Sultana" />
+            <Frame caption="Hafez Nurul Ahsan → NA" width="w-72">
+              <ArchFrame name="Hafez Nurul Ahsan" />
             </Frame>
-            <Frame caption="Md. Nur Ahmed Siddiqui Chowdhury → NC" width="w-full max-w-90">
-              <ArchFrame name="Md. Nur Ahmed Siddiqui Chowdhury" ratio="tall" />
+            <Frame caption="Mufti Ahmed Mostafa Raian → AR" width="w-full max-w-90">
+              <ArchFrame name="Mufti Ahmed Mostafa Raian" ratio="tall" />
             </Frame>
           </div>
 
           <SubTitle>Error, loading and plain</SubTitle>
           <div className="flex flex-wrap items-end gap-6">
             <Frame caption="Broken src → monogram" width="w-40">
-              <ArchFrame name="Ustadha Khadija Begum" src="/dev/missing-photo.jpg" width={800} height={800} sizes="160px" />
+              <ArchFrame name="Mufti Shaker Waliullah" src="/dev/missing-photo.jpg" width={800} height={800} sizes="160px" />
             </Frame>
             <Frame caption="Empty opening: --surface (the loading fill)" width="w-40">
               <ArchFrame name="" decorative />

@@ -13,11 +13,12 @@
  *   distorts, because the frame's CSS aspect-ratio always equals the viewBox.
  */
 
-export type ArchRatio = "portrait" | "tall";
+export type ArchRatio = "portrait" | "tall" | "window";
 
 export const archRatios: Record<ArchRatio, number> = {
   portrait: 4 / 5, // instructor cards and profiles
   tall: 2 / 3, // hero and auth-page photographs
+  window: 1, // a broad arch window (Home hero "spacious" layout)
 };
 
 const round = (n: number) => Math.round(n * 1000) / 1000;

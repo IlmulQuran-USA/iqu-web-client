@@ -5,7 +5,7 @@
  * marker for these and never invent a value.
  */
 export const site = {
-  name: "Ilm-ul-Quran USA",
+  name: "Ilm-Ul-Quran USA",
   legalName: "AL HASANAH FOUNDATION",
   domain: "ilmulquranus.org",
   mission:

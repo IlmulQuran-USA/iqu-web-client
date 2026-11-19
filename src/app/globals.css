@@ -72,8 +72,15 @@
   --duration-panel: 320ms;
   --ease-riwaq: cubic-bezier(0.2, 0, 0, 1);
 
-  /* Layout (DESIGN.md §4, spec §6.1) */
-  --header-height: 72px;
+  /* Layout (DESIGN.md §4, spec §6.1). Header: 64 px below lg, 72 px from lg
+     (owner decision, 19 Nov 2026). The mobile drawer header matches. */
+  --header-height: 64px;
+}
+
+@media (min-width: 64rem) {
+  :root {
+    --header-height: 72px;
+  }
 }
 
 @theme inline {

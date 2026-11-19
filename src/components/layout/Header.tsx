@@ -16,17 +16,17 @@ import {
 } from "@/content/navigation";
 import { cn } from "@/lib/cn";
 import { isCurrent, isExactPage } from "@/lib/nav";
+import { Logo } from "./Logo";
 import { MobileNav } from "./MobileNav";
-import { Wordmark } from "./Wordmark";
 
 /**
  * Public header (spec §6.1).
- * - Sticky, 72 px, --paper. The 1 px --rule bottom border appears only after
+ * - Sticky, --paper, 64 px tall (72 px from lg). The 1 px --rule bottom border appears only after
  *   40 px of scroll.
  * - Desktop: Courses ▾ (mega panel), Programs ▾, Instructors, About ▾,
  *   Donate (a --link text link, never filled), then Log in (ghost) and
  *   Start free trial (primary, the header's only filled button).
- * - The desktop row needs about 960 px, so it appears from lg (1024). Below
+ * - The desktop row needs about 945 px (logo 229 + nav + CTAs, with gaps and nav padding tightened from lg to xl), so it appears from lg (1024). Below
  *   that the drawer takes over. The spec says md (768); see the build notes.
  * - Menus open on click, not hover, so keyboard and touch work the same way.
  *   Escape closes a menu and returns focus to its trigger, as do a click
@@ -37,9 +37,35 @@ type MenuKey = "courses" | "programs" | "about";
 
 const SCROLL_THRESHOLD = 40;
 
-export function Header() {
+export function Header({
+  yieldCtaTo,
+}: {
+  /**
+   * Id of an on-page element holding the page's own filled CTA (the Home
+   * hero). While it is on screen the header CTA drops to secondary, so only
+   * one filled button is in view (CLAUDE.md §4; spec §6.1 and §7.1 each ask
+   * for a filled "Start free trial").
+   */
+  yieldCtaTo?: string;
+} = {}) {
   const pathname = usePathname() ?? "/";
   const [scrolled, setScrolled] = useState(false);
+  // Start yielded when a target is named, so the server render never shows two filled CTAs.
+  const [ctaYielded, setCtaYielded] = useState(Boolean(yieldCtaTo));
+
+  useEffect(() => {
+    if (!yieldCtaTo) return;
+    const target = document.getElementById(yieldCtaTo);
+    // Only pass yieldCtaTo on a page that renders the target.
+    if (!target) return;
+    // The sticky header covers the top of the viewport: 64 px below lg, 72 px from lg.
+    const headerHeight = Math.round(target.ownerDocument.querySelector("header")?.getBoundingClientRect().height ?? 72);
+    const observer = new IntersectionObserver(([entry]) => setCtaYielded(entry.isIntersecting), {
+      rootMargin: `-${headerHeight}px 0px 0px 0px`,
+    });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [yieldCtaTo]);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const triggerRefs = useRef<Partial<Record<MenuKey, HTMLButtonElement | null>>>({});
@@ -96,9 +122,9 @@ export function Header() {
         Skip to main content
       </a>
 
-      {/* 72 px total: the row is 71 px plus the 1 px bottom rule. */}
-      <div className="container-content flex h-[calc(var(--header-height)-1px)] items-center justify-between gap-6">
-        <Wordmark onNavigate={close} />
+      {/* --header-height (64 px, 72 px from lg): the row plus the 1 px bottom rule. */}
+      <div className="container-content flex h-[calc(var(--header-height)-1px)] items-center justify-between gap-6 lg:gap-4 xl:gap-6">
+        <Logo onNavigate={close} />
 
         <nav
           ref={navRef}
@@ -170,7 +196,7 @@ export function Header() {
           <ButtonLink href={primaryLinks.login.href} variant="ghost">
             {primaryLinks.login.label}
           </ButtonLink>
-          <ButtonLink href={primaryLinks.enrol.href} variant="primary">
+          <ButtonLink href={primaryLinks.enrol.href} variant={ctaYielded ? "secondary" : "primary"}>
             {primaryLinks.enrol.label}
           </ButtonLink>
         </div>
@@ -182,7 +208,7 @@ export function Header() {
 }
 
 const topItem =
-  "inline-flex min-h-11 items-center gap-1 rounded-button px-3 text-body font-medium " +
+  "inline-flex min-h-11 items-center gap-1 rounded-button px-2 text-body font-medium xl:px-3 " +
   "transition-colors duration-(--duration-micro) ease-riwaq underline-offset-[6px]";
 
 // Current and open items: --ink with a 2 px --accent-strong underline

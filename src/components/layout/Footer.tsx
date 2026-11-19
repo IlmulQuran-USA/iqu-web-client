@@ -4,8 +4,8 @@ import Link from "next/link";
 import { footerColumns, legalLinks, socialLinks, type NavLink } from "@/content/navigation";
 import { PENDING, site } from "@/content/site";
 import { cn } from "@/lib/cn";
+import { Logo } from "./Logo";
 import { NewsletterForm } from "./NewsletterForm";
-import { Wordmark } from "./Wordmark";
 
 /**
  * Public footer (spec §6.2).
@@ -70,7 +70,7 @@ export async function Footer() {
         <div className="container-content grid gap-6 py-12 md:grid-cols-12 md:gap-6 md:py-16">
           <div className="md:col-span-5">
             <h2 id="newsletter-title" className="text-heading-lg text-ink">
-              News from Ilm-ul-Quran USA
+              News from Ilm-Ul-Quran USA
             </h2>
             <p className="mt-2 max-w-measure text-body text-ink-body">
               New classes, program dates and what your support makes possible.
@@ -85,7 +85,7 @@ export async function Footer() {
       <div className="band">
         <div className="container-content grid grid-cols-2 gap-x-6 gap-y-10 py-12 md:py-16 lg:grid-cols-12 lg:gap-6">
           <div className="col-span-2 lg:col-span-4">
-            <Wordmark tone="band" />
+            <Logo variant="footer" />
             <p className="mt-3 max-w-measure text-body text-on-band-muted">{site.mission}</p>
             <p className="mt-4 text-ui font-medium text-on-band">
               {site.legalName} is a {site.taxStatus}.{" "}

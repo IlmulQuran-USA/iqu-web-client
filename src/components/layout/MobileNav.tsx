@@ -15,7 +15,7 @@ import {
 } from "@/content/navigation";
 import { cn } from "@/lib/cn";
 import { isCurrent, isExactPage } from "@/lib/nav";
-import { Wordmark } from "./Wordmark";
+import { Logo } from "./Logo";
 
 /**
  * MobileDrawer (spec §6.1 "Mobile").
@@ -88,7 +88,7 @@ export function MobileNav({ pathname, className }: { pathname: string; className
             <h2 id={titleId} className="sr-only">
               Menu
             </h2>
-            <Wordmark onNavigate={closeDrawer} />
+            <Logo onNavigate={closeDrawer} />
             <button
               ref={closeRef}
               type="button"

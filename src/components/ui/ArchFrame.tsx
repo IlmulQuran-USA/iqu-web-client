@@ -39,8 +39,14 @@ export type ArchFrameProps = ImageSource & {
   ratio?: ArchRatio;
   /** Responsive `sizes` for next/image. */
   sizes?: string;
-  /** Hero image only (CLAUDE.md §4). */
+  /** Hero image only (CLAUDE.md §4): preloads, loads eagerly, high fetch priority. */
   preload?: boolean;
+  /** "eager" loads without preload or raised priority (images in the first view that are not the LCP). */
+  loading?: "eager" | "lazy";
+  /** Low-quality placeholder shown blurred until the image paints (spec §7.1 hero LQIP). */
+  blurDataURL?: string;
+  /** Point kept in view when the arch crops the photo, in % of width and height. Default: centre. */
+  focalPoint?: { x: number; y: number };
   /**
    * The concentric hairline around a photograph. On by default. The
    * monogram always has its single edge hairline instead, so this has no
@@ -60,6 +66,9 @@ export function ArchFrame({
   ratio = "portrait",
   sizes = "(min-width: 64rem) 25vw, 50vw",
   preload = false,
+  loading,
+  blurDataURL,
+  focalPoint,
   hairline = true,
   className,
 }: ArchFrameProps) {
@@ -92,8 +101,13 @@ export function ArchFrame({
             alt={decorative ? "" : (alt ?? name)}
             sizes={sizes}
             preload={preload}
+            loading={preload ? undefined : loading}
+            fetchPriority={preload ? "high" : undefined}
+            placeholder={blurDataURL ? "blur" : "empty"}
+            blurDataURL={blurDataURL}
             onError={() => setFailed(true)}
             className="size-full object-cover"
+            style={focalPoint ? { objectPosition: `${focalPoint.x}% ${focalPoint.y}%` } : undefined}
           />
         ) : (
           <div
