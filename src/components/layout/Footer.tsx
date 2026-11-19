@@ -12,7 +12,7 @@ import { NewsletterForm } from "./NewsletterForm";
  * - The newsletter band sits above the columns on --tint. The columns and
  *   legal strip sit on the dark --band: white text, slate-300 secondary,
  *   coral accents and a coral focus ring (DESIGN.md §1–§2).
- * - Four columns: Identity · Learn · Organisation · Support us. The EIN sits
+ * - Four columns: Identity · Learn · Organization · Support us. The EIN sits
  *   under the giving column (DESIGN.md §10).
  * - Legal strip: © year AL HASANAH FOUNDATION · Privacy · Terms · Refund
  *   policy · Accessibility statement, with social links on the right

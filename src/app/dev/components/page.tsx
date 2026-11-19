@@ -87,7 +87,7 @@ const states = [
 ] as const;
 
 const variantNotes: Record<ButtonVariant, string> = {
-  primary: "One per view. Enrol, Save.",
+  primary: "One per view. Enroll, Save.",
   secondary: "An alternative action.",
   ghost: "Tertiary or in-table. Underline on hover.",
   danger: "Destructive. Always behind a confirm dialog.",
@@ -120,7 +120,7 @@ export default function ComponentsPage() {
         </div>
 
         <Section id="tokens" title="Tokens">
-          <SubTitle>Colour</SubTitle>
+          <SubTitle>Color</SubTitle>
           {colourGroups.map((group) => (
             <div key={group.title}>
               <p className="eyebrow mb-3">{group.title}</p>

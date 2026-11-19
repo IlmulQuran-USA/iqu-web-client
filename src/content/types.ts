@@ -13,10 +13,16 @@ import { wholePhraseIndex } from "@/lib/text";
 export const instructorSchema = z.object({
   /** URL slug, made from the name. Never the old site's instructor URL. */
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lowercase-hyphenated slug"),
-  /** Full name including its title, as the owner writes it. */
+  /** Full name including its title ("Mufti …", "Hafez …"), as the owner writes it. */
   name: z.string().min(1).max(60),
-  /** Title line under the name ("Mufti · Director"); null when there is none. */
-  title: z.string().max(40).nullable(),
+  /**
+   * Short caption under the name on cards. Never repeats the title that is
+   * already in the name. At most 24 characters so it stays within two lines
+   * on a 375 px three-up row.
+   */
+  role: z.string().trim().min(1).max(24),
+  /** Full wording of the role, for the instructor profile page. */
+  roleFull: z.string().trim().min(1),
   /** Square portrait in public/instructors/; null keeps the arch monogram. */
   photo: z
     .object({

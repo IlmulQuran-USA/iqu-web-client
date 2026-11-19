@@ -1,3 +1,5 @@
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ButtonLink } from "@/components/ui/Button";
@@ -48,22 +50,29 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
         <div className="container-content mt-8 md:mt-16">
           <h2 className="sr-only">Some of our instructors</h2>
           {/* All featured instructors stay visible at every width (no carousel,
-              CLAUDE.md §4): three to a row on phones, all five in one row from lg. */}
-          <ul className="flex flex-wrap justify-center gap-x-3 gap-y-8 sm:gap-x-6 lg:flex-nowrap lg:gap-x-8">
-            {people.map((person) => (
+              CLAUDE.md §4): 3 + 2 on phones and tablets, one row from lg.
+              Each card spans three subgrid rows (portrait, name, role), so
+              names and roles line up across every visual row whatever their
+              length, and a short last row stays centred. */}
+          <ul className="grid grid-cols-6 gap-x-3 sm:gap-x-6 lg:grid-cols-10 lg:gap-x-8">
+            {people.map((person, i) => (
               <li
                 key={person.id}
-                className="flex basis-[calc((100%-1.5rem)/3)] flex-col items-center text-center sm:basis-[calc((100%-3rem)/3)] lg:basis-0 lg:grow"
+                className={cn("col-span-2 row-span-3 grid grid-rows-subgrid", placement(i, people.length))}
               >
-                <InstructorArch person={person} />
-                {/* Arches are top-aligned, so captions take their natural height. */}
-                <p translate="no" className="mt-3 text-ui font-medium text-balance text-ink sm:text-body">
-                  {person.name}
-                </p>
-                {person.title ? <p className="text-ui-sm text-ink-muted sm:text-ui">{person.title}</p> : null}
+                <InstructorCard person={person} />
               </li>
             ))}
           </ul>
+          <p className="mt-2 text-center sm:mt-4">
+            <Link
+              href="/instructors"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+            >
+              Meet all our instructors
+              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+            </Link>
+          </p>
         </div>
       ) : null}
     </section>
@@ -252,6 +261,61 @@ function HeroImage({ hero, ratio, sizes }: { hero: HomeHeroData; ratio: "portrai
       preload
     />
   );
+}
+
+/**
+ * One link per instructor: portrait, name and role together, to the profile.
+ * The link spans the card's three subgrid rows. On phones the name is 14 px
+ * and the role 13 px. A name is never cut off: it may take three lines on a
+ * 375 px phone (owner decision, 19 Nov 2026; "Mufti Muhammad Faijullah" does).
+ * The role (<= 24 characters) stays within two lines and never repeats the
+ * title already in the name. The link's accessible name is the visible
+ * name and role; the portrait keeps its "Portrait of <name>" alt text.
+ */
+function InstructorCard({ person }: { person: Instructor }) {
+  return (
+    <Link
+      href={`/instructors/${person.id}`}
+      aria-label={`${person.name}, ${person.role}`}
+      className="group row-span-3 grid grid-rows-subgrid rounded-card pb-6 text-center lg:pb-2"
+    >
+      <InstructorArch person={person} />
+      <span
+        translate="no"
+        className="mt-3 text-ui font-medium text-balance text-ink decoration-1 decoration-accent-strong underline-offset-4 group-hover:underline sm:text-body"
+      >
+        {person.name}
+      </span>
+      <span className="mt-0.5 line-clamp-2 text-ui-sm text-balance text-ink-muted sm:text-ui">{person.role}</span>
+    </Link>
+  );
+}
+
+/*
+ * Grid placement. Cards span two tracks of a 6-track grid (3 per row) below
+ * lg and a 10-track grid (5 in one row) from lg; a row with fewer cards
+ * starts further in so it stays centred. Class names are written out in full
+ * so Tailwind can see them.
+ */
+const START = ["col-start-1", "col-start-2", "col-start-3", "col-start-4", "col-start-5"];
+const LG_START = [
+  "lg:col-start-1",
+  "lg:col-start-2",
+  "lg:col-start-3",
+  "lg:col-start-4",
+  "lg:col-start-5",
+  "lg:col-start-6",
+  "lg:col-start-7",
+  "lg:col-start-8",
+  "lg:col-start-9",
+];
+
+function placement(i: number, count: number): string {
+  const rowStart = Math.floor(i / 3) * 3;
+  const inRow = Math.min(3, count - rowStart);
+  const start = 3 - inRow + 2 * (i - rowStart); // 0-based track
+  const lgStart = 5 - count + 2 * i;
+  return `${START[start]} ${LG_START[lgStart]}`;
 }
 
 function InstructorArch({ person }: { person: Instructor }) {

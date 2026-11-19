@@ -21,7 +21,7 @@ export type NavLink = {
  * provisional until course pages exist.
  */
 export const coursesByLevel: NavLink[] = [
-  { label: "Qa'idah & Nazirah", href: "/courses/qaidah-nazirah" },
+  { label: "Qa’idah & Nazirah", href: "/courses/qaidah-nazirah" },
   { label: "Quran Hifz", href: "/courses/hifz" },
   { label: "Arabic Language", href: "/courses/arabic" },
   { label: "Tarjumatul Quran", href: "/courses/tarjumatul-quran" },
@@ -104,7 +104,7 @@ export const footerColumns: { title: string; links: NavLink[]; giving?: boolean 
     ],
   },
   {
-    title: "Organisation",
+    title: "Organization",
     links: [
       { label: "About", href: "/about" },
       { label: "Instructors", href: "/instructors" },
