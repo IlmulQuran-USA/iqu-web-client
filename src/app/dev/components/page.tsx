@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { NewsletterCard } from "@/components/layout/NewsletterCard";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { Button, ButtonLink, type ButtonVariant } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
@@ -410,8 +411,22 @@ export default function ComponentsPage() {
         <Section id="footer" title="Footer">
           <p className="max-w-measure text-body text-ink-muted">
             The live footer is below: four columns and the legal strip with Facebook. The Zeffy and Facebook links
-            open in a new tab and say so. The newsletter sign-up is the footer&rsquo;s top row; without the Brevo settings it reads &ldquo;Sign-up opens soon.&rdquo;
+            open in a new tab and say so. The newsletter card sits at the top of the footer. The live footer shows
+            the form only when every Brevo setting is present; otherwise it reads &ldquo;Sign-up opens soon.&rdquo; Both
+            states are shown here for review, whatever the settings say.
           </p>
+          <SubTitle>Newsletter card: form</SubTitle>
+          <div id="newsletter-demo-form" className="band py-8">
+            <div>
+              <NewsletterCard open headingId="newsletter-demo-form-title" />
+            </div>
+          </div>
+          <SubTitle>Newsletter card: sign-up opens soon</SubTitle>
+          <div id="newsletter-demo-soon" className="band py-8">
+            <div>
+              <NewsletterCard open={false} headingId="newsletter-demo-soon-title" />
+            </div>
+          </div>
         </Section>
       </main>
       <Footer />

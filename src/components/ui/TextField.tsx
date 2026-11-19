@@ -27,7 +27,7 @@ import { cn } from "@/lib/cn";
  * - Field text is 16 px, so iOS does not zoom when the field takes focus.
  * - A disabled field is a muted input. A system-supplied value is not a
  *   disabled field; it renders as ReadOnlyFact (spec §7C.3).
- * - tone="band" for fields on the dark --band (footer newsletter): slate-800
+ * - tone="band" for fields on the dark --band (footer newsletter): slate-900
  *   fill, slate-500 border (3:1+), white text and label, errors in
  *   --danger-on-band (DESIGN.md §2 "Dark band").
  */

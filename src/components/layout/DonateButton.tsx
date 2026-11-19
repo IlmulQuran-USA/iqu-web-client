@@ -10,16 +10,16 @@ import { cn } from "@/lib/cn";
  * never filled: the filled style belongs to enrolment.
  *
  * 8 px radius, 44 px tall, a HandHeart icon (--accent-strong, 1.5 px) before
- * the label (--link), and a 1 px --accent-strong border. A coral light
- * travels along the border with a soft glow (styles in globals.css):
+ * the label (--link), and a double border drawn inside the box: the 1 px
+ * --accent-strong border and an inset 1 px line 3 px in (globals.css), so
+ * Donate is exactly the size of the buttons beside it. A coral light travels
+ * along the outer border with a soft glow:
  *   load   3 laps (4.5 s) when it mounts, inside WCAG 2.2.2's 5 s
  *   rest   static border
  *   lap    one more lap on hover or keyboard focus; the heart also beats
  *          once on hover
  * Under prefers-reduced-motion nothing moves and the border is static.
- * Double border at rest: the 1 px border, a 2 px gap and a 2 px
- * --accent-strong outer ring (globals.css); the light travels along that ring,
- * and on keyboard focus the ring turns --ink.
+ * Keyboard focus turns the outer border --ink, inside the box.
  * Static states, so hover and press never depend on motion: hover and the
  * current page fill with --tint (--link on it stays above 4.5:1); pressed
  * also darkens the border to --link.
@@ -76,8 +76,10 @@ export function DonateButton({
       onFocus={lapAgain}
       onAnimationEnd={onAnimationEnd}
       className={cn(
-        "donate box-border inline-flex h-11 items-center justify-center gap-2 rounded-button border border-accent-strong px-3 text-body font-medium whitespace-nowrap text-link " +
-          "transition-colors duration-(--duration-micro) ease-riwaq hov:bg-tint act:border-link act:bg-tint aria-[current=page]:bg-tint",
+        "donate box-border inline-flex h-11 items-center justify-center gap-2 rounded-button px-3 text-body font-medium whitespace-nowrap text-link " +
+          "transition-[color,background-color,border-color,box-shadow] duration-(--duration-micro) ease-riwaq " +
+          // --donate-fill paints the fill and the gap between the two lines (globals.css).
+          "hov:[--donate-fill:var(--tint)] act:border-link act:[--donate-fill:var(--tint)] aria-[current=page]:[--donate-fill:var(--tint)]",
         className,
       )}
     >

@@ -18,7 +18,7 @@
 
 Coloured bands are not used for section separation. The only exceptions:
 - Home nonprofit band: `--surface-2`.
-- Footer newsletter: no longer a band. It is the top row inside the footer, on `--band` (owner decision, 19 Nov 2026).
+- Footer newsletter: no longer a band. It is a card at the top of the footer: `--band-card` (slate-800) on `--band`, 12 px radius, a 3 px `--accent` left edge, 32 px padding (24 px on phones), 48 px above the link columns (owner decisions, 19 and 20 Nov 2026).
 - Footer and Home final CTA band: `--band` (dark slate).
 
 ---
@@ -69,8 +69,9 @@ Coloured bands are not used for section separation. The only exceptions:
 | --------------- | --------- | ------------------------------------------------------------------- |
 | `--band`        | `#0F172A` | Footer and final CTA band. Text `#FFFFFF` (17.9:1); secondary `#CBD5E1` (12.0:1); accents `#F96C48` (6.2:1). |
 | Primary on band | `#F96C48` | Fill `--accent`, label `--ink` (6.2:1)                             |
-| Field on band   | `#1E293B` / `#64748B` | `--band-field` fill, `--band-field-border` (slate-500: 3.75:1 on the band, 3.07:1 on the fill), white text 14.6:1. Used by the footer newsletter |
-| Status on band  | `#F97066` / `#47CD89` | `--danger-on-band` (6.4:1) and `--success-on-band` (8.8:1): inline error and success text on the band, where `--danger` / `--success` fail |
+| Card on band    | `#1E293B` | `--band-card`: the newsletter card. White 14.6:1, `#CBD5E1` secondary 9.9:1, `--accent` left edge and focus ring 5.1:1 |
+| Field on band   | `#0F172A` / `#64748B` | `--band-field` fill (slate-900), `--band-field-border` (slate-500: 3.07:1 on the card, 3.75:1 on the fill; slate-600 fails at 1.9:1), white text 17.9:1. Used by the newsletter card |
+| Status on band  | `#F97066` / `#47CD89` | `--danger-on-band` (6.4:1 on the band, 5.3:1 on the card) and `--success-on-band` (8.8:1 / 7.2:1): inline error and success text, where `--danger` / `--success` fail |
 | Outline on band | white     | 1 px `--on-band` border, `--on-band` label, transparent fill (Subscribe): the band's non-primary action |
 
 **Focus**
@@ -181,7 +182,7 @@ Every screen is built and checked at **375** and **1440**; **768** where layout 
 | Secondary | Alternative action                 | 1 px `--ink-body` outline, `--ink-body` label, transparent fill |
 | Ghost     | Tertiary, in-table actions         | `--ink` text only, underline on hover                         |
 | Tonal     | Log in                             | `--surface` fill, `--ink` label, font-medium, no border, 8 px radius, 44 px; `--rule` on hover; Lucide `UserRound` before the label (icon-only from 1024 to 1279) |
-| Donate    | Giving, on public pages            | Double border: 1 px `--accent-strong` border, a 2 px gap and a 2 px `--accent-strong` outer ring (the focus-visible construction); on keyboard focus the outer ring turns `--ink`. `--link` label, Lucide `HandHeart` (1.5 px, `--accent-strong`) before it, 8 px radius, 44 px. Never filled. A coral (`--accent`) light travels along the outer ring with a `--glow-accent` glow: 3 laps on load (4.5 s), one on hover and focus (the heart beats once on hover), then a static border; nothing moves under reduced motion |
+| Donate    | Giving, on public pages            | Double border drawn inside the 44 px box, so Donate is exactly the size of the buttons beside it: the outer line is the 1 px `--accent-strong` border, the inner line an inset 1 px `--accent-strong` line 3 px in (2 px of the button's fill between them). On keyboard focus the outer border turns `--ink` (no outside ring; owner decision, 20 Nov 2026); under forced colours focus draws a Highlight ring inside the box. `--link` label, Lucide `HandHeart` (1.5 px, `--accent-strong`) before it, 8 px radius, 44 px. Never filled. A coral (`--accent`) light travels along the outer border with a `--glow-accent` glow: 3 laps on load (4.5 s), one on hover and focus (the heart beats once on hover), then a static border; nothing moves under reduced motion |
 | Danger    | Destructive                        | Filled `--danger`, white label, always behind a confirm dialog |
 | Link      | Inline in prose                    | `--link`, underlined, 2 px offset                             |
 | On band   | Primary action on `--band`         | Filled `--accent`, `--ink` label                              |

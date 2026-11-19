@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlert, CircleCheck } from "lucide-react";
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import { subscribeToNewsletter, type NewsletterState } from "@/app/actions/newsletter";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
@@ -42,6 +42,7 @@ async function subscribe(prev: NewsletterState, formData: FormData): Promise<New
  */
 export function NewsletterForm() {
   const [state, formAction, pending] = useActionState(subscribe, initial);
+  const honeypotId = useId();
   const fieldError = state.status === "error" && state.field === "email" ? state.message : undefined;
   const formMessage = state.status !== "idle" && !fieldError ? state : null;
 
@@ -49,8 +50,8 @@ export function NewsletterForm() {
     <form action={formAction} noValidate className="w-full">
       {/* Honeypot: hidden from people and assistive tech, out of the tab order. */}
       <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">
-        <label htmlFor="newsletter-website">Website</label>
-        <input id="newsletter-website" name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+        <label htmlFor={honeypotId}>Website</label>
+        <input id={honeypotId} name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">

@@ -35,14 +35,16 @@
   --band: #0f172a;
   --on-band: #ffffff;
   --on-band-muted: #cbd5e1;
-  /* Form fields and messages on --band (footer newsletter, owner decision 19 Nov 2026).
-     Field: slate-800 fill, slate-500 border (3.75:1 on --band, 3.07:1 on the fill;
-     slate-600 would fail WCAG 1.4.11). --danger and --success fail on --band, so
-     lighter steps carry errors and success there. */
-  --band-field: #1e293b; /* white text 14.6:1 */
+  /* The footer newsletter card and its form (owner decisions 19 and 20 Nov 2026).
+     Card: slate-800 on --band. Field: slate-900 fill, slate-500 border (3.07:1
+     on the card, 3.75:1 on the fill; slate-600 would fail WCAG 1.4.11).
+     --danger and --success fail on these darks, so lighter steps carry errors
+     and success there. */
+  --band-card: #1e293b; /* white 14.6:1, --on-band-muted 9.9:1, --accent 5.1:1 */
+  --band-field: #0f172a; /* white text 17.9:1 */
   --band-field-border: #64748b;
-  --danger-on-band: #f97066; /* 6.4:1 on --band, 5.3:1 on --band-field */
-  --success-on-band: #47cd89; /* 8.8:1 on --band */
+  --danger-on-band: #f97066; /* 5.3:1 on --band-card, 6.4:1 on --band-field */
+  --success-on-band: #47cd89; /* 7.2:1 on --band-card */
 
   /* Focus ring. Redefined to --accent inside .band. */
   --focus: #0f172a;
@@ -117,6 +119,7 @@
   --color-band: var(--band);
   --color-on-band: var(--on-band);
   --color-on-band-muted: var(--on-band-muted);
+  --color-band-card: var(--band-card);
   --color-band-field: var(--band-field);
   --color-band-field-border: var(--band-field-border);
   --color-danger-on-band: var(--danger-on-band);
@@ -313,7 +316,7 @@
 }
 
 /*
- * Donate button: a coral light segment travels along the outer ring (a conic
+ * Donate button: a coral light segment travels along the outer border (a conic
  * gradient on a rotating @property angle) with a soft glow that follows it.
  * Owner decision, 19 Nov 2026; the only gradient and glow in the system
  * (DESIGN.md §2, §4, §8). The component runs 3 laps on load (4.5 s, inside
@@ -357,26 +360,35 @@
 }
 
 @layer components {
-  /* Double border at rest (owner decision, 19 Nov 2026): the 1 px border, a
-     2 px gap and a 2 px --accent-strong ring, the same construction as the
-     focus-visible state. On keyboard focus the ring turns --ink (17.9:1). */
+  /* Double border, both lines inside the 44 px box (owner decision, 20 Nov
+     2026), so Donate is exactly the size of the buttons beside it. The outer
+     line is the 1 px --accent-strong border; the inner line is an inset
+     shadow 3 px in: 2 px of the button's own fill, then 1 px --accent-strong.
+     --donate-fill is the fill (--tint on hover, press and current page, set in
+     DonateButton), so the gap always matches it. */
   .donate {
     position: relative;
-    outline: 2px solid var(--accent-strong);
-    outline-offset: 2px;
+    --donate-fill: var(--paper);
+    border: 1px solid var(--accent-strong);
+    background-color: var(--donate-fill);
+    box-shadow:
+      inset 0 0 0 2px var(--donate-fill),
+      inset 0 0 0 3px var(--accent-strong);
   }
+  /* Keyboard focus: the outer border turns --ink (4.6:1 against
+     --accent-strong, 17.9:1 on --paper), inside the box; no outside ring. */
   .donate:focus-visible,
   .donate[data-force~="focus"] {
-    outline-color: var(--ink);
+    outline: none;
+    border-color: var(--ink);
   }
-  /* Forced colours paint both rings the same system colour, so the rest ring
-     goes and only keyboard focus draws one. */
+  /* Forced colours drop the inset line and repaint the border in a system
+     colour, so keyboard focus draws a Highlight ring, still inside the box. */
   @media (forced-colors: active) {
-    .donate {
-      outline-style: none;
-    }
-    .donate:focus-visible {
+    .donate:focus-visible,
+    .donate[data-force~="focus"] {
       outline: 2px solid Highlight;
+      outline-offset: -4px;
     }
   }
   /* The light: a ring exactly over the 1 px border, painted with a short conic segment. */
@@ -398,18 +410,18 @@
     -webkit-mask-composite: xor;
     opacity: 0;
   }
-  /* The light runs along the outer ring: 2 px wide, 2 px outside the 1 px
-     border (positions are from the padding box, inside the border). */
+  /* The light runs along the outer border: a 1 px ring exactly over it
+     (positions are from the padding box, inside the border). */
   .donate::before {
-    inset: -5px;
-    padding: 2px;
-    border-radius: calc(var(--radius-button) + 4px);
+    inset: -1px;
+    padding: 1px;
+    border-radius: inherit;
   }
-  /* The glow: the same segment, blurred, in a 6 px ring just outside the outer ring. */
+  /* The glow: the same segment, blurred, in a 6 px ring just outside the border. */
   .donate::after {
-    inset: -11px;
+    inset: -7px;
     padding: 6px;
-    border-radius: calc(var(--radius-button) + 10px);
+    border-radius: calc(var(--radius-button) + 6px);
     background: conic-gradient(
       from var(--donate-angle),
       transparent 0turn 0.82turn,

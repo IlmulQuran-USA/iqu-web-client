@@ -83,6 +83,7 @@ Riwāq deliberately uses some patterns generic detectors flag (uppercase eyebrow
 | Rule id | Scope | Reason (spec §) |
 | ------- | ----- | --------------- |
 | `hero-eyebrow-chip` | Home hero eyebrow (`src/components/home/HomeHero.tsx`; ignore in `.impeccable/config.json`) | Spec §7.1. The ignore covers source scans only; `detect <url>` still lists it at desktop widths. |
+| `side-tab` | Footer newsletter card's 3 px `--accent` left edge (`src/components/layout/NewsletterCard.tsx`; ignore in `.impeccable/config.json`) | Owner decision, 20 Nov 2026 (DESIGN.md §1). The ignore covers source scans only; `detect <url>` still lists it. |
 
 ---
 

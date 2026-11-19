@@ -7,7 +7,7 @@ import { PENDING, site } from "@/content/site";
 import { cn } from "@/lib/cn";
 import { newsletterConfig } from "@/lib/server/brevo";
 import { Logo } from "./Logo";
-import { NewsletterForm } from "./NewsletterForm";
+import { NewsletterCard } from "./NewsletterCard";
 
 /**
  * Public footer (spec §6.2; owner decision, 19 Nov 2026).
@@ -28,11 +28,10 @@ import { NewsletterForm } from "./NewsletterForm";
  * - Bottom bar on the same edges: © year, legal name and the street address
  *   on the left; legal links and Facebook on the right, on one row from xl
  *   (where both fit); stacked below.
- * - Newsletter: the top row inside the footer, on --band (not a separate
- *   band), on the same container edges and above a hairline: the serif
- *   heading and one line on the left, the form on the right. When any Brevo
- *   setting is missing the form is replaced by "Sign-up opens soon." so a form
- *   that cannot work is never shown (src/lib/server/brevo.ts).
+ * - Newsletter: a card at the top of the footer, on the same container edges,
+ *   48 px above the link columns (NewsletterCard). When any Brevo setting is
+ *   missing the form is replaced by "Sign-up opens soon." so a form that
+ *   cannot work is never shown (src/lib/server/brevo.ts).
  * - The language toggle waits for a Bangla locale (spec §10.3 Q6).
  * - A contact value that is null shows [pending] (CLAUDE.md §4).
  */
@@ -86,27 +85,12 @@ export async function Footer() {
   return (
     <footer className="mt-auto">
       <div className="band border-t border-ink-body">
-        <section aria-labelledby="newsletter-title" className="container-content">
-          <div className="grid gap-6 border-b border-ink-body py-12 md:py-16 lg:grid-cols-12 lg:gap-6">
-            <div className="lg:col-span-5">
-              <h2 id="newsletter-title" className="font-display text-heading-lg font-semibold text-on-band">
-                News from <span translate="no">{site.name}</span>
-              </h2>
-              <p className="mt-2 max-w-measure text-body text-on-band-muted">
-                New classes, program dates and what your support makes possible.
-              </p>
-            </div>
-            <div className="lg:col-span-6 lg:col-start-7">
-              {newsletterOpen ? (
-                <NewsletterForm />
-              ) : (
-                <p className="text-body font-medium text-on-band lg:pt-2">Sign-up opens soon.</p>
-              )}
-            </div>
-          </div>
-        </section>
+        <div className="container-content pt-12 md:pt-16">
+          <NewsletterCard open={newsletterOpen} />
+        </div>
 
-        <div className="container-content py-12 md:py-16">
+        {/* 48 px between the newsletter card and the link columns at every width. */}
+        <div className="container-content pt-12 pb-12 md:pb-16">
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:flex lg:items-stretch lg:justify-between lg:gap-x-8">
             {/* Brand group: logo, description, then Phone and Email directly beneath. */}
             <div className="col-span-2">

@@ -12,6 +12,15 @@
         ],
         "createdAt": "2026-11-19T12:44:33.799Z",
         "reason": "Spec §7.1 section 1 mandates the Home hero eyebrow above the H1; CLAUDE.md §5"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/components/layout/NewsletterCard.tsx"
+        ],
+        "createdAt": "2026-11-19T20:25:27.578Z",
+        "reason": "Owner decision 20 Nov 2026: the newsletter card has a 3 px --accent left edge (DESIGN.md §1); CLAUDE.md §5"
       }
     ]
   }
