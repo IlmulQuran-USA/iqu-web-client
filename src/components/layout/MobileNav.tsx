@@ -21,9 +21,9 @@ import { Logo } from "./Logo";
 /**
  * MobileDrawer (spec §6.1 "Mobile").
  * - Hamburger on the right. The drawer slides in from the right at full height.
- * - Courses, Programs and About are accordion sections. Instructors and
- *   Donate are plain links.
- * - Both CTAs are pinned to the bottom of the drawer.
+ * - Courses, Programs and About are accordion sections. Instructors is a
+ *   plain link.
+ * - Pinned to the bottom, full width: Donate, Log in, Start free trial.
  * - Built on a native modal <dialog>, which gives a focus trap, an inert
  *   background, a top layer and Escape to close. Focus goes back to the
  *   hamburger when the drawer closes. A click on the backdrop also closes it.
@@ -151,22 +151,22 @@ export function MobileNav({ pathname, className }: { pathname: string; className
                   <DrawerLinks links={about} pathname={pathname} onNavigate={closeDrawer} />
                 </Section>
               </li>
-              <li>
-                {/* The same Donate button as the header. Remounted each time the
-                    drawer first opens, so its 3 laps play once, when it can be seen. */}
-                <DonateButton
-                  key={opened ? "shown" : "hidden"}
-                  href={primaryLinks.donate.href}
-                  label={primaryLinks.donate.label}
-                  current={isCurrent(pathname, primaryLinks.donate.href)}
-                  onNavigate={closeDrawer}
-                  className="mt-2 ml-3"
-                />
-              </li>
             </ul>
           </nav>
 
+          {/* Pinned actions, top to bottom: Donate · Log in · Start free trial (owner
+              decision, 19 Nov 2026). Donate is full width, the same size as Log in. */}
           <div className="flex shrink-0 flex-col gap-2 border-t border-rule bg-paper px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            {/* The same Donate button as the header. Remounted when the drawer
+                first opens, so its 3 laps play once, when it can be seen. */}
+            <DonateButton
+              key={opened ? "shown" : "hidden"}
+              href={primaryLinks.donate.href}
+              label={primaryLinks.donate.label}
+              current={isCurrent(pathname, primaryLinks.donate.href)}
+              onNavigate={closeDrawer}
+              className="w-full"
+            />
             <ButtonLink
               href={primaryLinks.login.href}
               variant="tonal"
@@ -225,13 +225,11 @@ function PlainLink({
   href,
   pathname,
   onNavigate,
-  tone = "ink",
   children,
 }: {
   href: string;
   pathname: string;
   onNavigate: () => void;
-  tone?: "ink" | "accent";
   children: ReactNode;
 }) {
   const current = isCurrent(pathname, href);
@@ -241,11 +239,7 @@ function PlainLink({
         href={href}
         onClick={onNavigate}
         aria-current={current ? "page" : undefined}
-        className={cn(
-          rowClass,
-          tone === "accent" ? "text-link" : current ? currentMark : "text-ink",
-          "hov:bg-surface-2",
-        )}
+        className={cn(rowClass, current ? currentMark : "text-ink", "hov:bg-surface-2")}
       >
         {children}
       </Link>

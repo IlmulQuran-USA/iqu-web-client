@@ -23,7 +23,10 @@ import { Spinner } from "./Spinner";
  *   band-outline  A non-primary action on --band (Subscribe): 1 px white
  *              border, white label, transparent fill. Never on a light surface.
  *
- * Every variant has a hit area of at least 44 × 44 px and the global focus
+ * Every variant except link has a 1 px border (transparent on filled and tonal variants),
+ * border-box sizing and an explicit height per size (md 44 px, lg 52 px for
+ * hero CTAs), so a border never changes a button's size (owner decision,
+ * 19 Nov 2026). Every variant has a hit area of at least 44 × 44 px and the global focus
  * ring. While loading, the spinner replaces the label, the width stays fixed
  * and clicks are swallowed, so a form is never submitted twice.
  */
@@ -46,7 +49,7 @@ type ContentProps = {
 };
 
 const base =
-  "relative inline-flex min-h-11 min-w-11 items-center justify-center gap-2 font-sans font-medium " +
+  "relative box-border inline-flex min-h-11 min-w-11 items-center justify-center gap-2 font-sans font-medium " +
   "transition-[color,background-color,border-color,text-decoration-color] duration-(--duration-micro) ease-riwaq " +
   "disabled:cursor-not-allowed";
 
@@ -58,9 +61,8 @@ const variants: Record<ButtonVariant, string> = {
     "rounded-button border border-ink-body text-ink-body hov:not-disabled:bg-ink/6 act:not-disabled:bg-ink/12 " +
     "disabled:border-rule disabled:text-ink-muted",
   ghost:
-    "rounded-button text-ink decoration-1 underline-offset-4 hov:not-disabled:underline " +
+    "rounded-button border border-transparent text-ink decoration-1 underline-offset-4 hov:not-disabled:underline " +
     "act:not-disabled:text-ink-body act:not-disabled:underline disabled:text-ink-muted",
-  // Transparent border only to match the outlined variants' height.
   tonal:
     "rounded-button border border-transparent bg-surface text-ink hov:not-disabled:bg-rule act:not-disabled:bg-rule " +
     "disabled:text-ink-muted",
@@ -81,15 +83,14 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const sizes: Record<ButtonVariant, Record<ButtonSize, string>> = {
-  primary: { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
-  secondary: { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
-  danger: { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
-  ghost: { md: "px-3 py-2 text-body", lg: "min-h-13 px-4 py-3 text-body-lg" },
-  // Fixed 44 px: the owner set the tonal button's height exactly.
+  primary: { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
+  secondary: { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
+  danger: { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
+  ghost: { md: "h-11 px-3 text-body", lg: "h-13 px-4 text-body-lg" },
   tonal: { md: "h-11 px-4 text-body", lg: "h-13 px-5 text-body-lg" },
   link: { md: "px-0.5 py-2.5 text-body", lg: "min-h-13 px-0.5 py-3 text-body-lg" },
-  band: { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
-  "band-outline": { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
+  band: { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
+  "band-outline": { md: "h-11 px-5 text-body", lg: "h-13 px-6 text-body-lg" },
 };
 
 export function buttonClasses({
