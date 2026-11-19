@@ -20,13 +20,15 @@ import { Spinner } from "./Spinner";
  *              box isn't padded out.
  *   band       The primary action on the dark --band: coral fill, --ink label.
  *              Never on a light surface.
+ *   band-outline  A non-primary action on --band (Subscribe): 1 px white
+ *              border, white label, transparent fill. Never on a light surface.
  *
  * Every variant has a hit area of at least 44 × 44 px and the global focus
  * ring. While loading, the spinner replaces the label, the width stays fixed
  * and clicks are swallowed, so a form is never submitted twice.
  */
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "tonal" | "danger" | "link" | "band";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "tonal" | "danger" | "link" | "band" | "band-outline";
 export type ButtonSize = "md" | "lg";
 
 type StyleProps = {
@@ -72,6 +74,10 @@ const variants: Record<ButtonVariant, string> = {
   band:
     "rounded-button border border-transparent bg-accent text-ink hov:not-disabled:bg-accent-hover act:not-disabled:bg-accent-strong " +
     "disabled:bg-ink-body disabled:text-on-band-muted",
+  // White 1 px border and label (17.9:1); hover and press add a faint white wash.
+  "band-outline":
+    "rounded-button border border-on-band text-on-band hov:not-disabled:bg-on-band/10 act:not-disabled:bg-on-band/20 " +
+    "disabled:border-on-band-muted disabled:text-on-band-muted",
 };
 
 const sizes: Record<ButtonVariant, Record<ButtonSize, string>> = {
@@ -83,6 +89,7 @@ const sizes: Record<ButtonVariant, Record<ButtonSize, string>> = {
   tonal: { md: "h-11 px-4 text-body", lg: "h-13 px-5 text-body-lg" },
   link: { md: "px-0.5 py-2.5 text-body", lg: "min-h-13 px-0.5 py-3 text-body-lg" },
   band: { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
+  "band-outline": { md: "px-5 py-2 text-body", lg: "min-h-13 px-6 py-3 text-body-lg" },
 };
 
 export function buttonClasses({

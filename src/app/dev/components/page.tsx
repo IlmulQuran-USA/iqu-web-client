@@ -94,6 +94,7 @@ const variantNotes: Record<ButtonVariant, string> = {
   danger: "Destructive. Always behind a confirm dialog.",
   link: "A standalone text action in --link. In prose, use a plain <a>.",
   band: "Primary action on the dark band: coral fill, slate label.",
+  "band-outline": "Non-primary action on the dark band: white outline (Subscribe).",
 };
 
 const variantLabel: Record<ButtonVariant, string> = {
@@ -104,6 +105,7 @@ const variantLabel: Record<ButtonVariant, string> = {
   danger: "Delete record",
   link: "Request a correction",
   band: "Start free trial",
+  "band-outline": "Subscribe",
 };
 
 export default function ComponentsPage() {
@@ -232,12 +234,12 @@ export default function ComponentsPage() {
               </SubTitle>
               <ul
                 className={`mt-4 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-3 lg:grid-cols-6 ${
-                  variant === "band" ? "band rounded-card p-6" : ""
+                  variant.startsWith("band") ? "band rounded-card p-6" : ""
                 }`}
               >
                 {states.map(([state, props]) => (
                   <li key={state} className="flex flex-col items-start gap-2">
-                    <span className={`text-ui-sm ${variant === "band" ? "text-on-band-muted" : "text-ink-muted"}`}>
+                    <span className={`text-ui-sm ${variant.startsWith("band") ? "text-on-band-muted" : "text-ink-muted"}`}>
                       {state}
                     </span>
                     <Button variant={variant} {...props}>
@@ -408,8 +410,7 @@ export default function ComponentsPage() {
         <Section id="footer" title="Footer">
           <p className="max-w-measure text-body text-ink-muted">
             The live footer is below: four columns and the legal strip with Facebook. The Zeffy and Facebook links
-            open in a new tab and say so. The newsletter sign-up is hidden until Brevo is connected; it will return
-            inside the footer.
+            open in a new tab and say so. The newsletter sign-up is the footer&rsquo;s top row; without the Brevo settings it reads &ldquo;Sign-up opens soon.&rdquo;
           </p>
         </Section>
       </main>

@@ -18,7 +18,7 @@
 
 Coloured bands are not used for section separation. The only exceptions:
 - Home nonprofit band: `--surface-2`.
-- Footer newsletter band: `--tint` (hidden until Brevo is connected, owner decision 19 Nov 2026; it returns inside the footer, not as a band).
+- Footer newsletter: no longer a band. It is the top row inside the footer, on `--band` (owner decision, 19 Nov 2026).
 - Footer and Home final CTA band: `--band` (dark slate).
 
 ---
@@ -69,6 +69,9 @@ Coloured bands are not used for section separation. The only exceptions:
 | --------------- | --------- | ------------------------------------------------------------------- |
 | `--band`        | `#0F172A` | Footer and final CTA band. Text `#FFFFFF` (17.9:1); secondary `#CBD5E1` (12.0:1); accents `#F96C48` (6.2:1). |
 | Primary on band | `#F96C48` | Fill `--accent`, label `--ink` (6.2:1)                             |
+| Field on band   | `#1E293B` / `#64748B` | `--band-field` fill, `--band-field-border` (slate-500: 3.75:1 on the band, 3.07:1 on the fill), white text 14.6:1. Used by the footer newsletter |
+| Status on band  | `#F97066` / `#47CD89` | `--danger-on-band` (6.4:1) and `--success-on-band` (8.8:1): inline error and success text on the band, where `--danger` / `--success` fail |
+| Outline on band | white     | 1 px `--on-band` border, `--on-band` label, transparent fill (Subscribe): the band's non-primary action |
 
 **Focus**
 
@@ -92,7 +95,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 **Rules**
 - All text/background pairs ≥ 4.5:1 (WCAG AA). Large text (≥ 24 px, or ≥ 18.7 px bold) and UI boundaries ≥ 3:1.
 - `--accent` is never text or an icon on a light surface; use `--accent-strong` (large or icons) or `--link` (text).
-- **`--tint` fills at most one section per page** (owner decision, 19 Nov 2026). A section is a full-width page region or band. Selected and current states (nav current page) are not sections and do not count. The footer newsletter band, which used that allowance on every page, is hidden until Brevo is connected and will return inside the footer, so the allowance is currently unused. The arch monogram is never on `--tint` (§7).
+- **`--tint` fills at most one section per page** (owner decision, 19 Nov 2026). A section is a full-width page region or band. Selected and current states (nav current page) are not sections and do not count. The newsletter, which used that allowance on every page, now sits inside the footer on `--band`, so the allowance is currently unused. The arch monogram is never on `--tint` (§7).
 - Form field boundaries use `--ink-muted` (7.6:1), not `--rule`.
 - No gradients anywhere, with one exception (owner decision, 19 Nov 2026): the Donate button's travelling border light, a conic gradient, and its glow (§8).
 

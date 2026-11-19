@@ -26,15 +26,19 @@ async function subscribe(prev: NewsletterState, formData: FormData): Promise<New
     return {
       status: "error",
       email: String(formData.get("email") ?? ""),
-      message: "We couldn't reach our server. Check your connection and try again.",
+      message: "We couldn’t reach our server. Check your connection and try again.",
     };
   }
 }
 
 /**
- * One input, one button and one line of consent text (spec §6.2).
- * The email is checked on blur, then again on the server. The button shows
- * a spinner while pending and ignores repeat clicks.
+ * Footer newsletter form on --band (spec §6.2; owner decision 19 Nov 2026).
+ * A visible label, the email field and an outline Subscribe button on one
+ * line (stacked on phones), and the privacy line under them. The email is
+ * checked on blur, then again on the server. While pending, the spinner
+ * replaces the label at a fixed width and repeat clicks are ignored.
+ * Messages are announced politely: success in --success-on-band, errors in
+ * --danger-on-band, each with an icon (colour is never the only signal).
  */
 export function NewsletterForm() {
   const [state, formAction, pending] = useActionState(subscribe, initial);
@@ -43,8 +47,15 @@ export function NewsletterForm() {
 
   return (
     <form action={formAction} noValidate className="w-full">
+      {/* Honeypot: hidden from people and assistive tech, out of the tab order. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] size-px overflow-hidden">
+        <label htmlFor="newsletter-website">Website</label>
+        <input id="newsletter-website" name="website" type="text" tabIndex={-1} autoComplete="off" defaultValue="" />
+      </div>
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
         <TextField
+          tone="band"
           label="Email address"
           name="email"
           type="email"
@@ -56,12 +67,22 @@ export function NewsletterForm() {
           defaultValue={state.email}
           className="flex-1"
         />
-        {/* Offset by the label's height so the button lines up with the input. */}
-        <Button type="submit" variant="secondary" loading={pending} loadingLabel="Signing you up" className="sm:mt-7 sm:min-h-12">
+        {/* Offset by the label's height so the button lines up with the input.
+            Pressing it keeps focus in the field: otherwise the field's blur
+            check removes its error first, the stacked button jumps up on
+            phones and the tap misses. The server validates every submit. */}
+        <Button
+          type="submit"
+          variant="band-outline"
+          onMouseDown={(event) => event.preventDefault()}
+          loading={pending}
+          loadingLabel="Signing you up"
+          className="sm:mt-7 sm:min-h-12"
+        >
           Subscribe
         </Button>
       </div>
-      <p className="mt-3 max-w-measure text-ui text-ink-muted">
+      <p className="mt-3 max-w-measure text-ui text-on-band-muted">
         Occasional news about classes, programs and our work. Unsubscribe at any time.
       </p>
       <div aria-live="polite">
@@ -69,8 +90,8 @@ export function NewsletterForm() {
           <p
             className={
               formMessage.status === "success"
-                ? "mt-3 flex items-start gap-1.5 text-ui text-success"
-                : "mt-3 flex items-start gap-1.5 text-ui text-danger"
+                ? "mt-3 flex items-start gap-1.5 text-ui font-medium text-success-on-band"
+                : "mt-3 flex items-start gap-1.5 text-ui font-medium text-danger-on-band"
             }
           >
             {formMessage.status === "success" ? (
