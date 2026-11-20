@@ -2,6 +2,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { faq } from "@/content/home";
 import { PENDING, site } from "@/content/site";
+import { cn } from "@/lib/cn";
 
 /**
  * FAQAccordion (spec §6.3) · Home §9 Common questions. Native <details>, so
@@ -54,36 +55,54 @@ export function FAQAccordion() {
             </Link>
           </div>
 
-          <div className="border-t border-ink lg:col-span-8">
-            {faq.items.map((item) => (
-              <details key={item.q} className="group border-b border-rule">
-                <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink [&::-webkit-details-marker]:hidden">
-                  {item.q}
-                  <ChevronDown
-                    aria-hidden="true"
-                    strokeWidth={1.5}
-                    className="size-5 shrink-0 text-ink-muted transition-transform duration-(--duration-default) ease-riwaq group-open:rotate-180 motion-reduce:transition-none"
-                  />
-                </summary>
-                <div className="flex max-w-measure flex-col gap-3 pb-6 text-body text-pretty text-ink-body">
-                  <p>{item.a}</p>
-                  {/* An answer may carry a short list (the cost answer's prices) and a closing line. */}
-                  {"points" in item ? (
-                    <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-ink-muted">
-                      {item.points.map((point) => (
-                        <li key={point} className="tabular-nums">
-                          {point}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
-                  {"after" in item ? <p>{item.after}</p> : null}
-                </div>
-              </details>
-            ))}
-          </div>
+          <FAQList items={faq.items} className="lg:col-span-8" />
         </div>
       </div>
     </section>
+  );
+}
+
+export type FAQItem = {
+  q: string;
+  a: string;
+  /** A short list after the answer (the cost answer's prices). */
+  points?: readonly string[];
+  /** A closing line after the list. */
+  after?: string;
+};
+
+/**
+ * The accordion itself: native <details>, one per question, between hairlines.
+ * Shared by Home §9 and the course pages.
+ */
+export function FAQList({ items, className }: { items: readonly FAQItem[]; className?: string }) {
+  return (
+    <div className={cn("border-t border-ink", className)}>
+      {items.map((item) => (
+        <details key={item.q} className="group border-b border-rule">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink [&::-webkit-details-marker]:hidden">
+            {item.q}
+            <ChevronDown
+              aria-hidden="true"
+              strokeWidth={1.5}
+              className="size-5 shrink-0 text-ink-muted transition-transform duration-(--duration-default) ease-riwaq group-open:rotate-180 motion-reduce:transition-none"
+            />
+          </summary>
+          <div className="flex max-w-measure flex-col gap-3 pb-6 text-body text-pretty text-ink-body">
+            <p>{item.a}</p>
+            {item.points ? (
+              <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-ink-muted">
+                {item.points.map((point) => (
+                  <li key={point} className="tabular-nums">
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {item.after ? <p>{item.after}</p> : null}
+          </div>
+        </details>
+      ))}
+    </div>
   );
 }

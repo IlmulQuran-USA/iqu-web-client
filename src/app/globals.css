@@ -241,6 +241,18 @@
     scrollbar-color: var(--on-band-muted) var(--paper);
   }
 
+  /* Sticky bars never cover a focused element or an anchor target: the
+     course sub-nav (48 px) sits under the header, and below lg the
+     StickyCTA bar (about 72 px plus the safe area) sits at the bottom. */
+  html:has([data-sticky-subnav]) {
+    scroll-padding-top: calc(var(--header-height) + 3rem + 1rem);
+  }
+  @media (width < 64rem) {
+    html:has([data-sticky-cta]) {
+      scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+    }
+  }
+
   /* Body scroll lock while a modal dialog (mobile drawer) is open. */
   html:has(dialog[open]:modal) {
     overflow: hidden;

@@ -1,9 +1,10 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { InstructorCard } from "@/components/instructors/InstructorCard";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ButtonLink } from "@/components/ui/Button";
-import type { HomeHero as HomeHeroData, HomeHeroLayout, Instructor } from "@/content/types";
+import type { HomeHero as HomeHeroData, HomeHeroLayout } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { wholePhraseIndex } from "@/lib/text";
 import { InstructorRow } from "./InstructorRow";
@@ -54,7 +55,7 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
           <InstructorRow count={people.length}>
             {people.map((person) => (
               <li key={person.id} className="snap-start">
-                <InstructorCard person={person} />
+                <InstructorCard person={person} sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw" />
               </li>
             ))}
           </InstructorRow>
@@ -253,65 +254,6 @@ function HeroImage({ hero, ratio, sizes }: { hero: HomeHeroData; ratio: "portrai
       ratio={ratio}
       sizes={sizes}
       preload
-    />
-  );
-}
-
-/**
- * One link per instructor: portrait, name and role together, to the profile.
- * The card is a plain stack: portrait, name, then the role 4 px under the
- * name at every width (owner decision, 19 Nov 2026). The arches share one
- * height and the row aligns to the top, so the tops of the names line up;
- * nothing else is aligned, and card bottoms may differ. Sizes: name 14 / role 13 px
- * below 640, 13 / 12 px at 640–1023, 15 / 13 px from 1024. Text wraps to at
- * most two lines at these sizes and is never truncated; long words break
- * rather than overflow the card. The role (<= 24 characters) never repeats the
- * title already in the name. The link's accessible name is the visible
- * name and role; the portrait keeps its "Portrait of <name>" alt text.
- */
-function InstructorCard({ person }: { person: Instructor }) {
-  return (
-    <Link
-      href={`/instructors/${person.id}`}
-      aria-label={`${person.name}, ${person.role}`}
-      className="group flex flex-col rounded-card pb-2 text-center"
-    >
-      <InstructorArch person={person} />
-      <span
-        translate="no"
-        className="mt-3 text-ui font-medium text-balance wrap-break-word text-ink decoration-1 decoration-accent-strong underline-offset-4 group-hover:underline min-[40rem]:text-ui-sm lg:text-ui-md"
-      >
-        {person.name}
-      </span>
-      <span className="mt-1 text-ui-sm text-balance wrap-break-word text-ink-muted min-[40rem]:text-ui-xs lg:text-ui-sm">
-        {person.role}
-      </span>
-    </Link>
-  );
-}
-
-function InstructorArch({ person }: { person: Instructor }) {
-  // The arch scales with its column, up to 200 px wide (owner decision).
-  if (!person.photo) return <ArchFrame name={person.name} decorative className="mx-auto max-w-50" />;
-  return (
-    <ArchFrame
-      name={person.name}
-      alt={`Portrait of ${person.name}`}
-      src={person.photo.src}
-      width={person.photo.width}
-      height={person.photo.height}
-      sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw"
-      className="mx-auto max-w-50"
-      // The owner's files share one framing (eyes at 35%, centred), so all
-      // five use the same fit and position: cover, 50% 50% (20 Nov 2026).
-      focalPoint={{ x: 50, y: 50 }}
-      // All five are in the first view at 1440, so none is lazy. None is
-      // preloaded or raised in priority: on a phone they sit below the
-      // fold, and the H1 is the LCP element. next/image serves each at the
-      // card's width (sizes), not at the 600 × 600 source.
-      // ArchFrame gives eager images fetchPriority "low", which also stops
-      // React from emitting a <link rel="preload"> for each portrait.
-      loading="eager"
     />
   );
 }

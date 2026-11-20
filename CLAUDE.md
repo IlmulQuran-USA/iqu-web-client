@@ -83,6 +83,7 @@ Riwāq deliberately uses some patterns generic detectors flag (uppercase eyebrow
 | Rule id | Scope | Reason (spec §) |
 | ------- | ----- | --------------- |
 | `hero-eyebrow-chip` | Home hero eyebrow (`src/components/home/HomeHero.tsx`; ignore in `.impeccable/config.json`) | Spec §7.1. The ignore covers source scans only; `detect <url>` still lists it at desktop widths. |
+| `first-viewport-column-overflow` | Course detail grid (`src/app/courses/[slug]/page.tsx`; ignore in `.impeccable/config.json`) | Spec §7.3 section 11: the desktop right-rail enrolment card. It is sticky, so the short column stays beside the reader all the way down (owner plan, 20 Nov 2026). `detect <url>` still lists it at desktop widths. |
 
 ---
 

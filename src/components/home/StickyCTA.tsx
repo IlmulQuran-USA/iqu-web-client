@@ -12,15 +12,24 @@ import { cn } from "@/lib/cn";
  * when the final CTA band is reached, so exactly one filled button is in view
  * at any time (CLAUDE.md §4). While hidden it is inert, so it leaves the tab
  * order. It slides; with reduced motion it simply appears.
+ *
+ * On a course page it also names the course and its from-price (spec §7.3
+ * section 11), beside the button.
  */
 export function StickyCTA({
   label,
   href,
   afterId,
   beforeId,
+  title,
+  detail,
 }: {
   label: string;
   href: string;
+  /** The course name (course pages). */
+  title?: string;
+  /** One line under it, e.g. "From $20/month". */
+  detail?: string;
   /** Element whose passing reveals the bar (the hero CTAs). */
   afterId: string;
   /** Element whose arrival hides the bar (the final CTA band). */
@@ -51,6 +60,7 @@ export function StickyCTA({
 
   return (
     <div
+      data-sticky-cta=""
       inert={!shown}
       className={cn(
         "fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-paper px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden",
@@ -58,9 +68,21 @@ export function StickyCTA({
         shown ? "translate-y-0" : "translate-y-full",
       )}
     >
-      <ButtonLink href={href} fullWidth>
-        {label}
-      </ButtonLink>
+      {title ? (
+        <div className="flex items-center gap-4">
+          <p className="min-w-0 flex-1">
+            <span className="block text-ui font-medium text-balance text-ink">{title}</span>
+            {detail ? <span className="block text-ui-sm text-ink-muted tabular-nums">{detail}</span> : null}
+          </p>
+          <ButtonLink href={href} className="shrink-0">
+            {label}
+          </ButtonLink>
+        </div>
+      ) : (
+        <ButtonLink href={href} fullWidth>
+          {label}
+        </ButtonLink>
+      )}
     </div>
   );
 }
