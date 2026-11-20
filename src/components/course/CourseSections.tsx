@@ -16,6 +16,8 @@ import {
   schedulePoints,
   shown,
   shownList,
+  ctas,
+  teacherGroups,
   teachersIntro,
   teachersOf,
 } from "@/content/course-page";
@@ -25,6 +27,7 @@ import { fromPrice, usd } from "@/content/pricing";
 import type { Curriculum } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { TextLink } from "./CourseHero";
+import { PhoneDisclosure } from "./PhoneDisclosure";
 
 /*
  * The course page sections (spec §7.3 sections 3–10; plan approved 20 Nov
@@ -190,19 +193,26 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
       // The Noorani Qaidah 48-class plan: one row per block of classes.
       return (
         <ol aria-label="Class plan" className="mt-8 border-t border-ink">
-          {curriculum.rows.map((row) => (
-            <li key={row.classes} className="grid gap-2 border-b border-rule py-5 sm:grid-cols-[8rem_1fr] sm:gap-6">
-              <p className="flex items-baseline gap-2 sm:flex-col sm:gap-0">
-                <span className="text-ui text-ink-muted">Classes</span>
-                <span className="font-display text-heading-lg font-semibold text-ink tabular-nums">{row.classes}</span>
-              </p>
-              <div>
-                <p className="max-w-measure text-body text-pretty text-ink-body">{row.focus}</p>
-                <p className="mt-2 flex items-center gap-1.5 text-ui text-ink-muted">
+          {curriculum.rows.map((row, i) => (
+            <li key={row.classes} className="border-b border-rule py-5">
+              {/* Phones: folds to the class range and focus; the first row starts open. */}
+              <PhoneDisclosure
+                openOnPhone={i === 0}
+                summary={
+                  <span className="flex flex-col gap-1 md:flex-row md:gap-6">
+                    <span className="flex items-baseline gap-2 md:w-32 md:shrink-0 md:flex-col md:gap-0">
+                      <span className="text-ui text-ink-muted">Classes</span>
+                      <span className="font-display text-heading-lg font-semibold text-ink tabular-nums">{row.classes}</span>
+                    </span>
+                    <span className="block max-w-measure text-body text-pretty text-ink-body">{row.focus}</span>
+                  </span>
+                }
+              >
+                <p className="mt-2 flex items-center gap-1.5 text-ui text-ink-muted md:pl-38">
                   <ClipboardCheck aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0 text-accent-strong" />
                   {row.checkpoint}
                 </p>
-              </div>
+              </PhoneDisclosure>
             </li>
           ))}
         </ol>
@@ -222,24 +232,35 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
       // Quranic Arabic Mastery: the year in phases, months on the left.
       return (
         <ol aria-label="The year in phases" className="mt-8 border-t border-ink">
-          {curriculum.phases.map((phase) => (
-            <li key={phase.title} className="grid gap-4 border-b border-rule py-6 md:grid-cols-[9rem_1fr] md:gap-6">
-              <div>
-                <p className="text-ui font-medium text-ink-muted tabular-nums">{phase.months}</p>
-                <h3 className="mt-1 font-display text-heading-md font-semibold text-balance text-ink">{phase.title}</h3>
-              </div>
-              <div>
-                <p className="max-w-measure text-body-lg text-pretty text-ink">{phase.goal}</p>
-                <ul className="mt-4 grid list-disc gap-x-8 gap-y-1.5 pl-5 text-body text-ink-body marker:text-ink-muted sm:grid-cols-2">
-                  {phase.topics.map((topic) => (
-                    <li key={topic}>{topic}</li>
-                  ))}
-                </ul>
-                <p className="mt-4 max-w-measure text-ui text-ink-body">
-                  <span className="font-medium text-ink">Practice: </span>
-                  {phase.practice}
-                </p>
-              </div>
+          {curriculum.phases.map((phase, i) => (
+            <li key={phase.title} className="border-b border-rule py-6">
+              {/* Phones: folds to months, title and goal; the first phase starts open. */}
+              <PhoneDisclosure
+                openOnPhone={i === 0}
+                summary={
+                  <span className="flex flex-col gap-3 md:flex-row md:gap-6">
+                    <span className="block md:w-36 md:shrink-0">
+                      <span className="block text-ui font-medium text-ink-muted tabular-nums">{phase.months}</span>
+                      <span className="mt-1 block font-display text-heading-md font-semibold text-balance text-ink">
+                        {phase.title}
+                      </span>
+                    </span>
+                    <span className="block max-w-measure text-body-lg text-pretty text-ink">{phase.goal}</span>
+                  </span>
+                }
+              >
+                <div className="md:pl-42">
+                  <ul className="mt-4 grid list-disc gap-x-8 gap-y-1.5 pl-5 text-body text-ink-body marker:text-ink-muted sm:grid-cols-2">
+                    {phase.topics.map((topic) => (
+                      <li key={topic}>{topic}</li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 max-w-measure text-ui text-ink-body">
+                    <span className="font-medium text-ink">Practice: </span>
+                    {phase.practice}
+                  </p>
+                </div>
+              </PhoneDisclosure>
             </li>
           ))}
         </ol>
@@ -266,18 +287,45 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
 
 /* ── 5 · Teachers ────────────────────────────────────────────────────────── */
 
+/**
+ * Grouped by who the student would be taught by (owner, 20 Nov 2026): male
+ * teachers for brothers, female teachers for sisters and young children
+ * (COURSE-CONTENT.md §1). A group with no teacher says so plainly and points
+ * to "Ask a question", so the page never implies a teacher it does not list.
+ */
 export function Teachers({ course }: { course: Course }) {
   const people = teachersOf(course);
+  const groups = teacherGroups.map((group) => ({ ...group, people: people.filter((p) => p.gender === group.gender) }));
   return (
     <Section id="teachers" title="Who teaches this course">
       <p className="mt-4 max-w-measure text-body text-pretty text-ink-body">{teachersIntro}</p>
-      <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
-        {people.map((person) => (
-          <li key={person.id}>
-            <InstructorCard person={person} variant="grid" sizes="(min-width: 64rem) 180px, (min-width: 30rem) 30vw, 45vw" />
-          </li>
-        ))}
-      </ul>
+      {groups.map((group) => (
+        <div key={group.gender} className="mt-10">
+          {/* The count runs inline after the heading; an empty group says so in words below instead. */}
+          <h3 className="border-b border-rule pb-3 font-display text-heading-md font-semibold text-ink">
+            {group.heading}
+            {group.people.length > 0 ? (
+              <span className="ml-2 font-sans text-ui font-normal whitespace-nowrap text-ink-muted tabular-nums">
+                {group.people.length === 1 ? "1 teacher" : `${group.people.length} teachers`}
+              </span>
+            ) : null}
+          </h3>
+          {group.people.length > 0 ? (
+            <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
+              {group.people.map((person) => (
+                <li key={person.id}>
+                  <InstructorCard person={person} variant="grid" sizes="128px" />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="mt-4">
+              <p className="max-w-measure text-body text-pretty text-ink-body">{group.empty}</p>
+              <TextLink label={ctas(course).ask.label} href={ctas(course).ask.href} className="mt-1" />
+            </div>
+          )}
+        </div>
+      ))}
     </Section>
   );
 }

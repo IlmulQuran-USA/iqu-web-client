@@ -235,6 +235,16 @@ export const scholarship = {
 
 export const teachersIntro = teacherMatching.text;
 
+/** The Teachers section's groups, in this order (owner, 20 Nov 2026; COURSE-CONTENT.md §1). */
+export const teacherGroups = [
+  { gender: "male", heading: "For brothers", empty: "No male teacher is listed for this course yet." },
+  {
+    gender: "female",
+    heading: "For sisters and young children",
+    empty: "No female teacher is listed for this course yet.",
+  },
+] as const;
+
 /** The addendum's five course questions; the certificate answer only where there is one. */
 export function faqFor(course: Course) {
   return courseFaq.filter((item) => item.q !== "Is there a certificate?" || course.content.certificate.value === true);

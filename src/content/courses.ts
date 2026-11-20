@@ -1,5 +1,6 @@
 import { draft, draftList, live, liveList, pending } from "./copy";
 import { instructorIds } from "./instructors";
+import { livePaths } from "./legacy-paths";
 import { monthlyCourses, programs, type CourseId, type MonthlyCourse, type ProgramId } from "./pricing";
 import { courseContentSchema, type CourseContent } from "./types";
 
@@ -38,7 +39,7 @@ export const courseRules = {
 const courseCopy: Record<CourseId, CourseContent> = {
   "noorani-qaidah": {
     id: "noorani-qaidah",
-    livePath: "/course/nurani-qaida-for-kids/",
+    livePath: livePaths["noorani-qaidah"],
     meta: live(
       "The perfect starting point for beginners. Learn Arabic letters, pronunciation and Tajweed basics before reading the Qur’an.",
     ),
@@ -96,7 +97,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "quran-nazirah": {
     id: "quran-nazirah",
-    livePath: "/course/quran-nazirah/",
+    livePath: livePaths["quran-nazirah"],
     meta: live(
       "Learn to recite the Qur’an fluently with correct Tajweed. Online Nazirah classes for brothers and sisters of all ages.",
     ),
@@ -152,7 +153,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "quran-hifz": {
     id: "quran-hifz",
-    livePath: "/course/quran-memorization/",
+    livePath: livePaths["quran-hifz"],
     meta: live(
       "Memorize the Holy Qur’an with proper Tajweed and fluency. Structured online Hifz classes with qualified Huffaz for children and adults.",
     ),
@@ -195,7 +196,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "quranic-arabic-level-1": {
     id: "quranic-arabic-level-1",
-    livePath: "/course/quranic-arabic-mastery-level-1/",
+    livePath: livePaths["quranic-arabic-level-1"],
     meta: live(
       "Understand up to 80% of the Qur’an by listening and reading. Grammar, vocabulary and practice in one structured online program.",
     ),
@@ -302,7 +303,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "tarjumatul-quran": {
     id: "tarjumatul-quran",
-    livePath: null,
+    livePath: livePaths["tarjumatul-quran"],
     meta: pending,
     // Owner, 20 Nov 2026.
     placement: live("Tarjumatul Qur’an teaches only the meaning of the Qur’an."),
@@ -327,7 +328,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "islamic-studies": {
     id: "islamic-studies",
-    livePath: null,
+    livePath: livePaths["islamic-studies"],
     // CONTENT-ADDENDUM.md §3.1 (draft). The page stays noindex, and out of
     // the sitemap, until its overview is live (owner, 20 Nov 2026). Never
     // borrow the Weekend program's curriculum.
@@ -372,7 +373,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 const programCopy: Record<ProgramId, CourseContent> = {
   "weekend-ilm-program": {
     id: "weekend-ilm-program",
-    livePath: "/course/weekend-ilm-program/",
+    livePath: livePaths["weekend-ilm-program"],
     meta: pending,
     overview: live(
       "Essential Islamic knowledge for children aged 5–12, in an engaging and structured way. In live online weekend classes, students learn Qur’an recitation with Tajweed, foundational beliefs (Aqeedah), Islamic manners (Akhlaq), basic Fiqh, and selected duas and surahs for daily life. Taught by qualified, caring teachers, the program helps children build a strong Islamic identity, deepen their connection to Allah and practice Islam confidently, in sha’ Allah.",
@@ -437,7 +438,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
   "summer-ilm-camp": {
     id: "summer-ilm-camp",
     // Live name: Summer Islamic Education Program.
-    livePath: "/course/summer-islamic-education-program/",
+    livePath: livePaths["summer-ilm-camp"],
     meta: pending,
     overview: live(
       "An online summer program that keeps children connected to the Qur’an and Islamic learning during their summer break, with qualified teachers in a nurturing environment.",
@@ -530,6 +531,18 @@ export const courseFaq = [
     a: "Yes. The new monthly amount starts from your next billing date, and we confirm it with you first.",
   },
 ] as const;
+
+/**
+ * Owner to supply (critique, 20 Nov 2026). Until then the pages say
+ * "young children" without an age, and the gender question keeps the
+ * addendum's rule-only answer above.
+ */
+export const teacherGenderOpen = {
+  /** The age up to which a boy is taught by a female teacher ("young children"). */
+  youngChildrenAge: pending,
+  /** A direct yes/no answer to "Can I choose a male or female teacher?". */
+  chooseTeacherAnswer: pending,
+} as const;
 
 /**
  * "We match you with a teacher" (CONTENT-ADDENDUM.md §3.4, draft). The

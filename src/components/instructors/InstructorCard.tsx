@@ -16,9 +16,10 @@ import { cn } from "@/lib/cn";
  *          13 / 12 px at 640–1023, 15 / 13 px from 1024. Portraits load
  *          eagerly at low priority: all five are in the first view at 1440,
  *          and the H1 is the LCP element.
- *   grid   course pages: name 15 px, role 13 px, then the teacher's own
- *          languages (owner, 20 Nov 2026: languages belong to each teacher,
- *          never to the class). Portraits are lazy (below the fold).
+ *   grid   course pages: a compact arch (at most 128 px wide, photo and
+ *          monogram alike, so mixed rows line up), name 15 px, role 13 px,
+ *          then the teacher's own languages (owner, 20 Nov 2026: languages
+ *          belong to each teacher, never to the class). Portraits are lazy.
  */
 export function InstructorCard({
   person,
@@ -41,7 +42,7 @@ export function InstructorCard({
       }
       className="group flex flex-col rounded-card pb-2 text-center"
     >
-      <InstructorArch person={person} sizes={sizes} eager={!grid} />
+      <InstructorArch person={person} sizes={sizes} eager={!grid} width={grid ? "max-w-32" : "max-w-50"} />
       <span
         translate="no"
         className={cn(
@@ -68,9 +69,19 @@ export function InstructorCard({
   );
 }
 
-function InstructorArch({ person, sizes, eager }: { person: Instructor; sizes: string; eager: boolean }) {
-  // The arch scales with its column, up to 200 px wide (owner decision).
-  if (!person.photo) return <ArchFrame name={person.name} decorative className="mx-auto max-w-50" />;
+function InstructorArch({
+  person,
+  sizes,
+  eager,
+  width,
+}: {
+  person: Instructor;
+  sizes: string;
+  eager: boolean;
+  /** Largest arch width: 200 px in the hero (owner decision), 128 px in course grids. */
+  width: "max-w-50" | "max-w-32";
+}) {
+  if (!person.photo) return <ArchFrame name={person.name} decorative className={cn("mx-auto", width)} />;
   return (
     <ArchFrame
       name={person.name}
@@ -79,7 +90,7 @@ function InstructorArch({ person, sizes, eager }: { person: Instructor; sizes: s
       width={person.photo.width}
       height={person.photo.height}
       sizes={sizes}
-      className="mx-auto max-w-50"
+      className={cn("mx-auto", width)}
       // The owner's files share one framing (eyes at 35%, centred), so every
       // portrait uses the same fit and position: cover, 50% 50% (20 Nov 2026).
       focalPoint={{ x: 50, y: 50 }}
