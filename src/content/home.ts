@@ -7,7 +7,7 @@ import { LANGUAGES, type Instructor } from "./types";
 /*
  * Home page copy for sections 2–10 (spec §7.1), as approved by the owner on
  * 19 Nov 2026, and sections 5–7 (owner, 20 Nov 2026). Every fact names its
- * source; numbers and credentials are computed from the data, never typed.
+ * source; numbers are computed from the data, never typed.
  * Prices are never typed here: they come from ./pricing. Course names and
  * day counts are read from ./pricing too, so this copy stays true when a
  * course changes.
@@ -138,16 +138,6 @@ const byId = (id: string): Instructor => {
   return person;
 };
 
-/** A credential shown word for word: every item must exist in the teacher's qualifications. */
-function credential(id: string, items: string[]) {
-  const person = byId(id);
-  const listed = person.qualifications.status === "pending" ? [] : person.qualifications.items;
-  for (const item of items) {
-    if (!listed.includes(item)) throw new Error(`"${item}" is not in ${person.name}'s qualifications`);
-  }
-  return { text: items.join(" · "), name: person.name };
-}
-
 /*
  * The facts line, counted from src/content/instructors.ts (owner, 20 Nov 2026):
  *   Muftis       the name carries "Mufti";
@@ -179,12 +169,10 @@ export const teachersSection = {
       heading: "For brothers",
       // Instructor ids, checked against src/content/instructors.ts.
       ids: ["mufti-muaj-al-juhany", "mufti-jubayer-bin-jalaluddin", "mufti-shamsuddin-rois", "mufti-mushfiqur-rahman", "mufti-sajidullah"].map((id) => byId(id).id),
-      credential: credential("mufti-muaj-al-juhany", ["M.A. in Arabic Literature, Darul Uloom Deoband, India"]),
     },
     {
       heading: "For sisters and boys up to 10",
       ids: ["ustadha-najiba-mahzabin-jeba", "ustadha-maha-rashed", "hafezah-nuha-rashed", "shifa-jalal", "afra-humayra"].map((id) => byId(id).id),
-      credential: credential("ustadha-najiba-mahzabin-jeba", ["Hafizah", "‘Alimah"]),
     },
   ],
   all: { label: "See all teachers", href: "/instructors" },

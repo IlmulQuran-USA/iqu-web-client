@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { familiesSection as copy } from "@/content/home";
+import { initialsOf } from "@/lib/arch";
 import { homeTestimonialIds, liveTestimonials, programOf, type Testimonial } from "@/content/testimonials";
 
 /**
@@ -44,7 +45,7 @@ function Quote({ t }: { t: Testimonial }) {
           aria-hidden="true"
           className="flex size-11 shrink-0 items-center justify-center rounded-pill bg-surface font-display text-body font-semibold text-ink-body"
         >
-          {initials(t.name)}
+          {initialsOf(t.name)}
         </span>
         <span className="min-w-0 text-ui">
           <span className="block font-medium text-ink" translate="no">
@@ -79,15 +80,4 @@ function keepName(quote: string): ReactNode[] {
           part,
         ],
   );
-}
-
-/** "Sarah H." → "SH"; "Mohammad Rafiq" → "MR". */
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((part) => part.replace(/[^A-Za-z]/g, "").charAt(0))
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 }

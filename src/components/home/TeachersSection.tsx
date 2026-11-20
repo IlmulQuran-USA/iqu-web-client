@@ -10,11 +10,11 @@ import { InstructorRow } from "./InstructorRow";
  * Home §5 · Our teachers (spec §7.1 section 5; owner, 20 Nov 2026).
  * A facts line counted from src/content/instructors.ts, then two rows in the
  * hero's card and row (one row always: a swipe row on phones, five equal
- * columns from 640 px), grouped by who the student learns with. Under each
- * row, one credential word for word from the qualifications data, set as a
- * labelled fact with the teacher's name, never in quote marks (nobody said
- * it). Teachers without a portrait keep the arch monogram. The five hero
- * instructors are not repeated here.
+ * columns from 640 px), grouped by who the student learns with. No
+ * credential lines here (owner, 21 Nov 2026): qualifications belong to the
+ * profile pages. Teachers without a portrait keep the arch monogram, with
+ * initials from the name, never a title. The five hero instructors are not
+ * repeated here.
  */
 export function TeachersSection() {
   return (
@@ -64,11 +64,6 @@ export function TeachersSection() {
                   ))}
                 </InstructorRow>
               </div>
-              {/* The credential, word for word from the teacher's qualifications. */}
-              <p className="mt-4 max-w-measure text-body text-pretty text-ink-body">
-                <span className="text-ui text-ink-muted">Credential · </span>
-                <span className="font-medium text-ink">{row.credential.name}:</span> {row.credential.text}
-              </p>
             </div>
           );
         })}

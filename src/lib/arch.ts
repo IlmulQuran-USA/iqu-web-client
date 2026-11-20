@@ -54,6 +54,10 @@ export function archMask(ratio: number): string {
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
 }
 
+/**
+ * Titles that are never initials (owner, 21 Nov 2026: "Hafezah Nuha Rashed"
+ * is NR, not HR). Compared lower-case, with dots and commas removed.
+ */
 const HONORIFICS = new Set([
   "md",
   "mufti",
@@ -61,12 +65,15 @@ const HONORIFICS = new Set([
   "mawlana",
   "moulana",
   "hafiz",
+  "hafizah",
   "hafez",
+  "hafezah",
   "hafiza",
   "hafeza",
   "qari",
   "shaykh",
   "sheikh",
+  "ustad",
   "ustadh",
   "ustadha",
   "imam",
