@@ -500,7 +500,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
 
 /** Open items for the Summer program (COURSE-CONTENT.md §9.2, C5). */
 export const summerOpen = {
-  /** The live page says both "6–7 PM CDT" and "6–10 PM CST"; the owner confirms one. */
+  /** The live page says both "6–7 PM CDT" and "6–10 PM CST"; the owner confirms one. Show it as CT, never CST/CDT. */
   homeworkSupportHours: pending,
   /** Not announced yet. */
   dates2027: pending,

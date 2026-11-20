@@ -32,14 +32,15 @@ const fixedDaysSentence = fixedCourses
 export const schedule = {
   // "time\u00A0zone" stays on one line when the heading is balanced.
   heading: "Your time\u00A0zone, not ours.",
-  /** Spec §7.1 section 2. TO CONFIRM with the owner before launch. */
-  teachingHours: { status: "draft", from: 6, to: 23, label: "6 AM–11 PM", zones: "ET, CT, MT and PT" },
+  // Owner, 20 Nov 2026: class times are fully flexible. There is no
+  // teaching-hours window (spec §7.1's "6 AM–11 PM" is superseded): the
+  // family chooses its start time, end time and time zone when it enrolls,
+  // and a teacher is matched to that time.
   points: [
     {
-      // Spec §7.1 section 2. TO CONFIRM.
-      status: "draft",
-      title: "6 AM–11 PM, your time",
-      body: "Classes run from 6 AM to 11 PM in Eastern, Central, Mountain and Pacific time.",
+      status: "live",
+      title: "Any time, in your time zone",
+      body: "Choose the days and the time that suit your family, in your own time zone, and we match a teacher to it.",
     },
     {
       // PLUGIN-INVENTORY §2.1: 1–7 days a week; Hifz needs at least 3.
@@ -191,12 +192,10 @@ export const faq = {
       a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your first month. After that, the fee is charged monthly on your billing date. Families asking for a scholarship are contacted by our team instead.",
     },
     {
-      status: "draft",
+      // Owner's wording, 20 Nov 2026 (times are fully flexible).
+      status: "live",
       q: "What times are classes?",
-      // Spec §7.1 section 2 (hours, lengths: TO CONFIRM); PLUGIN-INVENTORY §2.1 (days); COURSE-CONTENT.md §6 (Arabic).
-      a: `Classes run from 6 AM to 11 PM in Eastern, Central, Mountain and Pacific time. You choose from one to seven days a week (at least ${inWords(hifz.minDays)} for Hifz) and a 30- or 45-minute session.${
-        fixedDaysSentence ? ` ${fixedDaysSentence}.` : ""
-      }`,
+      a: "Any time that suits your family. When you enroll you choose your preferred start and end time and your time zone, and we match a teacher to it.",
     },
     {
       status: "draft",

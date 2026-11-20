@@ -172,7 +172,8 @@ export function pathFor(course: Course) {
 /* ── Schedule ────────────────────────────────────────────────────────────── */
 
 export function schedulePoints(course: Course): { status: string; title: string; body: string }[] {
-  const [hours, , length] = homeSchedule.points;
+  // Home's flexible-time point (owner, 20 Nov 2026) and its session-length point.
+  const [anyTime, , length] = homeSchedule.points;
   const fixedLine = shownList(course.content.schedule)[0];
   const days = isFixedSchedule(course)
     ? `${fixedLine ?? `${inWords(course.minDays)} days a week.`} No other schedule is offered for this course.`
@@ -182,7 +183,7 @@ export function schedulePoints(course: Course): { status: string; title: string;
       : `Choose any number of days, from ${inWords(course.minDays)} to ${inWords(course.maxDays)} a week.`;
   return [
     { status: "live", title: daysLabel(course), body: days },
-    hours,
+    anyTime,
     length,
   ];
 }

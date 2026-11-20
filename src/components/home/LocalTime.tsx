@@ -4,10 +4,12 @@ import { Clock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * The visitor's own local time and whether it falls inside teaching hours
- * (spec §7.1 section 2, owner decision 19 Nov 2026: no second clock here; the
- * Dhaka view belongs to the teacher portal). Every time carries its zone
- * label (CLAUDE.md §4). It never claims that anyone is teaching right now.
+ * The visitor's own local time with its zone label, then the invitation to
+ * pick any time (spec §7.1 section 2; owner, 20 Nov 2026: class times are
+ * fully flexible, there is no teaching-hours window). No second clock here;
+ * the Dhaka view belongs to the teacher portal. Every time carries its zone
+ * label (CLAUDE.md §4), and the label is the year-round name (CT, never
+ * CST/CDT). It never claims that anyone is teaching right now.
  *
  * The server and the first client render show the static fallback, so there
  * is no hydration mismatch. The live line is filled in only once the line is
@@ -23,17 +25,23 @@ import { useEffect, useRef, useState } from "react";
 /** Start the live line this far before the section scrolls into view. */
 const ROOT_MARGIN = "400px 0px";
 
-export function LocalTime({
-  fromHour,
-  toHour,
-  hoursLabel,
-  zones,
-}: {
-  fromHour: number;
-  toHour: number;
-  hoursLabel: string;
-  zones: string;
-}) {
+const INVITE = "Pick any time that suits your family.";
+
+/**
+ * The year-round name of the visitor's zone: ET, CT, MT, PT, AT (and the
+ * other North American generic names), never the daylight-saving forms.
+ * Arizona's year-round "MST" becomes MT. Elsewhere, the UTC offset
+ * ("GMT+6"), since a long name like "Bangladesh Time" would crowd the line.
+ */
+function zoneLabel(now: Date): string {
+  const part = (timeZoneName: "shortGeneric" | "shortOffset") =>
+    new Intl.DateTimeFormat("en-US", { timeZoneName }).formatToParts(now).find((p) => p.type === "timeZoneName")?.value;
+  const generic = part("shortGeneric") ?? "";
+  if (/^[A-Z]{1,4}$/.test(generic)) return generic.replace(/^([ECMPA])[SD]T$/, "$1T");
+  return part("shortOffset") ?? "local time";
+}
+
+export function LocalTime() {
   const ref = useRef<HTMLParagraphElement>(null);
   const [minute, setMinute] = useState(-1);
 
@@ -70,25 +78,11 @@ export function LocalTime({
     };
   }, []);
 
-  let text = `Class times are set in ${zones}.`;
+  let text = INVITE;
   if (minute >= 0) {
     const now = new Date(minute * 60_000);
     const time = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit" }).format(now);
-    const zone =
-      new Intl.DateTimeFormat("en-US", { timeZoneName: "short" }).formatToParts(now).find((p) => p.type === "timeZoneName")
-        ?.value ?? "local time";
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    // Mainland US and Canadian zones: UTC−4 to UTC−8 in an America/* zone.
-    const offset = -now.getTimezoneOffset() / 60;
-    const northAmerica = tz.startsWith("America/") && offset <= -4 && offset >= -8;
-    const hour = now.getHours() + now.getMinutes() / 60;
-    const inside = hour >= fromHour && hour < toHour;
-
-    text = northAmerica
-      ? inside
-        ? `It’s ${time} where you are (${zone}), inside our teaching hours.`
-        : `It’s ${time} where you are (${zone}), outside our teaching hours of ${hoursLabel}.`
-      : `It’s ${time} where you are (${zone}). Class times are set in ${zones}.`;
+    text = `It’s ${time} where you are (${zoneLabel(now)}). ${INVITE}`;
   }
 
   return (

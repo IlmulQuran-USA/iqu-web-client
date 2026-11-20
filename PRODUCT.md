@@ -45,7 +45,8 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 ## Operating Context
 
 - **Teaching:** Classes run on Zoom meetings owned by the organization. The portal hands out the join link and reads Zoom's webhook events. Until the Zoom API is connected, admins paste meeting links by hand, and everything downstream must work the same way.
-- **Time zones:** Classes go from Bangladesh (Dhaka) to North American zones. Class times are the main practical objection families raise. Every time shown carries its zone label. Teachers see two clocks, and a warning appears in the two weeks before each North American daylight-saving change.
+- **Time zones:** Classes go from Bangladesh (Dhaka) to North American zones. Class times are the main practical objection families raise. Every time shown carries its zone label, using the year-round names ET, CT, MT, PT and AT (Atlantic), never CST/CDT/EST/EDT, which change with daylight saving. Teachers see two clocks, and a warning appears in the two weeks before each North American daylight-saving change.
+- **Class times are flexible (owner, 20 Nov 2026).** There is no teaching-hours window; spec §7.1's "6 AM–11 PM" is superseded. Each family chooses its own start time, end time and time zone when it enrolls (the live enrollment form works this way), and a teacher is matched to that time.
 - **Messaging (v1, confirmed):** The portal runs alongside the existing channels and does not replace them.
   - **Telegram** stays for admin and teacher alerts through the existing Google Apps Script bots (teacher scheduling, daily reports, class reminders, cutoff notices, no-show and not-held alerts).
   - **Families** get email and in-app notices from the portal.
@@ -60,7 +61,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 
 **Public site:** home, course catalog and course detail (6 courses), instructor directory and profiles, about, why us, transparency and finances, impact, donate, programs (Summer Ilm Camp, Weekend Islamic School), camp results, blog, FAQ, contact, teach with us.
 
-**Enrolment funnel (`/enroll`):** five steps (Student · Course · Schedule · Fees · Review), then a confirmation page. Progress autosaves. Schedule slots show in the family's local time. The Zakat scholarship has its own page (`/scholarship`).
+**Enrolment funnel (`/enroll`):** five steps (Student · Course · Schedule · Fees · Review), then a confirmation page. Progress autosaves. The Schedule step takes the family's preferred days, start time, end time and time zone (no slot grid; times are flexible). The Zakat scholarship has its own page (`/scholarship`).
 
 **Portal:** student `/s/*`, parent `/p/*`, teacher `/t/*`, admin `/a/*`, all inside one shell. Attendance uses exactly six statuses: Present · Partial · Technical issue · Student absent · Teacher no-show · Class not held. Attendance thresholds are read from settings because they will be calibrated from three weeks of live data. Teachers request corrections, and admins approve them. Parents confirm the week's classes every Friday, and any family can report a problem with a class.
 
@@ -80,6 +81,9 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 - Name fields accept Unicode and long, four-part names.
 
 **Never build:** Join / Not Join buttons, start and end time inputs, teacher Present / Absent selection, "Mark class as completed", class recordings, or any automated WhatsApp send.
+
+**Open items for the enrolment funnel:**
+- The time-zone picker must offer Eastern, Central, Mountain, Pacific and Atlantic as year-round zones. The live form lacks Mountain and Atlantic and splits Central into CST and CDT.
 
 **Open product decisions (do not resolve silently):**
 - Whether the portal replaces Telegram after v1.

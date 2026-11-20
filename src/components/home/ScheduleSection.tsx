@@ -3,11 +3,11 @@ import { LocalTime } from "./LocalTime";
 
 /**
  * Home §2 · The scheduling answer (spec §7.1). Three facts in a hairline-ruled
- * row, then the visitor's own local time against teaching hours. No pickers
- * that do nothing, and no claim that anyone is teaching right now.
+ * row, then the visitor's own local time and an invitation to pick any time
+ * (owner, 20 Nov 2026: times are fully flexible, no teaching-hours window).
+ * No pickers that do nothing, and no claim that anyone is teaching right now.
  */
 export function ScheduleSection() {
-  const { teachingHours } = schedule;
   return (
     <section aria-labelledby="schedule-title" className="container-content">
       <div className="border-t border-rule py-12 md:py-16 lg:py-24">
@@ -17,12 +17,7 @@ export function ScheduleSection() {
               {schedule.heading}
             </h2>
             <div className="mt-6">
-              <LocalTime
-                fromHour={teachingHours.from}
-                toHour={teachingHours.to}
-                hoursLabel={teachingHours.label}
-                zones={teachingHours.zones}
-              />
+              <LocalTime />
             </div>
           </div>
           <ul className="grid gap-8 sm:grid-cols-3 sm:gap-6 lg:col-span-8">

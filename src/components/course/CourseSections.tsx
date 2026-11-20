@@ -21,7 +21,6 @@ import {
   teachersIntro,
   teachersOf,
 } from "@/content/course-page";
-import { schedule as homeSchedule } from "@/content/home";
 import type { Course } from "@/content/courses";
 import { fromPrice, usd } from "@/content/pricing";
 import type { Curriculum } from "@/content/types";
@@ -333,7 +332,6 @@ export function Teachers({ course }: { course: Course }) {
 /* ── 6 · Schedule ────────────────────────────────────────────────────────── */
 
 export function Schedule({ course }: { course: Course }) {
-  const { teachingHours } = homeSchedule;
   return (
     <Section id="schedule" title="Schedule">
       <ul className="mt-8 grid gap-8 sm:grid-cols-3 sm:gap-6">
@@ -345,12 +343,7 @@ export function Schedule({ course }: { course: Course }) {
         ))}
       </ul>
       <div className="mt-8">
-        <LocalTime
-          fromHour={teachingHours.from}
-          toHour={teachingHours.to}
-          hoursLabel={teachingHours.label}
-          zones={teachingHours.zones}
-        />
+        <LocalTime />
       </div>
     </Section>
   );
