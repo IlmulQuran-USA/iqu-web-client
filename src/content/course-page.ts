@@ -63,20 +63,33 @@ export function curriculumHeading(course: Course): string {
   return "Curriculum";
 }
 
+/** The live list, then any teachers added from their own profiles (draft). */
 export function teachersOf(course: Course): Instructor[] {
-  const { teachers } = course.content;
-  if (teachers.status === "pending") return [];
-  return teachers.ids.map((id) => {
+  const { teachers, profileTeachers } = course.content;
+  const ids = [...(teachers.status === "pending" ? [] : teachers.ids), ...(profileTeachers?.ids ?? [])];
+  return [...new Set(ids)].map((id) => {
     const person = instructors.find((i) => i.id === id);
     if (!person) throw new Error(`Unknown instructor ${id} on ${course.id}`);
     return person;
   });
 }
 
+/**
+ * Highlights, minus any claim about male and female teachers when the
+ * course's teacher list does not have both (owner, 20 Nov 2026).
+ */
+const BOTH_GENDERS_CLAIM = /male.*female|female.*male/i;
+export function highlightsOf(course: Course): string[] {
+  const items = shownList(course.content.highlights);
+  const genders = new Set(teachersOf(course).map((p) => p.gender));
+  const hasBoth = genders.has("male") && genders.has("female");
+  return hasBoth ? items : items.filter((item) => !BOTH_GENDERS_CLAIM.test(item));
+}
+
 /** Only the sections this course has, in page order. */
 export function sectionsOf(course: Course): { id: SectionId; label: string }[] {
   const present: Record<SectionId, boolean> = {
-    overview: overviewBlocks(course).length > 0 || shownList(course.content.highlights).length > 0,
+    overview: overviewBlocks(course).length > 0 || highlightsOf(course).length > 0,
     curriculum: hasCurriculum(course),
     teachers: teachersOf(course).length > 0,
     schedule: true,

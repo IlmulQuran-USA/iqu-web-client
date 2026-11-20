@@ -90,6 +90,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
     certificate: { status: "live", value: true },
     nextStepId: "quran-nazirah",
     teachers: { status: "live", ids: ["mufti-shaker-waliullah"] },
+    // Owner, 20 Nov 2026: both teach reading foundations to children and beginners (§10 profiles).
+    profileTeachers: { status: "draft", ids: ["shifa-jalal", "afra-humayra"] },
   },
 
   "quran-nazirah": {
@@ -184,6 +186,11 @@ const courseCopy: Record<CourseId, CourseContent> = {
     ]),
     certificate: { status: "live", value: true },
     teachers: { status: "live", ids: ["mawlana-mouinul-islam", "mawlana-nazrul-islam"] },
+    // Owner, 20 Nov 2026: all four list memorization in their §10 profiles.
+    profileTeachers: {
+      status: "draft",
+      ids: ["ustadha-maha-rashed", "hafezah-nuha-rashed", "hafezah-humayra-afrin", "ustadha-najiba-mahzabin-jeba"],
+    },
   },
 
   "quranic-arabic-level-1": {

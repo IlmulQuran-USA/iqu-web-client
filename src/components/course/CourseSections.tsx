@@ -9,6 +9,7 @@ import {
   faqFor,
   feeNotes,
   feeRows,
+  highlightsOf,
   overviewBlocks,
   pathFor,
   scholarship,
@@ -54,7 +55,7 @@ function SubHeading({ children, className }: { children: ReactNode; className?: 
 
 export function Overview({ course }: { course: Course }) {
   const blocks = overviewBlocks(course);
-  const highlights = shownList(course.content.highlights);
+  const highlights = highlightsOf(course);
   const path = pathFor(course);
   return (
     <Section id="overview" title="Overview">

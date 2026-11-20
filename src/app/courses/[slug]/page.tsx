@@ -80,9 +80,15 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
       <Header yieldCtaTo={[COURSE_RAIL_ID, FINAL_CTA_ID]} />
       <main id="main-content" aria-labelledby="course-title">
         <div className="container-content">
+          {/* DOM order is hero, card, then the sections, so keyboard users reach the
+              price and the enrol button straight after the hero (critique, owner
+              20 Nov 2026). From lg the grid places the card beside both rows. */}
           <div className="grid lg:grid-cols-12 lg:gap-x-6">
-            <div className="min-w-0 lg:col-span-8">
+            <div className="min-w-0 lg:col-span-8 lg:row-start-1">
               <CourseHero course={course} />
+            </div>
+            <CourseRail course={course} className="lg:col-span-4 lg:col-start-9 lg:row-span-2 lg:row-start-1 lg:pl-6" />
+            <div className="min-w-0 lg:col-span-8 lg:row-start-2">
               <SectionNav sections={sections} />
               {has("overview") ? <Overview course={course} /> : null}
               {has("curriculum") ? <CurriculumSection course={course} /> : null}
@@ -92,7 +98,6 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
               <CourseFAQ course={course} />
               <WhereNext course={course} />
             </div>
-            <CourseRail course={course} className="lg:col-span-4 lg:pl-6" />
           </div>
         </div>
         <FinalCta href={enrol.href} />

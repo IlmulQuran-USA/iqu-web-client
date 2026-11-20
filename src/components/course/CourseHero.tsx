@@ -1,9 +1,19 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
+import { ArchFrame } from "@/components/ui/ArchFrame";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ButtonLink } from "@/components/ui/Button";
-import { afterClick, ctas, daysLabel, heroFacts, scholarshipLink, shown, taughtBy } from "@/content/course-page";
+import {
+  afterClick,
+  ctas,
+  daysLabel,
+  heroFacts,
+  scholarshipLink,
+  shown,
+  taughtBy,
+  teachersOf,
+} from "@/content/course-page";
 import type { Course } from "@/content/courses";
 import { fromPrice, isFixedSchedule, usd } from "@/content/pricing";
 import { cn } from "@/lib/cn";
@@ -54,16 +64,7 @@ export function CourseHero({ course }: { course: Course }) {
         ))}
       </ul>
       {/* "Who teaches?" is the parent's first question (PRODUCT.md Users): answered in the hero. */}
-      {teachers ? (
-        <p className="mt-4 text-ui text-ink-body">
-          <a
-            href="#teachers"
-            className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-          >
-            <span translate="no">{teachers}</span>
-          </a>
-        </p>
-      ) : null}
+      {teachers ? <TaughtBy course={course} summary={teachers} /> : null}
 
       <div className="mt-6 lg:hidden">
         <Price course={course} />
@@ -123,6 +124,56 @@ export function CourseRail({ course, className }: { course: Course; className?: 
         </ul>
       </div>
     </aside>
+  );
+}
+
+/** At most this many arches in the hero row; the rest are "+N more". */
+const HERO_TEACHERS = 5;
+
+/**
+ * "Who teaches?" in the first screen (critique, owner 20 Nov 2026): small
+ * arch portraits of the course's teachers (the monogram where there is no
+ * photo), up to five, then "+N more". One link to the Teachers section; its
+ * accessible name lists the teachers, the arches are decorative.
+ */
+function TaughtBy({ course, summary }: { course: Course; summary: string }) {
+  const people = teachersOf(course);
+  const shownPeople = people.slice(0, HERO_TEACHERS);
+  const more = people.length - shownPeople.length;
+  return (
+    <a
+      href="#teachers"
+      aria-label={`${summary}. See all teachers.`}
+      className="group mt-6 inline-flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2 rounded-chip"
+    >
+      <span className="text-ui text-ink-muted">Taught by</span>
+      <span className="flex items-end gap-1.5">
+        {/* A fixed-width box per arch: ArchFrame fills its container's width. */}
+        {shownPeople.map((person) => (
+          <span key={person.id} className="block w-10 shrink-0">
+            {person.photo ? (
+              <ArchFrame
+                name={person.name}
+                decorative
+                src={person.photo.src}
+                width={person.photo.width}
+                height={person.photo.height}
+                focalPoint={{ x: 50, y: 50 }}
+                sizes="40px"
+                loading="eager"
+              />
+            ) : (
+              <ArchFrame name={person.name} decorative />
+            )}
+          </span>
+        ))}
+      </span>
+      {more > 0 ? <span className="text-ui font-medium text-ink-body tabular-nums">+{more} more</span> : null}
+      <span className="inline-flex items-center gap-1 text-ui font-medium text-link underline decoration-1 underline-offset-2 group-hover:decoration-2">
+        Meet the teachers
+        <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+      </span>
+    </a>
   );
 }
 

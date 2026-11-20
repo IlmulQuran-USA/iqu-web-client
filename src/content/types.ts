@@ -172,6 +172,11 @@ export function courseContentSchema(instructorIds: readonly string[]) {
       z.object({ status: approved, ids: z.array(teacherId).min(1) }),
       z.object({ status: pendingStatus, ids: z.array(z.string()).max(0) }),
     ]),
+    /**
+     * Teachers added from their own profiles (COURSE-CONTENT.md §10), not
+     * from the live course page: always draft until the owner confirms them.
+     */
+    profileTeachers: z.object({ status: z.literal("draft"), ids: z.array(teacherId).min(1) }).optional(),
   });
 }
 export type CourseContent = z.infer<ReturnType<typeof courseContentSchema>>;
