@@ -1,8 +1,8 @@
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/Button";
 import { progressSection as copy } from "@/content/home";
+import { LaptopFrame, PhoneFrame } from "./DeviceFrames";
 
 /**
  * Home §6 · How progress is measured (spec §7.1 section 6; owner, 20–21 Nov
@@ -14,7 +14,7 @@ import { progressSection as copy } from "@/content/home";
  *
  * Order (DOM, and so phones): heading and lead, ledger, dashboard, results.
  * From lg: heading, ledger and results on the left; the dashboard on the
- * right. Below sm only the phone screenshot shows, at a readable size.
+ * right (about 55% of the width). Below sm the laptop and phone stack, centred.
  * The secondary button keeps the one-filled-button rule.
  */
 export function ProgressSection() {
@@ -22,7 +22,8 @@ export function ProgressSection() {
   return (
     <section aria-labelledby="progress-title" className="container-content">
       <div className="border-t border-rule py-12 md:py-16 lg:py-24">
-        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-2">
+        {/* From lg the device group takes about 55% of the content width. */}
+        <div className="grid gap-x-12 gap-y-10 lg:grid-cols-[minmax(0,45fr)_minmax(0,55fr)]">
           <div className="lg:col-start-1 lg:row-start-1">
             <h2 id="progress-title" className="text-heading-xl text-balance md:text-display-md">
               {copy.heading}
@@ -57,28 +58,27 @@ export function ProgressSection() {
             ))}
           </ul>
 
-          {/* The parent dashboard: laptop with the phone over its lower right corner (phone only below sm). */}
+          {/* The parent dashboard: laptop with the phone over its lower right corner by about a
+              quarter of the phone's width; stacked and centred below 480 px. */}
           <figure className="flex flex-col gap-6 lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:pt-2">
-            <div className="relative mx-auto w-3/5 sm:hidden">
-              <PhoneFrame />
-            </div>
-            <div className="relative hidden pr-[8%] pb-[18%] sm:block">
-              {/* Laptop: a dark bezel around the screen, then the base. Radii and elevation from the token set. */}
-              <div className="rounded-t-card bg-ink p-[1.6%] pb-[2.2%] shadow-card">
-                <Image
-                  src={dashboard.desktop.src}
-                  width={dashboard.desktop.width}
-                  height={dashboard.desktop.height}
-                  alt={dashboard.alt}
-                  sizes="(min-width: 80rem) 540px, (min-width: 64rem) 42vw, 86vw"
-                  loading="lazy"
-                  className="h-auto w-full rounded-chip"
-                />
-              </div>
-              <div aria-hidden="true" className="-mx-[5%] h-3.5 rounded-b-card border border-t-0 border-rule bg-surface" />
-              <div className="absolute right-0 bottom-0 w-[27%]">
-                <PhoneFrame decorative />
-              </div>
+            <div className="relative sm:pb-[5%]">
+              <LaptopFrame
+                className="w-full sm:w-[84%]"
+                shot={{
+                  src: dashboard.desktop.src,
+                  alt: dashboard.alt,
+                  // The screen's real display width: 90% of the laptop, which is 84% of the group.
+                  sizes: "(min-width: 80rem) 480px, (min-width: 64rem) 40vw, (min-width: 30rem) 74vw, 88vw",
+                }}
+              />
+              <PhoneFrame
+                className="mx-auto mt-8 w-[55%] sm:absolute sm:right-[1%] sm:bottom-0 sm:mt-0 sm:w-[22%]"
+                shot={{
+                  src: dashboard.phone.src,
+                  alt: `${dashboard.alt} on a phone`,
+                  sizes: "(min-width: 80rem) 132px, (min-width: 64rem) 11vw, (min-width: 30rem) 20vw, 50vw",
+                }}
+              />
             </div>
             <figcaption>
               <p className="text-body font-medium text-ink">{dashboard.caption}</p>
@@ -120,24 +120,6 @@ export function ProgressSection() {
         </div>
       </div>
     </section>
-  );
-}
-
-/** The phone screenshot in a dark bezel. Decorative when the laptop beside it already carries the alt text. */
-function PhoneFrame({ decorative = false }: { decorative?: boolean }) {
-  const { dashboard } = copy;
-  return (
-    <div className="rounded-card bg-ink p-[3.5%] shadow-overlay">
-      <Image
-        src={dashboard.phone.src}
-        width={dashboard.phone.width}
-        height={dashboard.phone.height}
-        alt={decorative ? "" : `${dashboard.alt} on a phone`}
-        sizes="(min-width: 80rem) 160px, (min-width: 30rem) 26vw, 60vw"
-        loading="lazy"
-        className="h-auto w-full rounded-button"
-      />
-    </div>
   );
 }
 

@@ -224,8 +224,10 @@ export const progressSection = {
   },
   /*
    * The parent dashboard (owner, 21 Nov 2026): Playwright screenshots of
-   * /preview/parent-dashboard with sample data, at 1440 × 900 and 375 × 812
-   * (2×). Re-take them when the dashboard changes. Sample: shown for admin
+   * /preview/parent-dashboard with sample data, visible screen only, fonts
+   * loaded, animations off: 1280 × 800 at 2× and 393 × 852 at 3×, WebP at
+   * quality 90. Re-take them when the dashboard changes, and bump the file
+   * name (-v2, -v3…) so no cache serves the old ones. Sample: shown for admin
    * review, to be replaced or confirmed before the public launch.
    */
   dashboard: {
@@ -239,8 +241,8 @@ export const progressSection = {
       "Sabaq, Sabqi and Manzil after every Hifz class.",
       "The next class, in your own time zone.",
     ],
-    desktop: { src: "/images/home/parent-dashboard-desktop.webp", width: 1440, height: 900 },
-    phone: { src: "/images/home/parent-dashboard-phone.webp", width: 750, height: 1624 },
+    desktop: { src: "/images/home/parent-dashboard-desktop-v2.webp", width: 2560, height: 1600 },
+    phone: { src: "/images/home/parent-dashboard-phone-v2.webp", width: 1179, height: 2556 },
     report: { label: "See a sample report", href: "/preview/sample-report" },
   },
 } as const;

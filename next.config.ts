@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  // next/image only serves listed qualities: 75 (default) and 90 for the Home
+  // dashboard screenshots, whose small UI text needs it (owner, 21 Nov 2026).
+  images: { qualities: [75, 90] },
   async redirects() {
     return legacyCourseRedirects();
   },
