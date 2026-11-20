@@ -241,7 +241,7 @@ export const teacherGroups = [
   { gender: "male", heading: "For brothers", empty: "No male teacher is listed for this course yet." },
   {
     gender: "female",
-    heading: "For sisters and young children",
+    heading: "For sisters and boys up to 10",
     empty: "No female teacher is listed for this course yet.",
   },
 ] as const;

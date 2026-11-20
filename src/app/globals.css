@@ -242,10 +242,12 @@
   }
 
   /* Sticky bars never cover a focused element or an anchor target: the
-     course sub-nav (48 px) sits under the header, and below lg the
-     StickyCTA bar (about 72 px plus the safe area) sits at the bottom. */
+     course sub-nav (48 px plus its 1 px rule) sits under the header, and
+     below lg the StickyCTA bar (about 72 px plus the safe area) sits at the
+     bottom. On course pages an anchored section's top rule lands exactly on
+     the sub-nav's rule, so the two read as one line. */
   html:has([data-sticky-subnav]) {
-    scroll-padding-top: calc(var(--header-height) + 3rem + 1rem);
+    scroll-padding-top: calc(var(--header-height) + 3rem);
   }
   @media (width < 64rem) {
     html:has([data-sticky-cta]) {

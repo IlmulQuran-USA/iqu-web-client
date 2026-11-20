@@ -34,7 +34,7 @@ export const coursesByLevel: NavLink[] = monthlyCourses.map((c) => ({ label: c.l
 /**
  * Courses ▾ › By age. Filter state lives in the URL (CLAUDE.md §7).
  * DECIDED: spec §6.1's "Sisters only" is renamed "Female teachers". It is the
- * female-instructor pathway for sisters and young children (COURSE-CONTENT.md §1),
+ * female-instructor pathway for sisters and boys up to age 10 (owner, 20 Nov 2026),
  * not a women-only class list.
  */
 export const coursesByAge: NavLink[] = [

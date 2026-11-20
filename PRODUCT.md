@@ -13,7 +13,7 @@ web
 ## Users
 
 - **Parents and guardians (primary).** Muslim families in the United States and Canada choosing live Quran and Islamic classes for their children (Kids 5–12, Teens). They are handing over their children's religious education and need to trust the teachers. Over 60% of traffic is mobile, and most enrolments happen on a phone. Their questions, in order: *Who teaches?* · *Will the class times work in my time zone?* · *What does it cost, and can I get help?* · *What happens after I click?*
-- **Adult learners and sisters.** Some enrol for themselves. Some need a female instructor, which is offered for girls and young children.
+- **Adult learners and sisters.** Some enrol for themselves. Some need a female instructor. Brothers learn with male teachers. Sisters, and boys up to age 10, can learn with a female teacher. (Owner, 20 Nov 2026.)
 - **Donors.** Supporters in the US and Canada giving sadaqah, Zakat or monthly support. They look for 501(c)(3) status, the EIN, where the money goes, and whether Zakat is handled correctly.
 - **Students (portal).** They join classes, follow their Sabaq / Sabqi / Manzil progress, do homework, and read reports and certificates.
 - **Teachers (portal).** Huffaz, Ulama and Mufti in Bangladesh who teach students in North America. They work in Dhaka time with the student's local time alongside, and they are often away from a desk. Their most-used screen is the class record after each class.

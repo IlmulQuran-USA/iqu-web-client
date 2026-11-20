@@ -39,8 +39,10 @@ import { PhoneDisclosure } from "./PhoneDisclosure";
 
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
-    // Anchor offset: html scroll-padding covers the header and the sticky sub-nav (globals.css).
-    <section id={id} aria-labelledby={`${id}-title`} className="border-t border-rule py-12 md:py-16">
+    // Anchor offset: html scroll-padding covers the header and the sticky sub-nav (globals.css),
+    // so a section's top rule lands on the bar's own bottom rule: one line, never two. The
+    // first section drops its rule, since the bar's rule already sits right above it.
+    <section id={id} aria-labelledby={`${id}-title`} className="border-t border-rule py-12 md:py-16 [[data-sticky-subnav]+&]:border-t-0">
       <h2 id={`${id}-title`} className="text-heading-xl text-balance md:text-display-md">
         {title}
       </h2>
@@ -238,7 +240,9 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
                 openOnPhone={i === 0}
                 summary={
                   <span className="flex flex-col gap-3 md:flex-row md:gap-6">
-                    <span className="block md:w-36 md:shrink-0">
+                    {/* From md: a 192 px title column fits every title in two lines, and a
+                        two-line minimum height starts every topic list at the same offset. */}
+                    <span className="block md:min-h-19 md:w-48 md:shrink-0">
                       <span className="block text-ui font-medium text-ink-muted tabular-nums">{phase.months}</span>
                       <span className="mt-1 block font-display text-heading-md font-semibold text-balance text-ink">
                         {phase.title}
@@ -248,7 +252,7 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
                   </span>
                 }
               >
-                <div className="md:pl-42">
+                <div className="md:pl-54">
                   <ul className="mt-4 grid list-disc gap-x-8 gap-y-1.5 pl-5 text-body text-ink-body marker:text-ink-muted sm:grid-cols-2">
                     {phase.topics.map((topic) => (
                       <li key={topic}>{topic}</li>
@@ -288,7 +292,7 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
 
 /**
  * Grouped by who the student would be taught by (owner, 20 Nov 2026): male
- * teachers for brothers, female teachers for sisters and young children
+ * teachers for brothers; sisters, and boys up to age 10, with female teachers
  * (COURSE-CONTENT.md §1). A group with no teacher says so plainly and points
  * to "Ask a question", so the page never implies a teacher it does not list.
  */
@@ -304,7 +308,11 @@ export function Teachers({ course }: { course: Course }) {
           <h3 className="border-b border-rule pb-3 font-display text-heading-md font-semibold text-ink">
             {group.heading}
             {group.people.length > 0 ? (
-              <span className="ml-2 font-sans text-ui font-normal whitespace-nowrap text-ink-muted tabular-nums">
+              // A middle dot keeps the count apart from a heading that ends in a number ("up to 10").
+              <span className="font-sans text-ui font-normal whitespace-nowrap text-ink-muted tabular-nums">
+                <span aria-hidden="true" className="mx-2">
+                  ·
+                </span>
                 {group.people.length === 1 ? "1 teacher" : `${group.people.length} teachers`}
               </span>
             ) : null}

@@ -24,9 +24,16 @@ import { courseContentSchema, type CourseContent } from "./types";
 
 /* ── §1 · Rules for every course (live, confirmed by the owner) ──────────── */
 
+/**
+ * Who teaches whom (owner, 20 Nov 2026: boys up to age 10 can learn with a
+ * female teacher). The one wording used everywhere: course pages, FAQs and
+ * the teacher-matching line.
+ */
+const TEACHER_RULE = "Brothers learn with male teachers. Sisters, and boys up to age 10, can learn with a female teacher.";
+
 export const courseRules = {
   format: live("All classes are online, live on Zoom. Students choose one-on-one or batch (small group)."),
-  teacherAssignment: live("Male teachers for brothers; female teachers for sisters and young children."),
+  teacherAssignment: live(TEACHER_RULE),
   certificate: live("A certificate is awarded at the end of every course."),
   languages: live("Classes are taught in English, Bengali, Arabic and Urdu."),
   learningPath: live(
@@ -110,7 +117,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
       "Fluent reading of the Qur’an with correct Tajweed",
       "Tajweed rules: proper articulation and pronunciation",
       "One-on-one or group classes, on your schedule",
-      "Male teachers for brothers; female teachers for sisters and young children",
+      // The live highlight, with the owner's exact rule (20 Nov 2026).
+      TEACHER_RULE,
       "Learn from home, at a time that suits you",
     ]),
     method: {
@@ -513,9 +521,10 @@ export const summerOpen = {
 /** The same five questions on every course page, worded as in the addendum (draft). */
 export const courseFaq = [
   {
-    status: "draft",
+    // Owner's wording, 20 Nov 2026.
+    status: "live",
     q: "Can I choose a male or female teacher?",
-    a: "Male teachers teach brothers; female teachers teach sisters and young children.",
+    a: `Yes. ${TEACHER_RULE} Tell us your preference when you enroll.`,
   },
   { status: "draft", q: "One-on-one or group?", a: "Both. Choose one-on-one or a small batch when you enroll." },
   {
@@ -533,25 +542,13 @@ export const courseFaq = [
 ] as const;
 
 /**
- * Owner to supply (critique, 20 Nov 2026). Until then the pages say
- * "young children" without an age, and the gender question keeps the
- * addendum's rule-only answer above.
- */
-export const teacherGenderOpen = {
-  /** The age up to which a boy is taught by a female teacher ("young children"). */
-  youngChildrenAge: pending,
-  /** A direct yes/no answer to "Can I choose a male or female teacher?". */
-  chooseTeacherAnswer: pending,
-} as const;
-
-/**
- * "We match you with a teacher" (CONTENT-ADDENDUM.md §3.4, draft). The
- * addendum says "girls and young children" here; the owner's decision of
- * 20 Nov 2026 and the addendum's own §3.3 say "sisters", which is kept.
+ * "We match you with a teacher" (CONTENT-ADDENDUM.md §3.4, draft), with the
+ * owner's exact rule on teacher gender (20 Nov 2026) in place of the
+ * addendum's "girls and young children".
  */
 export const teacherMatching = {
   status: "draft",
-  text: "We match by the student’s level, the teacher gender the family prefers (female teachers for sisters and young children), and the days and times that suit the family.",
+  text: `We match by the student’s level, the teacher gender the family prefers and the days and times that suit the family. ${TEACHER_RULE}`,
 } as const;
 
 /* ── Validation and lookup ───────────────────────────────────────────────── */

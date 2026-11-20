@@ -22,7 +22,7 @@ export const homeHero: HomeHeroContent = {
   highlight: "qualified Huffaz, Ulama and Mufti",
   // PRODUCT.md decision 4: say the first month is free; never claim no card is needed.
   subhead:
-    "Classes are live, one-on-one or in a small batch, with female tutors for sisters and young children, and your first month is free.",
+    "Classes are live, one-on-one or in a small batch, with female teachers for sisters and boys up to 10, and your first month is free.",
   primaryCta: { label: "Start free trial", href: "/enroll" },
   secondaryCta: { label: "Browse courses", href: "/courses" },
   // PRODUCT.md "Evidence on Hand": approximate figures confirmed by the owner.

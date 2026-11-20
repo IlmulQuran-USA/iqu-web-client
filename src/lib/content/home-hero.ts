@@ -20,7 +20,7 @@ const DEFAULTS: HomeHeroContent = {
   headline: "Learn the Qur’an from home with qualified Huffaz, Ulama and Mufti.",
   highlight: "qualified Huffaz, Ulama and Mufti",
   subhead:
-    "Classes are live, one-on-one or in a small batch, with female tutors for sisters and young children, and your first month is free.",
+    "Classes are live, one-on-one or in a small batch, with female teachers for sisters and boys up to 10, and your first month is free.",
   primaryCta: { label: "Start free trial", href: "/enroll" },
   secondaryCta: { label: "Browse courses", href: "/courses" },
   trust: ["250+ students taught", "25+ qualified instructors", "501(c)(3) nonprofit", "Nearly half of our students study free"],

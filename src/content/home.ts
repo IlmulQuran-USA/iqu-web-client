@@ -1,5 +1,5 @@
 import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, usd, type CourseId } from "./pricing";
-import { courseFaq, teacherMatching } from "./courses";
+import { courseFaq, courseRules, teacherMatching } from "./courses";
 import { PENDING, site } from "./site";
 
 /*
@@ -198,10 +198,10 @@ export const faq = {
       a: "Any time that suits your family. When you enroll you choose your preferred start and end time and your time zone, and we match a teacher to it.",
     },
     {
-      status: "draft",
+      // Owner's rule and wording, 20 Nov 2026 (courseRules.teacherAssignment).
+      status: "live",
       q: "Are female teachers available?",
-      // COURSE-CONTENT.md §1 (owner, 20 Nov 2026); spec §7.1 section 4 (matching by gender preference).
-      a: "Yes. Female teachers are offered for sisters and young children. Tell us your preference on the form and we take it into account when we match a teacher.",
+      a: `Yes. ${courseRules.teacherAssignment.text} Tell us your preference when you enroll.`,
     },
     {
       status: "draft",

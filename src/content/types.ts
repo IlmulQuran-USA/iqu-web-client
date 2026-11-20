@@ -49,7 +49,7 @@ export const instructorSchema = z.object({
   id: slugSchema,
   /** Full name including its title ("Mufti …", "Hafez …"), exactly as COURSE-CONTENT.md §10 writes it. */
   name: z.string().min(1).max(60),
-  /** Brothers are taught by male teachers; sisters and young children by female teachers (COURSE-CONTENT.md §1). */
+  /** Brothers learn with male teachers; sisters, and boys up to age 10, can learn with a female teacher (owner, 20 Nov 2026). */
   gender: z.enum(["male", "female"]),
   /**
    * Short caption under the name on cards. Never repeats the title that is
