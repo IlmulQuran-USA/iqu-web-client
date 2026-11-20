@@ -20,7 +20,7 @@ export function GivingBand() {
       <div className="container-content grid gap-8 py-12 md:py-16 lg:grid-cols-12 lg:gap-6 lg:py-24">
         <h2
           id="giving-title"
-          className="text-display-md text-balance md:text-display-lg lg:col-span-7"
+          className="text-display-md text-balance md:text-display-lg lg:col-span-7 lg:self-center"
         >
           {giving.heading}
         </h2>

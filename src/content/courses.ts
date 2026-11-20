@@ -32,7 +32,8 @@ import { courseContentSchema, type CourseContent } from "./types";
 const TEACHER_RULE = "Brothers learn with male teachers. Sisters, and boys up to age 10, can learn with a female teacher.";
 
 export const courseRules = {
-  format: live("All classes are online, live on Zoom. Students choose one-on-one or batch (small group)."),
+  // Owner, 20 Nov 2026: "small group" everywhere, never "batch".
+  format: live("All classes are online, live on Zoom. Students choose one-on-one or a small group."),
   teacherAssignment: live(TEACHER_RULE),
   certificate: live("A certificate is awarded at the end of every course."),
   languages: live("Classes are taught in English, Bengali, Arabic and Urdu."),
@@ -61,7 +62,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
       "Correct pronunciation and Tajweed rules",
       "Interactive, engaging teaching methods",
       "Qualified male and female teachers",
-      "One-on-one or batch, on a flexible schedule",
+      "One-on-one or small group, on a flexible schedule",
       "Suitable for children and adults",
     ]),
     // The 48-class plan (live).
@@ -166,7 +167,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
       "Memorize the Holy Qur’an with proper Tajweed and fluency. Structured online Hifz classes with qualified Huffaz for children and adults.",
     ),
     overview: live(
-      "For students who wish to memorize the Holy Qur’an with proper Tajweed and fluency. A structured approach lets each student memorize at their own pace under the supervision of qualified teachers. One-on-one and batch classes are available.",
+      "For students who wish to memorize the Holy Qur’an with proper Tajweed and fluency. A structured approach lets each student memorize at their own pace under the supervision of qualified teachers. One-on-one and small-group classes are available.",
     ),
     audience: live("Students who can read the Qur’an fluently (Nazirah level)."),
     highlights: liveList([
@@ -175,7 +176,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
       "Emphasis on Tajweed and correct pronunciation",
       "Daily revision and retention techniques",
       "Experienced male and female teachers",
-      "One-on-one and batch options",
+      "One-on-one and small-group options",
       "Suitable for children and adults",
     ]),
     // Every class has three parts (PRODUCT.md method).
@@ -204,6 +205,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "quranic-arabic-level-1": {
     id: "quranic-arabic-level-1",
+    // For adults: the page addresses the student as "you" (owner, 20 Nov 2026).
+    forAdults: true,
     livePath: livePaths["quranic-arabic-level-1"],
     meta: live(
       "Understand up to 80% of the Qur’an by listening and reading. Grammar, vocabulary and practice in one structured online program.",
@@ -311,6 +314,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
 
   "tarjumatul-quran": {
     id: "tarjumatul-quran",
+    forAdults: true,
     livePath: livePaths["tarjumatul-quran"],
     meta: pending,
     // Owner, 20 Nov 2026.
@@ -526,7 +530,7 @@ export const courseFaq = [
     q: "Can I choose a male or female teacher?",
     a: `Yes. ${TEACHER_RULE} Tell us your preference when you enroll.`,
   },
-  { status: "draft", q: "One-on-one or group?", a: "Both. Choose one-on-one or a small batch when you enroll." },
+  { status: "draft", q: "One-on-one or group?", a: "Both. Choose one-on-one or a small group when you enroll." },
   {
     status: "draft",
     q: "What if a class is cancelled?",

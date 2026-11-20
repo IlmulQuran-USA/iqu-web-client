@@ -93,7 +93,8 @@ export function CourseHero({ course }: { course: Course }) {
 export function CourseRail({ course, className }: { course: Course; className?: string }) {
   const links = ctas(course);
   return (
-    <aside aria-labelledby="course-rail-title" className={cn("hidden lg:block", className)}>
+    // Bottom padding keeps the stuck card clear of the final band (critique, owner 20 Nov 2026).
+    <aside aria-labelledby="course-rail-title" className={cn("hidden lg:block lg:pb-16", className)}>
       <div
         id={COURSE_RAIL_ID}
         className="sticky top-[calc(var(--header-height)+1.5rem)] mt-16 rounded-card border border-rule bg-paper p-6 shadow-card"
@@ -127,27 +128,21 @@ export function CourseRail({ course, className }: { course: Course; className?: 
   );
 }
 
-/** At most this many arches in the hero row; the rest are "+N more". */
-const HERO_TEACHERS = 5;
+/** At most this many arches in the hero row; the names carry the rest. */
+const HERO_TEACHERS = 3;
 
 /**
- * "Who teaches?" in the first screen (critique, owner 20 Nov 2026): small
- * arch portraits of the course's teachers (the monogram where there is no
- * photo), up to five, then "+N more". One link to the Teachers section; its
- * accessible name lists the teachers, the arches are decorative.
+ * "Who teaches?" in the first screen (critique, owner 20 Nov 2026): up to
+ * three small arch portraits (the monogram where there is no photo), then the
+ * names as text ("Taught by A, B and 4 more"), so the row reads without
+ * photos. One link to the Teachers section; the arches are decorative.
  */
 function TaughtBy({ course, summary }: { course: Course; summary: string }) {
   const people = teachersOf(course);
   const shownPeople = people.slice(0, HERO_TEACHERS);
-  const more = people.length - shownPeople.length;
   return (
-    <a
-      href="#teachers"
-      aria-label={`${summary}. See all teachers.`}
-      className="group mt-6 inline-flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2 rounded-chip"
-    >
-      <span className="text-ui text-ink-muted">Taught by</span>
-      <span className="flex items-end gap-1.5">
+    <a href="#teachers" className="group mt-6 flex min-h-11 max-w-measure items-center gap-3 rounded-chip">
+      <span className="flex shrink-0 items-end gap-1.5">
         {/* A fixed-width box per arch: ArchFrame fills its container's width. */}
         {shownPeople.map((person) => (
           <span key={person.id} className="block w-10 shrink-0">
@@ -168,10 +163,12 @@ function TaughtBy({ course, summary }: { course: Course; summary: string }) {
           </span>
         ))}
       </span>
-      {more > 0 ? <span className="text-ui font-medium text-ink-body tabular-nums">+{more} more</span> : null}
-      <span className="inline-flex items-center gap-1 text-ui font-medium text-link underline decoration-1 underline-offset-2 group-hover:decoration-2">
-        Meet the teachers
-        <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+      <span className="min-w-0 text-ui text-pretty text-ink-body">
+        <span translate="no">{summary}</span>{" "}
+        <span className="inline-flex items-center gap-1 font-medium whitespace-nowrap text-link underline decoration-1 underline-offset-2 group-hover:decoration-2">
+          Meet the teachers
+          <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+        </span>
       </span>
     </a>
   );
@@ -183,7 +180,7 @@ function Price({ course }: { course: Course }) {
       {/* One fee only (a fixed schedule): no "From". */}
       {isFixedSchedule(course) ? null : <span className="text-ui text-ink-muted">From</span>}
       <span className="font-display text-heading-xl font-semibold text-ink tabular-nums">{usd(fromPrice(course))}</span>
-      <span className="text-ui text-ink-muted">a month</span>
+      <span className="text-ui text-ink-muted">/month</span>
     </p>
   );
 }

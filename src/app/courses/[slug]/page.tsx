@@ -108,7 +108,8 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
         href={enrol.href}
         afterId={COURSE_CTAS_ID}
         beforeId={FINAL_CTA_ID}
-        title={course.label}
+        // The short name keeps the phone bar to one line (owner, 20 Nov 2026).
+        title={course.navLabel ?? course.label}
         detail={fromLine(course)}
       />
     </>

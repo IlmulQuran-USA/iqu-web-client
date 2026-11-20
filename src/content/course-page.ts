@@ -184,7 +184,8 @@ export function schedulePoints(course: Course): { status: string; title: string;
   return [
     { status: "live", title: daysLabel(course), body: days },
     anyTime,
-    length,
+    // Adult courses address the student as "you", never "your child" (owner, 20 Nov 2026).
+    course.content.forAdults ? { ...length, body: length.body.replace("suits your child", "suits you") } : length,
   ];
 }
 
@@ -199,9 +200,9 @@ export function feeRows(course: Course): { days: number; label: string; fee: str
   return rows;
 }
 
-/** "From $20 a month"; a fixed-schedule course has one fee, so no "From": "$80 a month". */
+/** "From $20/month"; a fixed-schedule course has one fee, so no "From": "$80/month" (owner's price format, 20 Nov 2026). */
 export const fromLine = (course: Course) =>
-  `${isFixedSchedule(course) ? "" : "From "}${usd(fromPrice(course))} a month`;
+  `${isFixedSchedule(course) ? "" : "From "}${usd(fromPrice(course))}/month`;
 
 /** "Taught by A", "Taught by A and B", "Taught by A, B and 8 more". */
 export function taughtBy(course: Course): string | null {
@@ -218,11 +219,14 @@ if (!afterClickStep) throw new Error("Home How it works no longer has the first-
 export const afterClick = afterClickStep.body;
 
 /** Under the fee table. PRODUCT.md decision 4; K1 (billing date); PLUGIN-INVENTORY §2.1 and §2.5. */
-export const feeNotes = [
-  "Your first month is free. After that, the fee is charged monthly on your billing date.",
-  "Session length does not change the fee.",
-  "Fees are in US dollars, for each child.",
-] as const;
+export function feeNotes(course: Course): string[] {
+  return [
+    "Your first month is free. After that, the fee is charged monthly on your billing date.",
+    "Session length does not change the fee.",
+    // Adult courses address the student as "you" (owner, 20 Nov 2026).
+    `Fees are in US dollars, for each ${course.content.forAdults ? "student" : "child"}.`,
+  ];
+}
 
 export const scholarship = {
   heading: "Scholarships",
@@ -246,9 +250,22 @@ export const teacherGroups = [
   },
 ] as const;
 
+/**
+ * Owner, 20 Nov 2026: on a course with no female teacher listed, the gender
+ * question says so instead of a plain "Yes", so the FAQ never contradicts
+ * the Teachers section.
+ */
+const NO_FEMALE_TEACHER_ANSWER =
+  "Brothers learn with male teachers. No female teacher is listed for this course yet; ask us and we’ll tell you the options.";
+
 /** The addendum's five course questions; the certificate answer only where there is one. */
-export function faqFor(course: Course) {
-  return courseFaq.filter((item) => item.q !== "Is there a certificate?" || course.content.certificate.value === true);
+export function faqFor(course: Course): { q: string; a: string }[] {
+  const hasFemale = teachersOf(course).some((p) => p.gender === "female");
+  return courseFaq
+    .filter((item) => item.q !== "Is there a certificate?" || course.content.certificate.value === true)
+    .map((item) =>
+      item.q === "Can I choose a male or female teacher?" && !hasFemale ? { ...item, a: NO_FEMALE_TEACHER_ANSWER } : item,
+    );
 }
 
 /** Every course by slug, for the route. */

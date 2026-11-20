@@ -17,12 +17,16 @@ export function FAQAccordion() {
   return (
     <section aria-labelledby="faq-title" className="container-content">
       <div className="border-t border-rule py-12 md:py-16 lg:py-24">
-        <div className="grid gap-10 lg:grid-cols-12 lg:gap-6">
-          <div className="lg:col-span-4">
-            <h2 id="faq-title" className="text-heading-xl md:text-display-md">
-              {faq.heading}
-            </h2>
-            <p className="mt-4 max-w-measure text-body text-ink-body">Something else on your mind? Ask us directly.</p>
+        {/* DOM order is heading, questions, contact, so on phones the questions come
+            first (critique, owner 20 Nov 2026). From lg the grid puts the contact
+            block back under the heading, beside the questions. */}
+        <div className="grid gap-10 lg:grid-cols-12 lg:gap-x-6 lg:gap-y-4">
+          <h2 id="faq-title" className="text-heading-xl md:text-display-md lg:col-span-4 lg:row-start-1">
+            {faq.heading}
+          </h2>
+          <FAQList items={faq.items} className="lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:self-start" />
+          <div className="lg:col-span-4 lg:row-start-2">
+            <p className="max-w-measure text-body text-ink-body">Something else on your mind? Ask us directly.</p>
             {/* Contact links are full 44 px targets (CLAUDE.md §4) and never break mid-number. */}
             <dl className="mt-2 grid grid-cols-[auto_1fr] items-center gap-x-4 text-body">
               <dt className="text-ink-muted">Phone</dt>
@@ -54,8 +58,6 @@ export function FAQAccordion() {
               <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
             </Link>
           </div>
-
-          <FAQList items={faq.items} className="lg:col-span-8" />
         </div>
       </div>
     </section>

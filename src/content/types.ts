@@ -134,6 +134,8 @@ export function courseContentSchema(instructorIds: readonly string[]) {
     id: slugSchema,
     /** The live WordPress path, for the 301 at launch (COURSE-CONTENT.md §11, C6); null when there is none. */
     livePath: z.string().startsWith("/").nullable(),
+    /** A course for adults: its page addresses the student as "you", never "your child" (owner, 20 Nov 2026). */
+    forAdults: z.literal(true).optional(),
     /** Keep the page out of search and the sitemap until its content is live. */
     noindex: z.literal(true).optional(),
     /** Meta description. */

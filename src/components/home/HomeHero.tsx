@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
+import { instructors } from "@/content/instructors";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ButtonLink } from "@/components/ui/Button";
 import type { HomeHero as HomeHeroData, HomeHeroLayout } from "@/content/types";
@@ -36,6 +37,9 @@ export function HomeHero({ hero, layout = hero.layout }: { hero: HomeHeroData; l
 
 /* ── Layouts ─────────────────────────────────────────────────────────────── */
 
+/** Female instructors in the directory (src/content/instructors.ts), for the line under the hero row. */
+const femaleTeachers = instructors.filter((person) => person.gender === "female").length;
+
 function Teachers({ hero }: { hero: HomeHeroData }) {
   const people = hero.featuredInstructors;
   return (
@@ -59,7 +63,18 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
               </li>
             ))}
           </InstructorRow>
-          <p className="mt-2 text-center">
+          {/* The subhead's promise to sisters, answered from the data without photos (owner, 20 Nov 2026). */}
+          {femaleTeachers > 0 ? (
+            <p className="mt-4 text-center text-ui text-ink-body">
+              <Link
+                href="/instructors"
+                className="inline-flex min-h-11 items-center rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+              >
+                Plus {femaleTeachers} female teachers for sisters and boys up to&nbsp;10
+              </Link>
+            </p>
+          ) : null}
+          <p className="text-center">
             <Link
               href="/instructors"
               className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"

@@ -391,7 +391,7 @@ export function Fees({ course }: { course: Course }) {
             </tbody>
           </table>
           <ul className="mt-4 flex flex-col gap-1.5 text-ui text-ink-muted">
-            {feeNotes.map((note) => (
+            {feeNotes(course).map((note) => (
               <li key={note}>{note}</li>
             ))}
           </ul>
@@ -443,7 +443,7 @@ export function WhereNext({ course }: { course: Course }) {
                   <span className="mt-1 block font-display text-heading-md font-semibold text-ink decoration-1 decoration-accent-strong underline-offset-4 group-hover:underline">
                     {c.label}
                   </span>
-                  <span className="mt-1 block text-ui text-ink-muted tabular-nums">From {usd(fromPrice(c))} a month</span>
+                  <span className="mt-1 block text-ui text-ink-muted tabular-nums">From {usd(fromPrice(c))}/month</span>
                 </span>
                 {!back ? (
                   <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-5 shrink-0 text-ink-muted" />

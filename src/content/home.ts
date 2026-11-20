@@ -85,8 +85,8 @@ export const programsSection = {
   intro: "Live classes for children, teens and adults, priced by course and by the number of days you choose.",
   monthlyLabel: "Monthly classes",
   programsLabel: "Seasonal and weekend programs",
-  // PRODUCT.md "Positioning"; the subsidy line is live (Donate page).
-  scholarshipNote: `Scholarships are available. ${aid.studyFree} ${aid.subsidized.text}`,
+  // Critique, owner 20 Nov 2026: the giving band owns "Nearly half…" and the subsidy line.
+  scholarshipNote: "Scholarships are available.",
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
   daysLine: (min: number, max: number) =>
@@ -161,9 +161,10 @@ const lowestFrom = Math.min(...flexible.map(fromPrice));
 const fromLowest = flexible.filter((c) => fromPrice(c) === lowestFrom);
 const fromHigher = flexible.filter((c) => fromPrice(c) !== lowestFrom);
 const costPoints = [
-  `${listOf(fromLowest.map((c) => c.label))}: from ${usd(lowestFrom)} a month`,
-  ...fromHigher.map((c) => `${c.label}: from ${usd(fromPrice(c))} a month (at least ${c.minDays} days a week)`),
-  ...fixedCourses.map((c) => `${c.label}: ${usd(fromPrice(c))} a month (${c.minDays} days a week)`),
+  // Prices always as "$20/month" (owner, 20 Nov 2026).
+  `${listOf(fromLowest.map((c) => c.label))}: from ${usd(lowestFrom)}/month`,
+  ...fromHigher.map((c) => `${c.label}: from ${usd(fromPrice(c))}/month (at least ${c.minDays} days a week)`),
+  ...fixedCourses.map((c) => `${c.label}: ${usd(fromPrice(c))}/month (${c.minDays} days a week)`),
   `${programs.weekend.label}: free`,
   `${programs.summer.label}: ${usd(programs.summer.fee)} one-time, with a reduced option`,
 ];
@@ -180,7 +181,7 @@ export const faq = {
       status: "draft",
       q: "How much do classes cost?",
       // PLUGIN-INVENTORY §2.1–§2.5 and COURSE-CONTENT.md via ./pricing; PRODUCT.md decision 4; owner's scholarship route.
-      a: `Monthly classes start from ${usd(lowestFrom)} a month, and your first month is free. The fee depends on the course and the number of days a week:`,
+      a: `Monthly classes start from ${usd(lowestFrom)}/month, and your first month is free. The fee depends on the course and the number of days a week:`,
       points: costPoints,
       after:
         "Fees are in US dollars, and session length does not change the price. Families asking for a scholarship are contacted by our team.",
