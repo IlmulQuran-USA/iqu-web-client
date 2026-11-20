@@ -20,6 +20,23 @@ export const livePaths: Record<CourseId | ProgramId, string | null> = {
 };
 
 /**
+ * Instructor slugs that changed (owner, 21 Nov 2026: these two teachers are
+ * written with no title). Old slug → new slug, each a 301.
+ */
+export const renamedInstructorSlugs: Record<string, string> = {
+  "ustadha-najiba-mahzabin-jeba": "najiba-mahzabin-jeba",
+  "ustadha-maha-rashed": "maha-rashed",
+};
+
+export function instructorSlugRedirects() {
+  return Object.entries(renamedInstructorSlugs).map(([from, to]) => ({
+    source: `/instructors/${from}`,
+    destination: `/instructors/${to}`,
+    statusCode: 301 as const,
+  }));
+}
+
+/**
  * 301s from the live course paths to the new course pages. Programs and
  * instructors are added when their pages are built. Next.js drops the
  * trailing slash first, so the source has none.

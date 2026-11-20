@@ -66,9 +66,9 @@ const statusBadges = [
 ] as const;
 
 const typeScale = [
-  ["Display XL · Newsreader 500 · 64", "font-display text-display-xl font-medium", "Qur’an taught by scholars"],
-  ["Display L · Newsreader 500 · 48", "font-display text-display-lg font-medium", "Qur’an taught by scholars"],
-  ["Display M · Newsreader 600 · 36", "font-display text-display-md font-semibold", "Qur’an taught by scholars"],
+  ["Display XL · Newsreader 500 · 64", "font-display text-display-xl font-medium", "Quran taught by scholars"],
+  ["Display L · Newsreader 500 · 48", "font-display text-display-lg font-medium", "Quran taught by scholars"],
+  ["Display M · Newsreader 600 · 36", "font-display text-display-md font-semibold", "Quran taught by scholars"],
   ["Heading XL · Newsreader 600 · 30", "font-display text-heading-xl font-semibold", "Meet the instructors"],
   ["Heading L · Newsreader 600 · 24", "font-display text-heading-lg font-semibold", "Meet the instructors"],
   ["Heading M · Newsreader 600 · 20", "font-display text-heading-md font-semibold", "Meet the instructors"],
@@ -325,7 +325,7 @@ export default function ComponentsPage() {
               label="Course"
               name="s-disabled"
               autoComplete="off"
-              defaultValue="Qur’an Hifz"
+              defaultValue="Quran Hifz"
               disabled
               hint="Disabled: unavailable right now. This is not how a system fact looks."
             />

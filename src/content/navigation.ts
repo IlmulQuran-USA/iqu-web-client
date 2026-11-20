@@ -27,7 +27,7 @@ export type NavLink = {
  * Courses ▾ › By level.
  * DECIDED: the full catalog from src/content/pricing.ts, in the owner's order
  * (COURSE-CONTENT.md §2, 20 Nov 2026), with its slugs. Noorani Qaidah and
- * Qur’an Nazirah are separate courses that share one rate.
+ * Quran Nazirah are separate courses that share one rate.
  */
 export const coursesByLevel: NavLink[] = monthlyCourses.map((c) => ({ label: c.label, href: c.href }));
 

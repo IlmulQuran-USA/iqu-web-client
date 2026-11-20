@@ -80,7 +80,7 @@ export const programsSection = {
   heading: "Programs for every stage",
   /**
    * The only courses Home lists, in this order (owner, 20 Nov 2026):
-   * Noorani Qaidah · Qur’an Nazirah · Qur’an Hifz, then the Weekend and Summer
+   * Noorani Qaidah · Quran Nazirah · Quran Hifz, then the Weekend and Summer
    * programs below. Every other course is in the catalog only ("See all courses").
    */
   courseIds: ["noorani-qaidah", "quran-nazirah", "quran-hifz"] satisfies CourseId[],
@@ -142,7 +142,7 @@ const byId = (id: string): Instructor => {
  * The facts line, counted from src/content/instructors.ts (owner, 20 Nov 2026):
  *   Muftis       the name carries "Mufti";
  *   Huffaz       the name carries Hafez/Hafezah, or a qualification mentions
- *                Hifz, Hafiz or Hafizah (Ustadha Maha Rashed is a Hafizah by
+ *                Hifz, Hafiz or Hafizah (Maha Rashed is a Hafizah by
  *                her bio, but her qualifications are pending, so not counted);
  *   languages    every language a teacher teaches in, in LANGUAGES order.
  * "20 of our teachers": the hero trust strip says "25+ qualified instructors"
@@ -172,7 +172,7 @@ export const teachersSection = {
     },
     {
       heading: "For sisters and boys up to 10",
-      ids: ["ustadha-najiba-mahzabin-jeba", "ustadha-maha-rashed", "hafezah-nuha-rashed", "shifa-jalal", "afra-humayra"].map((id) => byId(id).id),
+      ids: ["najiba-mahzabin-jeba", "maha-rashed", "hafezah-nuha-rashed", "shifa-jalal", "afra-humayra"].map((id) => byId(id).id),
     },
   ],
   all: { label: "See all teachers", href: "/instructors" },
@@ -219,7 +219,7 @@ export const progressSection = {
   proof: {
     status: "live",
     title: "Summer Ilm Camp 2026: final results",
-    text: "Every student was assessed in Qur’an & Tajweed, Aqeedah, Fiqh, Akhlaq and Seerah, 20 marks each.",
+    text: "Every student was assessed in Quran & Tajweed, Aqeedah, Fiqh, Akhlaq and Seerah, 20 marks each.",
     link: { label: "See the 2026 results", href: "https://ilmulquranus.org/summer-program-results/" },
   },
   /*
@@ -341,7 +341,7 @@ export const faq = {
       status: "draft",
       q: "What do we need for classes?",
       // Owner, 19 Nov 2026.
-      a: "Classes are live on Zoom. We recommend a laptop or tablet with a steady internet connection. A phone works, but we don’t recommend it: the screen is too small for reading the Qur’an comfortably.",
+      a: "Classes are live on Zoom. We recommend a laptop or tablet with a steady internet connection. A phone works, but we don’t recommend it: the screen is too small for reading the Quran comfortably.",
     },
   ],
 } as const;

@@ -38,7 +38,7 @@ export const courseRules = {
   certificate: live("A certificate is awarded at the end of every course."),
   languages: live("Classes are taught in English, Bengali, Arabic and Urdu."),
   learningPath: live(
-    "Noorani Qaidah, then Qur’an Nazirah (reading the Qur’an), then Qur’an Hifz. Nazirah is the reading stage that comes before Hifz.",
+    "Noorani Qaidah, then Quran Nazirah (reading the Quran), then Quran Hifz. Nazirah is the reading stage that comes before Hifz.",
   ),
 } as const;
 
@@ -49,10 +49,10 @@ const courseCopy: Record<CourseId, CourseContent> = {
     id: "noorani-qaidah",
     livePath: livePaths["noorani-qaidah"],
     meta: live(
-      "The perfect starting point for beginners. Learn Arabic letters, pronunciation and Tajweed basics before reading the Qur’an.",
+      "The perfect starting point for beginners. Learn Arabic letters, pronunciation and Tajweed basics before reading the Quran.",
     ),
     overview: live(
-      "For beginners who want to learn to read the Qur’an with proper pronunciation and Tajweed. It builds a strong foundation in recognizing Arabic letters, joining words and articulating each sound correctly.",
+      "For beginners who want to learn to read the Quran with proper pronunciation and Tajweed. It builds a strong foundation in recognizing Arabic letters, joining words and articulating each sound correctly.",
     ),
     audience: live("Children and adults starting from the beginning."),
     // The 48-class plan below (live).
@@ -107,15 +107,15 @@ const courseCopy: Record<CourseId, CourseContent> = {
     id: "quran-nazirah",
     livePath: livePaths["quran-nazirah"],
     meta: live(
-      "Learn to recite the Qur’an fluently with correct Tajweed. Online Nazirah classes for brothers and sisters of all ages.",
+      "Learn to recite the Quran fluently with correct Tajweed. Online Nazirah classes for brothers and sisters of all ages.",
     ),
     overview: live(
-      "Online Qur’an Nazirah (recitation) classes for brothers and sisters of all ages. Students develop fluency in reading the Qur’an with proper Tajweed, guided by qualified male and female teachers.",
+      "Online Quran Nazirah (recitation) classes for brothers and sisters of all ages. Students develop fluency in reading the Quran with proper Tajweed, guided by qualified male and female teachers.",
     ),
-    placement: live("Nazirah is reading the Qur’an itself, after the Qaidah and before Hifz."),
+    placement: live("Nazirah is reading the Quran itself, after the Qaidah and before Hifz."),
     audience: live("Students who have completed the Noorani Qaidah or can already read Arabic letters with harakat."),
     highlights: liveList([
-      "Fluent reading of the Qur’an with correct Tajweed",
+      "Fluent reading of the Quran with correct Tajweed",
       "Tajweed rules: proper articulation and pronunciation",
       "One-on-one or group classes, on your schedule",
       // The live highlight, with the owner's exact rule (20 Nov 2026).
@@ -131,12 +131,12 @@ const courseCopy: Record<CourseId, CourseContent> = {
           text: "Reading short surahs of Juz ‘Amma from the mushaf, applying the rules learned in the Qaidah.",
         },
         {
-          title: "Reading through the Qur’an",
+          title: "Reading through the Quran",
           text: "The student reads aloud to the teacher, portion by portion, juz by juz. The teacher listens, corrects pronunciation and Tajweed on the spot, and sets the next portion.",
         },
         {
           title: "Fluency and completion",
-          text: "Steady pace, correct stops (waqf) and Tajweed applied without prompting, working toward a complete reading (khatm) of the Qur’an.",
+          text: "Steady pace, correct stops (waqf) and Tajweed applied without prompting, working toward a complete reading (khatm) of the Quran.",
         },
         { title: "Revision", text: "Earlier portions are re-read regularly so fluency holds." },
       ],
@@ -150,8 +150,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
         "shifa-jalal",
         "afra-humayra",
         "jawadul-islam-khan-jami",
-        "ustadha-maha-rashed",
-        "ustadha-najiba-mahzabin-jeba",
+        "maha-rashed",
+        "najiba-mahzabin-jeba",
         "mufti-ahmed-mostafa-raian",
         "mufti-shaker-waliullah",
         "mufti-mushfiqur-rahman",
@@ -164,12 +164,12 @@ const courseCopy: Record<CourseId, CourseContent> = {
     id: "quran-hifz",
     livePath: livePaths["quran-hifz"],
     meta: live(
-      "Memorize the Holy Qur’an with proper Tajweed and fluency. Structured online Hifz classes with qualified Huffaz for children and adults.",
+      "Memorize the Holy Quran with proper Tajweed and fluency. Structured online Hifz classes with qualified Huffaz for children and adults.",
     ),
     overview: live(
-      "For students who wish to memorize the Holy Qur’an with proper Tajweed and fluency. A structured approach lets each student memorize at their own pace under the supervision of qualified teachers. One-on-one and small-group classes are available.",
+      "For students who wish to memorize the Holy Quran with proper Tajweed and fluency. A structured approach lets each student memorize at their own pace under the supervision of qualified teachers. One-on-one and small-group classes are available.",
     ),
-    audience: live("Students who can read the Qur’an fluently (Nazirah level)."),
+    audience: live("Students who can read the Quran fluently (Nazirah level)."),
     highlights: liveList([
       "100% online, with flexible scheduling",
       "A personal memorization plan based on each student’s capability",
@@ -190,7 +190,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
       ],
     },
     path: draftList([
-      "The student usually starts with Juz ‘Amma, then moves through the Qur’an juz by juz.",
+      "The student usually starts with Juz ‘Amma, then moves through the Quran juz by juz.",
       "The daily amount grows with the student’s ability.",
       "Teachers set homework revision between classes.",
     ]),
@@ -199,7 +199,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
     // Owner, 20 Nov 2026: all four list memorization in their §10 profiles.
     profileTeachers: {
       status: "draft",
-      ids: ["ustadha-maha-rashed", "hafezah-nuha-rashed", "hafezah-humayra-afrin", "ustadha-najiba-mahzabin-jeba"],
+      ids: ["maha-rashed", "hafezah-nuha-rashed", "hafezah-humayra-afrin", "najiba-mahzabin-jeba"],
     },
   },
 
@@ -209,21 +209,21 @@ const courseCopy: Record<CourseId, CourseContent> = {
     forAdults: true,
     livePath: livePaths["quranic-arabic-level-1"],
     meta: live(
-      "Understand up to 80% of the Qur’an by listening and reading. Grammar, vocabulary and practice in one structured online program.",
+      "Understand up to 80% of the Quran by listening and reading. Grammar, vocabulary and practice in one structured online program.",
     ),
     overview: live(
-      "Master the fundamentals of Quranic Arabic. The program combines grammar, vocabulary and practical Qur’anic application to build a deep, lasting connection with the Book of Allah, in sha’ Allah.",
+      "Master the fundamentals of Quranic Arabic. The program combines grammar, vocabulary and practical Quranic application to build a deep, lasting connection with the Book of Allah, in sha’ Allah.",
     ),
     // Present as the course's aim, never as a guarantee (COURSE-CONTENT.md §6).
     objective: live(
-      "To understand at least 80% of Qur’anic verses through listening and reading within one year, in sha’ Allah.",
+      "To understand at least 80% of Quranic verses through listening and reading within one year, in sha’ Allah.",
     ),
-    audience: live("Students who can read the Qur’an fluently with harakat and sukun. No prior Arabic grammar is needed."),
+    audience: live("Students who can read the Quran fluently with harakat and sukun. No prior Arabic grammar is needed."),
     // Owner, 20 Nov 2026. The fee is the 4-day fee in ./pricing.
     duration: live("One year"),
     schedule: liveList(["Four days a week, for one year."]),
     highlights: liveList([
-      "Practical, Qur’an-focused learning",
+      "Practical, Quran-focused learning",
       "Guided grammar and vocabulary",
       "Weekly translation and comprehension practice",
       "A final tafsir and grammar project",
@@ -235,7 +235,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
         {
           title: "Foundations",
           months: "Months 1–3",
-          goal: "Core grammar and vocabulary for basic Qur’anic structures.",
+          goal: "Core grammar and vocabulary for basic Quranic structures.",
           topics: [
             "The alphabet (refresher)",
             "Ism, fi‘l and harf",
@@ -247,7 +247,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
             "Mubtada’–khabar",
             "Root-based vocabulary",
           ],
-          practice: "Short Qur’anic phrases, Juz ‘Amma vocabulary, simple translation and tafsir exercises.",
+          practice: "Short Quranic phrases, Juz ‘Amma vocabulary, simple translation and tafsir exercises.",
         },
         {
           title: "Grammar expansion",
@@ -261,28 +261,28 @@ const courseCopy: Record<CourseId, CourseContent> = {
             "Adjectives",
             "Negation (la, lam, lamma, ma, laysa)",
             "Inna",
-            "Common Qur’anic particles",
+            "Common Quranic particles",
           ],
-          practice: "Short ayahs from Juz 30 and 29, 500 common Qur’anic words, root extraction.",
+          practice: "Short ayahs from Juz 30 and 29, 500 common Quranic words, root extraction.",
         },
         {
-          title: "Advanced grammar and Qur’anic style",
+          title: "Advanced grammar and Quranic style",
           months: "Months 7–9",
-          goal: "Qur’anic expressions and complex grammar.",
+          goal: "Quranic expressions and complex grammar.",
           topics: [
             "Verb forms I–X",
             "Conditionals and relative clauses",
             "Kana and its sisters",
             "Inna and its sisters",
-            "Qur’anic emphasis",
+            "Quranic emphasis",
             "An introduction to balaghah",
           ],
           practice: "Ayah analysis, longer passages, comparative meaning analysis.",
         },
         {
-          title: "Full Qur’anic immersion",
+          title: "Full Quranic immersion",
           months: "Months 10–12",
-          goal: "Direct comprehension and analysis of Qur’anic verses.",
+          goal: "Direct comprehension and analysis of Quranic verses.",
           topics: [
             "Al-Fatihah",
             "Excerpts from Al-Baqarah, Yasin, Al-Mulk and Al-Kahf",
@@ -303,8 +303,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
     ]),
     // In sha’ Allah: aims, not guarantees.
     outcomes: liveList([
-      "Understand about 80% of the Qur’anic text through listening and reading",
-      "Translate and analyze a wide range of Qur’anic passages",
+      "Understand about 80% of the Quranic text through listening and reading",
+      "Translate and analyze a wide range of Quranic passages",
       "A foundation for advanced study",
     ]),
     note: live("Ilm-Ul-Quran USA may adjust the curriculum to better meet students’ needs."),
@@ -318,13 +318,13 @@ const courseCopy: Record<CourseId, CourseContent> = {
     livePath: livePaths["tarjumatul-quran"],
     meta: pending,
     // Owner, 20 Nov 2026.
-    placement: live("Tarjumatul Qur’an teaches only the meaning of the Qur’an."),
+    placement: live("Tarjumatul Quran teaches only the meaning of the Quran."),
     overview: draft(
-      "Understand what you recite. Tarjumatul Qur’an teaches the meaning of the Qur’an, word by word and ayah by ayah, so students follow what they read in salah and in recitation. The course covers meaning only; recitation and memorization are taught in Nazirah and Hifz.",
+      "Understand what you recite. Tarjumatul Quran teaches the meaning of the Quran, word by word and ayah by ayah, so students follow what they read in salah and in recitation. The course covers meaning only; recitation and memorization are taught in Nazirah and Hifz.",
     ),
-    audience: draft("Students who can already read the Qur’an."),
+    audience: draft("Students who can already read the Quran."),
     certificate: { status: "live", value: true },
-    // CONTENT-ADDENDUM.md §3.2 (draft): every teacher whose profile lists Qur’an translation.
+    // CONTENT-ADDENDUM.md §3.2 (draft): every teacher whose profile lists Quran translation.
     teachers: {
       status: "draft",
       ids: [
@@ -333,7 +333,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
         "ustad-alauddin-khilzi",
         "jawadul-islam-khan-jami",
         "mawlana-nazrul-islam",
-        "ustadha-najiba-mahzabin-jeba",
+        "najiba-mahzabin-jeba",
       ],
     },
   },
@@ -350,7 +350,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
       "Islamic Studies gives children, teens and adults a clear, practical grounding in their faith: what Muslims believe, how to worship correctly and how to live with good character. It is taught by qualified ‘Ulama and Muftis.",
     ),
     audience: draft(
-      "Anyone who wants structured Islamic knowledge alongside their Qur’an classes. Lessons are pitched to the student’s age and level.",
+      "Anyone who wants structured Islamic knowledge alongside their Quran classes. Lessons are pitched to the student’s age and level.",
     ),
     curriculum: {
       kind: "topics",
@@ -388,7 +388,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
     livePath: livePaths["weekend-ilm-program"],
     meta: pending,
     overview: live(
-      "Essential Islamic knowledge for children aged 5–12, in an engaging and structured way. In live online weekend classes, students learn Qur’an recitation with Tajweed, foundational beliefs (Aqeedah), Islamic manners (Akhlaq), basic Fiqh, and selected duas and surahs for daily life. Taught by qualified, caring teachers, the program helps children build a strong Islamic identity, deepen their connection to Allah and practice Islam confidently, in sha’ Allah.",
+      "Essential Islamic knowledge for children aged 5–12, in an engaging and structured way. In live online weekend classes, students learn Quran recitation with Tajweed, foundational beliefs (Aqeedah), Islamic manners (Akhlaq), basic Fiqh, and selected duas and surahs for daily life. Taught by qualified, caring teachers, the program helps children build a strong Islamic identity, deepen their connection to Allah and practice Islam confidently, in sha’ Allah.",
     ),
     schedule: liveList([
       "Ages 5–12.",
@@ -400,7 +400,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
       status: "live",
       groups: [
         {
-          title: "Qur’an and Tajweed",
+          title: "Quran and Tajweed",
           items: [
             "Correct pronunciation (Makharij)",
             "Tajweed rules, basic to intermediate",
@@ -453,7 +453,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
     livePath: livePaths["summer-ilm-camp"],
     meta: pending,
     overview: live(
-      "An online summer program that keeps children connected to the Qur’an and Islamic learning during their summer break, with qualified teachers in a nurturing environment.",
+      "An online summer program that keeps children connected to the Quran and Islamic learning during their summer break, with qualified teachers in a nurturing environment.",
     ),
     // 2026 dates and schedule: CONTENT-ADDENDUM.md §5 (live, the Summer
     // Program page, which replaces the old course post). Ages and levels:
@@ -469,7 +469,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
       status: "live",
       groups: [
         {
-          title: "Qur’an studies",
+          title: "Quran studies",
           items: ["Recitation with Tajweed", "Memorizing short surahs from Juz ‘Amma", "Selected meanings and lessons"],
         },
         {
@@ -483,8 +483,8 @@ const programCopy: Record<ProgramId, CourseContent> = {
           ],
         },
         {
-          title: "Qur’anic Arabic (older students)",
-          items: ["Basic grammar", "Common Qur’anic vocabulary", "Short ayahs and their translations"],
+          title: "Quranic Arabic (older students)",
+          items: ["Basic grammar", "Common Quranic vocabulary", "Short ayahs and their translations"],
         },
       ],
     },
@@ -502,7 +502,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
         "mufti-ariful-islam",
         "ustad-alauddin-khilzi",
         "mawlana-nazrul-islam",
-        "ustadha-maha-rashed",
+        "maha-rashed",
         "hafezah-nuha-rashed",
         "mufti-muhammad-faijullah",
       ],

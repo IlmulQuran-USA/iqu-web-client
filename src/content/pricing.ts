@@ -16,7 +16,7 @@
 
 /**
  * The plugin's course keys (§2.1). This is what a registration stores, so
- * two courses can share one key: Noorani Qaidah and Qur’an Nazirah are both
+ * two courses can share one key: Noorani Qaidah and Quran Nazirah are both
  * billed as `qaidah`.
  */
 export type PriceKey = "qaidah" | "hifz" | "arabic" | "tarjumatul_quran" | "islamic_studies";
@@ -44,7 +44,7 @@ export type CourseId =
 export type MonthlyCourse = {
   /** URL slug (COURSE-CONTENT.md). The page is /courses/<id>. */
   id: CourseId;
-  /** Owner's spelling: Qur’an with the typographic apostrophe. */
+  /** Owner's spelling: Quran with the typographic apostrophe. */
   label: string;
   /** Shorter label for tight navigation (footer columns). Defaults to label. */
   navLabel?: string;
@@ -61,8 +61,8 @@ export type MonthlyCourse = {
 export const monthlyCourses: MonthlyCourse[] = [
   { id: "noorani-qaidah", label: "Noorani Qaidah", href: "/courses/noorani-qaidah", priceKey: "qaidah", minDays: 1, maxDays: 7 },
   // The same rate and rules as Noorani Qaidah (owner, 20 Nov 2026).
-  { id: "quran-nazirah", label: "Qur’an Nazirah", href: "/courses/quran-nazirah", priceKey: "qaidah", minDays: 1, maxDays: 7 },
-  { id: "quran-hifz", label: "Qur’an Hifz", href: "/courses/quran-hifz", priceKey: "hifz", minDays: 3, maxDays: 7 },
+  { id: "quran-nazirah", label: "Quran Nazirah", href: "/courses/quran-nazirah", priceKey: "qaidah", minDays: 1, maxDays: 7 },
+  { id: "quran-hifz", label: "Quran Hifz", href: "/courses/quran-hifz", priceKey: "hifz", minDays: 3, maxDays: 7 },
   {
     id: "quranic-arabic-level-1",
     // "Level 1" never breaks across lines (no-break space).
@@ -78,7 +78,7 @@ export const monthlyCourses: MonthlyCourse[] = [
   },
   {
     id: "tarjumatul-quran",
-    label: "Tarjumatul Qur’an",
+    label: "Tarjumatul Quran",
     href: "/courses/tarjumatul-quran",
     priceKey: "tarjumatul_quran",
     minDays: 1,

@@ -13,7 +13,6 @@ test("titles are never initials", () => {
   assert.equal(initialsOf("Mufti Muaj Al-Juhany"), "MA");
   assert.equal(initialsOf("Hafez Muhammad Nurul Ahsan"), "MA");
   assert.equal(initialsOf("Mawlana Nazrul Islam"), "NI");
-  assert.equal(initialsOf("Ustadha Maha Rashed"), "MR");
   assert.equal(initialsOf("Ustad Alauddin Khilzi"), "AK");
   assert.equal(initialsOf("Hafiz Abdullah Rahman"), "AR");
   assert.equal(initialsOf("Hafizah Amina Begum"), "AB");
@@ -24,12 +23,14 @@ test("titles are never initials", () => {
 test("names without a title", () => {
   assert.equal(initialsOf("Shifa Jalal"), "SJ");
   assert.equal(initialsOf("Afra Humayra"), "AH");
+  assert.equal(initialsOf("Maha Rashed"), "MR");
+  assert.equal(initialsOf("Najiba Mahzabin Jeba"), "NJ");
   assert.equal(initialsOf("Jawadul Islam Khan Jami"), "JJ");
   assert.equal(initialsOf("Sarah H."), "SH");
 });
 
 test("edge cases", () => {
   assert.equal(initialsOf("Mufti Sajidullah"), "S");
-  assert.equal(initialsOf("  Ustadha   Najiba  Mahzabin Jeba "), "NJ");
+  assert.equal(initialsOf("  Hafezah   Nuha  Rashed "), "NR");
   assert.equal(initialsOf("Mufti"), "");
 });

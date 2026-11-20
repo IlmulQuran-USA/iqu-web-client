@@ -16,8 +16,8 @@ import { homeHeroSchema, type HomeHero, type HomeHeroContent, type Instructor } 
 /** Known-good copy of the hero as approved on 19 Nov 2026. Edit src/content/home-hero.ts, not this. */
 const DEFAULTS: HomeHeroContent = {
   layout: "teachers",
-  eyebrow: "Online Qur’an education · Serving families in the US & Canada",
-  headline: "Learn the Qur’an from home with qualified Huffaz, Ulama and Mufti.",
+  eyebrow: "Online Quran education · Serving families in the US & Canada",
+  headline: "Learn the Quran from home with qualified Huffaz, Ulama and Mufti.",
   highlight: "qualified Huffaz, Ulama and Mufti",
   subhead:
     "Classes are live, one-on-one or in a small group, with female teachers for sisters and boys up to 10, and your first month is free.",

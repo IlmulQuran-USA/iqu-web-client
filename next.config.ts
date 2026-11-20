@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
-// 301s from the live WordPress course URLs (COURSE-CONTENT.md §11, C6). The
-// module imports only ./pricing, so the config loader can read it.
-import { legacyCourseRedirects } from "./src/content/legacy-paths";
+// 301s from the live WordPress course URLs (COURSE-CONTENT.md §11, C6) and
+// from renamed instructor slugs. The module imports only ./pricing, so the
+// config loader can read it.
+import { instructorSlugRedirects, legacyCourseRedirects } from "./src/content/legacy-paths";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -22,7 +23,7 @@ const nextConfig: NextConfig = {
   // dashboard screenshots, whose small UI text needs it (owner, 21 Nov 2026).
   images: { qualities: [75, 90] },
   async redirects() {
-    return legacyCourseRedirects();
+    return [...legacyCourseRedirects(), ...instructorSlugRedirects()];
   },
 };
 

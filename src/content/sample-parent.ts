@@ -145,7 +145,7 @@ export function childById(id: string | undefined): Child | undefined {
 /** The sample monthly report (/preview/sample-report): Yusuf, October 2026. */
 export const sampleReport = {
   status: "sample",
-  text: "Sample monthly progress report (Yusuf, Qur’an Hifz, October 2026).",
+  text: "Sample monthly progress report (Yusuf, Quran Hifz, October 2026).",
   child: children[0],
   month: "October 2026",
   issued: "1 Nov 2026",

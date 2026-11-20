@@ -91,7 +91,7 @@ export function Overview({ course }: { course: Course }) {
   );
 }
 
-/** Noorani Qaidah → Qur’an Nazirah → Qur’an Hifz, with this course marked (COURSE-CONTENT.md §1). */
+/** Noorani Qaidah → Quran Nazirah → Quran Hifz, with this course marked (COURSE-CONTENT.md §1). */
 function PathStrip({ steps }: { steps: { id: string; label: string; href: string; current: boolean }[] }) {
   return (
     <div className="mt-6">
@@ -153,7 +153,7 @@ export function CurriculumSection({ course }: { course: Course }) {
       ) : null}
       {steps.length > 0 ? (
         <div className="mt-10">
-          <SubHeading>Moving through the Qur’an</SubHeading>
+          <SubHeading>Moving through the Quran</SubHeading>
           <ul className="mt-3 flex max-w-measure list-disc flex-col gap-1.5 pl-5 text-body text-ink-body marker:text-ink-muted">
             {steps.map((step) => (
               <li key={step}>{step}</li>

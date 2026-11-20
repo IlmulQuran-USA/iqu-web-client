@@ -75,7 +75,6 @@ const HONORIFICS = new Set([
   "sheikh",
   "ustad",
   "ustadh",
-  "ustadha",
   "imam",
   "dr",
 ]);
