@@ -18,9 +18,14 @@ import { wholePhraseIndex } from "@/lib/text";
  *   pending  not supplied yet; the value is empty and nothing is invented
  * `npm run content:check` lists every draft and pending item.
  */
-export const COPY_STATUSES = ["live", "draft", "pending"] as const;
+/**
+ * sample  placeholder content shown for admin review (owner, 21 Nov 2026). It
+ *         renders everywhere, with no badge; content:check lists it as a
+ *         warning to replace or confirm before the public launch.
+ */
+export const COPY_STATUSES = ["live", "draft", "pending", "sample"] as const;
 export type CopyStatus = (typeof COPY_STATUSES)[number];
-const approved = z.enum(["live", "draft"]);
+const approved = z.enum(["live", "draft", "sample"]);
 const pendingStatus = z.literal("pending");
 
 /** One paragraph or sentence. */

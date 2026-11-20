@@ -9,10 +9,11 @@
  *   2. every "[pending]" placeholder string in those exports;
  *   3. any phrase from docs/spec/COURSE-CONTENT.md §11 "Removed" that has
  *      crept back into src/ (comments are ignored);
- *   4. every testimonial still "pending-verification", under "Testimonials
- *      to verify with the families" (US FTC rule, 16 CFR Part 465).
- * Exits with 1 while anything is listed, so it can gate a launch build.
- * Also lists, without failing, portraits marked to re-frame.
+ * Exits with 1 while anything above is listed, so it can gate a launch build.
+ * Also lists, as warnings that never fail: every `status: "sample"` item under
+ * "Sample content to replace" (owner, 21 Nov 2026: shown for admin review,
+ * replace or confirm before the public launch), and portraits marked to
+ * re-frame.
  *
  * Runs on Node's built-in TypeScript type stripping (Node ≥ 22.18), with a
  * small resolve hook for the "@/" alias and extensionless imports. No extra
@@ -49,7 +50,7 @@ registerHooks({
   },
 });
 
-const STATUSES = new Set(["live", "draft", "pending"]);
+const STATUSES = new Set(["live", "draft", "pending", "sample"]);
 const PENDING_MARK = "[pending]";
 
 /** A readable key for an array element: its id, title or question, else its index. */
@@ -66,6 +67,8 @@ function preview(item) {
   const raw =
     typeof item.text === "string"
       ? item.text
+      : typeof item.quote === "string"
+        ? `${item.name ? `${item.name}: ` : ""}${item.quote}`
       : Array.isArray(item.items) && item.items.length
         ? item.items.join(" · ")
         : Array.isArray(item.steps)
@@ -91,6 +94,12 @@ function walk(value, at, found, ancestors = new Set()) {
   ancestors.add(value);
   if (STATUSES.has(value.status) && value.status !== "live") {
     found.push({ status: value.status, path: at, preview: preview(value) });
+    // A sample block is listed once, as a whole: its contents (which may hold
+    // real records, e.g. instructors) are not walked again.
+    if (value.status === "sample") {
+      ancestors.delete(value);
+      return;
+    }
   }
   if (Array.isArray(value)) {
     value.forEach((v, i) => walk(v, `${at}[${elementKey(v, i)}]`, found, ancestors));
@@ -116,10 +125,8 @@ for (const file of files) {
   if (found.length) report.push({ file: `src/content/${file}`, found });
 }
 
-/* ── 4 · Testimonials to verify, and portraits to re-frame ───────────────── */
+/* ── 4 · Portraits to re-frame ───────────────────────────────────────────── */
 
-const { testimonials } = await import(pathToFileURL(path.join(CONTENT, "testimonials.ts")).href);
-const toVerify = testimonials.filter((t) => t.status !== "live");
 const { instructors } = await import(pathToFileURL(path.join(CONTENT, "instructors.ts")).href);
 const toReframe = instructors.filter((p) => p.photo?.reframe);
 
@@ -189,36 +196,40 @@ for (const file of sourceFiles(SRC)) {
 
 let drafts = 0;
 let pendings = 0;
+const samples = [];
 for (const { file, found } of report) {
+  const blocking = found.filter((f) => f.status !== "sample");
+  for (const f of found) if (f.status === "sample") samples.push({ file, ...f });
+  if (blocking.length === 0) continue;
   console.log(`\n${file}`);
-  const width = Math.max(...found.map((f) => f.path.length));
-  for (const f of found) {
+  const width = Math.max(...blocking.map((f) => f.path.length));
+  for (const f of blocking) {
     if (f.status === "draft") drafts++;
     else pendings++;
     console.log(`  ${f.status.padEnd(8)} ${f.path.padEnd(width)}  ${f.preview}`);
   }
+}
+// Sample content (owner, 21 Nov 2026): shown for admin review; a warning, never a failure.
+if (samples.length) {
+  console.log("\nSample content to replace (shown for admin review; replace or confirm before the public launch)");
+  const width = Math.max(...samples.map((s) => `${s.file}  ${s.path}`.length));
+  for (const s of samples) console.log(`  warning  ${`${s.file}  ${s.path}`.padEnd(width)}  ${s.preview}`);
 }
 if (removedHits.length) {
   console.log("\nRemoved content (COURSE-CONTENT.md §11) found in src/");
   for (const h of removedHits) console.log(`  ${h.file}:${h.line}  ${h.label}`);
 }
 
-if (toVerify.length) {
-  console.log("\nTestimonials to verify with the families (src/content/testimonials.ts)");
-  const width = Math.max(...toVerify.map((t) => t.id.length));
-  for (const t of toVerify) {
-    console.log(`  ${t.id.padEnd(width)}  ${t.name}, ${t.place} · post ${t.source.postId} · ${t.source.url}`);
-  }
-}
 if (toReframe.length) {
   console.log("\nPortraits to re-frame (src/content/instructors.ts; does not block launch)");
   for (const p of toReframe) console.log(`  ${p.id}  ${p.photo.src}  ${p.photo.width} × ${p.photo.height}`);
 }
 
-const total = drafts + pendings + removedHits.length + toVerify.length;
+// Sample items are warnings only: they never count towards the exit code.
+const total = drafts + pendings + removedHits.length;
 console.log(
   total
-    ? `\n${drafts} draft · ${pendings} pending · ${toVerify.length} testimonial${toVerify.length === 1 ? "" : "s"} to verify · ${removedHits.length} removed-content hit${removedHits.length === 1 ? "" : "s"}. Not ready for launch.`
-    : "\nAll content is live. Nothing draft, pending, unverified or removed.",
+    ? `\n${drafts} draft · ${pendings} pending · ${removedHits.length} removed-content hit${removedHits.length === 1 ? "" : "s"} · ${samples.length} sample (warning). Not ready for launch.`
+    : `\nAll content is live. Nothing draft, pending or removed.${samples.length ? ` ${samples.length} sample item(s) to replace (warning).` : ""}`,
 );
 process.exitCode = total ? 1 : 0;

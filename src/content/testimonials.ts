@@ -13,15 +13,15 @@ import { programs, type ProgramId } from "./pricing";
  * kept. The live star ratings and review titles are never carried over
  * (COURSE-CONTENT.md §11), nor the Noorani Qaidah reviews (lorem ipsum).
  *
- * Verification (owner, 20 Nov 2026; PRODUCT.md "Brand Commitments"): a
- * testimonial renders only when its status is "live", which the owner sets
- * after confirming it is a real parent's words, given with consent (US FTC
- * rule on fake reviews and testimonials, 16 CFR Part 465). Until then every
- * one is "pending-verification" and `npm run content:check` lists it under
- * "Testimonials to verify with the families".
+ * Status (owner, 21 Nov 2026): every one is "sample". Testimonials and
+ * sample content are shown for admin review; replace or confirm them before
+ * the public launch (PRODUCT.md "Brand Commitments"). `npm run content:check`
+ * lists them under "Sample content to replace". Set a testimonial to "live"
+ * once the family confirms it is their own words, given with consent (US FTC
+ * rule on fake reviews and testimonials, 16 CFR Part 465).
  */
 
-export const TESTIMONIAL_STATUSES = ["live", "pending-verification"] as const;
+export const TESTIMONIAL_STATUSES = ["live", "sample"] as const;
 
 const testimonialSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
@@ -43,7 +43,7 @@ const WEEKEND = { postId: 295, url: "https://ilmulquranus.org/course/weekend-ilm
 export const testimonials: Testimonial[] = testimonialSchema.array().parse([
   {
     id: "summer-sarah-h",
-    status: "pending-verification",
+    status: "sample",
     name: "Sarah H.",
     place: "Texas, USA",
     program: "summer-ilm-camp",
@@ -53,7 +53,7 @@ export const testimonials: Testimonial[] = testimonialSchema.array().parse([
   },
   {
     id: "summer-mohammad-rafiq",
-    status: "pending-verification",
+    status: "sample",
     name: "Mohammad Rafiq",
     place: "Chicago, USA",
     program: "summer-ilm-camp",
@@ -63,7 +63,7 @@ export const testimonials: Testimonial[] = testimonialSchema.array().parse([
   },
   {
     id: "summer-fatima-khalid",
-    status: "pending-verification",
+    status: "sample",
     name: "Fatima Khalid",
     place: "New Jersey, USA",
     program: "summer-ilm-camp",
@@ -73,7 +73,7 @@ export const testimonials: Testimonial[] = testimonialSchema.array().parse([
   },
   {
     id: "weekend-fatima-a",
-    status: "pending-verification",
+    status: "sample",
     name: "Fatima A.",
     place: "Chicago, IL",
     program: "weekend-ilm-program",
@@ -83,7 +83,7 @@ export const testimonials: Testimonial[] = testimonialSchema.array().parse([
   },
   {
     id: "weekend-mohammed-s",
-    status: "pending-verification",
+    status: "sample",
     name: "Mohammed S.",
     place: "Dallas, TX",
     program: "weekend-ilm-program",
@@ -93,7 +93,7 @@ export const testimonials: Testimonial[] = testimonialSchema.array().parse([
   },
   {
     id: "weekend-sarah-k",
-    status: "pending-verification",
+    status: "sample",
     name: "Sarah K.",
     place: "New Jersey",
     program: "weekend-ilm-program",
@@ -109,11 +109,9 @@ for (const id of homeTestimonialIds) {
   if (!testimonials.some((t) => t.id === id)) throw new Error(`Unknown testimonial ${id}`);
 }
 
-/** Only verified testimonials, in the given order. */
-export function liveTestimonials(ids: readonly string[]): Testimonial[] {
-  return ids
-    .map((id) => testimonials.find((t) => t.id === id))
-    .filter((t): t is Testimonial => t !== undefined && t.status === "live");
+/** The testimonials for the given ids, in order. Live and sample both render (owner, 21 Nov 2026). */
+export function testimonialsById(ids: readonly string[]): Testimonial[] {
+  return ids.map((id) => testimonials.find((t) => t.id === id)).filter((t): t is Testimonial => t !== undefined);
 }
 
 /** The program a testimonial is about, for its label and link. */

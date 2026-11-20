@@ -57,6 +57,7 @@ If a skill or detector suggestion contradicts 1–4, keep that choice and record
 - No stock photos. Missing portrait → arch-framed monogram.
 - Never invent fees, testimonials, ratings, credentials or statistics. Use `$XX` and `[pending]` placeholders until spec §8 content arrives.
 - No fabricated review counts — honest empty state instead.
+- Testimonials and sample content are shown for admin review; replace or confirm them before the public launch (owner, 21 Nov 2026). Mark them `status: "sample"`; `npm run content:check` lists them as a warning.
 - Quran/Hadith: own block, `dir="rtl"`, line-height 2.0, full citation, never over a photo.
 - Every displayed time carries its zone label. Dates as `30 Aug 2026`.
 - Scholarship families see a scholarship status card, never a $0 invoice table.

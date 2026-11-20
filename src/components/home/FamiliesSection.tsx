@@ -2,17 +2,18 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { familiesSection as copy } from "@/content/home";
 import { initialsOf } from "@/lib/arch";
-import { homeTestimonialIds, liveTestimonials, programOf, type Testimonial } from "@/content/testimonials";
+import { homeTestimonialIds, programOf, testimonialsById, type Testimonial } from "@/content/testimonials";
 
 /**
  * Home §7 · What families say (spec §7.1 section 7; owner, 20 Nov 2026).
- * Only testimonials the owner has verified (status "live") render; with none
- * live, the whole section is left out, never an empty state on Home. At most
- * three, as a static row (no carousel), stacked on phones. Each is the
+ * Three of the six, chosen for variety (program and place); live and sample
+ * both render (owner, 21 Nov 2026: shown for admin review, replace or confirm
+ * before launch). With none, the section is left out, never an empty state.
+ * At most three, as a static row (no carousel), stacked on phones. Each is the
  * family's exact words, their initials (no photos), name, place and the
  * program it is about. No star ratings, titles or review counts.
  */
-export function FamiliesSection({ items = liveTestimonials(homeTestimonialIds) }: { items?: Testimonial[] }) {
+export function FamiliesSection({ items = testimonialsById(homeTestimonialIds) }: { items?: Testimonial[] }) {
   const shown = items.slice(0, 3);
   if (shown.length === 0) return null;
   return (
@@ -40,7 +41,7 @@ function Quote({ t }: { t: Testimonial }) {
       <blockquote className="flex-1 text-body-lg text-pretty text-ink">
         <p>“{keepName(t.quote)}”</p>
       </blockquote>
-      <figcaption className="mt-6 flex items-center gap-3">
+      <figcaption className="mt-6 flex items-start gap-3">
         <span
           aria-hidden="true"
           className="flex size-11 shrink-0 items-center justify-center rounded-pill bg-surface font-display text-body font-semibold text-ink-body"
@@ -51,15 +52,14 @@ function Quote({ t }: { t: Testimonial }) {
           <span className="block font-medium text-ink" translate="no">
             {t.name}
           </span>
-          <span className="block text-ink-muted">
-            {t.place} ·{" "}
-            <Link
-              href={program.href}
-              className="inline-flex min-h-11 items-center rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-            >
-              {program.label}
-            </Link>
-          </span>
+          <span className="block text-ink-muted">{t.place}</span>
+          {/* The program on its own line, so its 44 px target never pushes the place away from the name. */}
+          <Link
+            href={program.href}
+            className="-my-1.5 inline-flex min-h-11 items-center rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+          >
+            {program.label}
+          </Link>
         </span>
       </figcaption>
     </figure>

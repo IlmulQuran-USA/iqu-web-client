@@ -194,12 +194,14 @@ const arabicChecks = arabic.assessment?.status === "live" ? arabic.assessment.it
 if (!examClasses || !hifzParts || arabicChecks.length === 0) throw new Error("Progress facts are missing from courses.ts");
 
 /*
- * Real assessment facts only (COURSE-CONTENT.md §1, §3, §5, §6, all live).
- * No dashboard, weekly reports or portal promises: there is no parent portal
- * yet (owner, 20 Nov 2026).
+ * Real assessment facts (COURSE-CONTENT.md §1, §3, §5, §6, all live), and the
+ * parent dashboard with sample data (owner, 21 Nov 2026: shown for admin
+ * review; the portal itself is not built yet).
  */
 export const progressSection = {
   heading: "How progress is measured",
+  /** Ties the parts together: the course checkpoints and the parent dashboard (critique, 21 Nov 2026). */
+  lead: "Every course has checkpoints written into it, and the parent dashboard shows each week as it happens.",
   rows: [
     { label: courseById("noorani-qaidah").label, href: "/courses/noorani-qaidah#curriculum", text: `Revision and an exam after classes ${examClasses}.` },
     { label: courseById("quran-hifz").label, href: "/courses/quran-hifz#curriculum", text: `${hifzParts} in every class: the new lesson, recent lessons and older portions.` },
@@ -219,6 +221,27 @@ export const progressSection = {
     title: "Summer Ilm Camp 2026: final results",
     text: "Every student was assessed in Qur’an & Tajweed, Aqeedah, Fiqh, Akhlaq and Seerah, 20 marks each.",
     link: { label: "See the 2026 results", href: "https://ilmulquranus.org/summer-program-results/" },
+  },
+  /*
+   * The parent dashboard (owner, 21 Nov 2026): Playwright screenshots of
+   * /preview/parent-dashboard with sample data, at 1440 × 900 and 375 × 812
+   * (2×). Re-take them when the dashboard changes. Sample: shown for admin
+   * review, to be replaced or confirmed before the public launch.
+   */
+  dashboard: {
+    status: "sample",
+    text: "Parent dashboard screenshots and the sample report (sample family data).",
+    alt: "Preview of the parent dashboard",
+    /** The visible caption: what the dashboard shows, in words (critique, 21 Nov 2026). */
+    caption: "The parent dashboard, after every class:",
+    callouts: [
+      "Each class shows a status from Zoom and the minutes your child and the teacher were in class together.",
+      "Sabaq, Sabqi and Manzil after every Hifz class.",
+      "The next class, in your own time zone.",
+    ],
+    desktop: { src: "/images/home/parent-dashboard-desktop.webp", width: 1440, height: 900 },
+    phone: { src: "/images/home/parent-dashboard-phone.webp", width: 750, height: 1624 },
+    report: { label: "See a sample report", href: "/preview/sample-report" },
   },
 } as const;
 
