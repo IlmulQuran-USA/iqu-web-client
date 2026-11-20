@@ -302,9 +302,13 @@ function InstructorArch({ person }: { person: Instructor }) {
       height={person.photo.height}
       sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw"
       className="mx-auto max-w-50"
+      // The owner's files share one framing (eyes at 35%, centred), so all
+      // five use the same fit and position: cover, 50% 50% (20 Nov 2026).
+      focalPoint={{ x: 50, y: 50 }}
       // All five are in the first view at 1440, so none is lazy. None is
       // preloaded or raised in priority: on a phone they sit below the
-      // fold, and the H1 is the LCP element. 370 × 370, about 100 KB in all.
+      // fold, and the H1 is the LCP element. next/image serves each at the
+      // card's width (sizes), not at the 600 × 600 source.
       // ArchFrame gives eager images fetchPriority "low", which also stops
       // React from emitting a <link rel="preload"> for each portrait.
       loading="eager"

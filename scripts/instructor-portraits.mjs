@@ -16,14 +16,20 @@
  * Native size is kept (370 × 370): the 600 × 600 minimum is waived by the
  * owner until larger originals exist.
  *
- * Usage: node scripts/instructor-portraits.mjs [sourceDir]   (default design/brand-source)
+ * Superseded (20 Nov 2026): the owner now supplies the final hero portraits
+ * himself (600 × 600 WebP, shared framing). The script skips any output that
+ * already exists, so it never overwrites them; --force overrides that.
+ *
+ * Usage: node scripts/instructor-portraits.mjs [sourceDir] [--force]   (default design/brand-source)
  * The mapping below was confirmed file by file by the owner. Never infer it
  * from a face.
  */
+import { existsSync } from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 
-const SOURCE_DIR = process.argv[2] ?? "design/brand-source";
+const FORCE = process.argv.includes("--force");
+const SOURCE_DIR = process.argv.slice(2).find((a) => !a.startsWith("--")) ?? "design/brand-source";
 const OUT_DIR = "public/instructors";
 const SURFACE = [0xf1, 0xf5, 0xf9];
 
@@ -139,6 +145,11 @@ async function processOne(file, { slug, radius, feather: FEATHER }) {
   // Square at native width: HEADROOM of --surface on top, source rows below.
   const size = W;
   const target = path.join(OUT_DIR, `${slug}.webp`);
+  // The owner's own final files (20 Nov 2026) must never be overwritten by this script.
+  if (!FORCE && existsSync(target)) {
+    console.log(`${file.padEnd(30)} → ${target}  exists, skipped (--force to overwrite)`);
+    return;
+  }
   await sharp(out, { raw: { width: W, height: H, channels: 3 } })
     .extract({ left: 0, top: 0, width: W, height: size - HEADROOM })
     .extend({ top: HEADROOM, background: { r: SURFACE[0], g: SURFACE[1], b: SURFACE[2] } })

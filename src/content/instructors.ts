@@ -20,17 +20,18 @@ import { instructorSchema, type Instructor } from "./types";
  * Never carried over (§11): ratings, review counts, student counts,
  * testimonials, placeholder qualifications.
  *
- * Portraits: the owner's cut-outs (design/brand-source/<name>.png, 370 × 406),
- * confirmed file by file by the owner, with the pastel card keyed out to
- * --surface and cropped square at native size by
- * scripts/instructor-portraits.mjs. The 600 × 600 minimum is waived by the
- * owner until larger originals exist (19 Nov 2026); replace the file at the
- * same path and update width/height when they do. A re-crop to a common face
- * scale waits for a looser original of Mufti Shaker Waliullah.
+ * Portraits: the owner's own final files (20 Nov 2026), used exactly as
+ * supplied: no crop, scale, background change or re-encode. All five share one
+ * framing (eyes at 35% of the height, same face size, centred, on --surface
+ * #F1F5F9), so every card shows them the same way (object-fit: cover,
+ * object-position: 50% 50%). Four are 600 × 600; Hafez Nurul Ahsan's is the
+ * earlier 370 × 370 file, kept by the owner. Replace a file at the same path
+ * and update its size here.
  * Everyone else has `photo: null` and keeps the arch monogram (spec §7.1);
  * the live images for the sisters are shared placeholders and are never used.
  */
-const portrait = (id: string) => ({ src: `/instructors/${id}.webp`, width: 370, height: 370 });
+/** A square portrait at its native pixel size. */
+const portrait = (id: string, size: 600 | 370 = 600) => ({ src: `/instructors/${id}.webp`, width: size, height: size });
 
 export const instructors: Instructor[] = instructorSchema.array().parse([
   /* ── Leadership ───────────────────────────────────────────────────────── */
@@ -83,7 +84,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Well-versed in Tajweed",
       "Experienced in teaching memorization and reading to children and beginners",
     ]),
-    photo: portrait("hafez-nurul-ahsan"),
+    photo: portrait("hafez-nurul-ahsan", 370),
   },
 
   /* ── Scholars and teachers (brothers) ─────────────────────────────────── */
