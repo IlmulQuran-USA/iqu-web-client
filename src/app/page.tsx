@@ -1,11 +1,14 @@
 import { FAQAccordion } from "@/components/home/FAQAccordion";
+import { FamiliesSection } from "@/components/home/FamiliesSection";
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { GivingBand } from "@/components/home/GivingBand";
 import { HERO_CTAS_ID, HomeHero } from "@/components/home/HomeHero";
 import { ProgramsLedger } from "@/components/home/ProgramsLedger";
+import { ProgressSection } from "@/components/home/ProgressSection";
 import { ScheduleSection } from "@/components/home/ScheduleSection";
 import { StepList } from "@/components/home/StepList";
 import { StickyCTA } from "@/components/home/StickyCTA";
+import { TeachersSection } from "@/components/home/TeachersSection";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { finalCta } from "@/content/home";
@@ -14,13 +17,13 @@ import { site } from "@/content/site";
 import { getHomeHero } from "@/lib/content/home-hero";
 
 /*
- * Home (spec §7.1), as approved by the owner on 19 Nov 2026:
- *   1 Hero · 2 Scheduling · 3 Programs · 4 How it works · 8 Giving ·
+ * Home (spec §7.1), as approved by the owner on 19–20 Nov 2026:
+ *   1 Hero · 2 Scheduling · 3 Programs · 4 How it works · 5 Our teachers ·
+ *   6 How progress is measured · 7 What families say · 8 Giving ·
  *   9 Common questions · 10 Final call to action.
- * Sections 5 (instructors: the hero already shows them), 6 (progress: no
- * parent portal yet) and 7 (testimonials: none with consent) are left out
- * until real content exists. No section uses --tint: the footer newsletter
- * band already takes the page's one tint section (DESIGN.md §2).
+ * Section 7 renders only verified testimonials, and not at all until one is
+ * (src/content/testimonials.ts). No section uses --tint: the footer
+ * newsletter band already takes the page's one tint section (DESIGN.md §2).
  */
 
 /** Organization structured data (spec §7.1 SEO), built only from site facts. */
@@ -66,6 +69,9 @@ export default async function HomePage() {
         <ScheduleSection />
         <ProgramsLedger />
         <StepList />
+        <TeachersSection />
+        <ProgressSection />
+        <FamiliesSection />
         <GivingBand />
         <FAQAccordion />
         <FinalCta />

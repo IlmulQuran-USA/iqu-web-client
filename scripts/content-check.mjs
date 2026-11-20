@@ -8,8 +8,11 @@
  *      src/content, with its file and field path;
  *   2. every "[pending]" placeholder string in those exports;
  *   3. any phrase from docs/spec/COURSE-CONTENT.md §11 "Removed" that has
- *      crept back into src/ (comments are ignored).
+ *      crept back into src/ (comments are ignored);
+ *   4. every testimonial still "pending-verification", under "Testimonials
+ *      to verify with the families" (US FTC rule, 16 CFR Part 465).
  * Exits with 1 while anything is listed, so it can gate a launch build.
+ * Also lists, without failing, portraits marked to re-frame.
  *
  * Runs on Node's built-in TypeScript type stripping (Node ≥ 22.18), with a
  * small resolve hook for the "@/" alias and extensionless imports. No extra
@@ -113,6 +116,13 @@ for (const file of files) {
   if (found.length) report.push({ file: `src/content/${file}`, found });
 }
 
+/* ── 4 · Testimonials to verify, and portraits to re-frame ───────────────── */
+
+const { testimonials } = await import(pathToFileURL(path.join(CONTENT, "testimonials.ts")).href);
+const toVerify = testimonials.filter((t) => t.status !== "live");
+const { instructors } = await import(pathToFileURL(path.join(CONTENT, "instructors.ts")).href);
+const toReframe = instructors.filter((p) => p.photo?.reframe);
+
 /* ── 3 · Removed phrases (COURSE-CONTENT.md §11) ─────────────────────────── */
 
 const REMOVED = [
@@ -193,10 +203,22 @@ if (removedHits.length) {
   for (const h of removedHits) console.log(`  ${h.file}:${h.line}  ${h.label}`);
 }
 
-const total = drafts + pendings + removedHits.length;
+if (toVerify.length) {
+  console.log("\nTestimonials to verify with the families (src/content/testimonials.ts)");
+  const width = Math.max(...toVerify.map((t) => t.id.length));
+  for (const t of toVerify) {
+    console.log(`  ${t.id.padEnd(width)}  ${t.name}, ${t.place} · post ${t.source.postId} · ${t.source.url}`);
+  }
+}
+if (toReframe.length) {
+  console.log("\nPortraits to re-frame (src/content/instructors.ts; does not block launch)");
+  for (const p of toReframe) console.log(`  ${p.id}  ${p.photo.src}  ${p.photo.width} × ${p.photo.height}`);
+}
+
+const total = drafts + pendings + removedHits.length + toVerify.length;
 console.log(
   total
-    ? `\n${drafts} draft · ${pendings} pending · ${removedHits.length} removed-content hit${removedHits.length === 1 ? "" : "s"}. Not ready for launch.`
-    : "\nAll content is live. Nothing draft, pending or removed.",
+    ? `\n${drafts} draft · ${pendings} pending · ${toVerify.length} testimonial${toVerify.length === 1 ? "" : "s"} to verify · ${removedHits.length} removed-content hit${removedHits.length === 1 ? "" : "s"}. Not ready for launch.`
+    : "\nAll content is live. Nothing draft, pending, unverified or removed.",
 );
 process.exitCode = total ? 1 : 0;

@@ -25,9 +25,12 @@ export function InstructorCard({
   person,
   variant = "hero",
   sizes,
+  lazy = false,
 }: {
   person: Instructor;
   variant?: "hero" | "grid";
+  /** Load the portrait lazily: a hero-style card below the fold (Home §5). */
+  lazy?: boolean;
   /** next/image sizes for the portrait. */
   sizes: string;
 }) {
@@ -42,7 +45,7 @@ export function InstructorCard({
       }
       className="group flex flex-col rounded-card pb-2 text-center"
     >
-      <InstructorArch person={person} sizes={sizes} eager={!grid} width={grid ? "max-w-32" : "max-w-50"} />
+      <InstructorArch person={person} sizes={sizes} eager={!grid && !lazy} width={grid ? "max-w-32" : "max-w-50"} />
       <span
         translate="no"
         className={cn(

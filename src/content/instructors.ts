@@ -20,18 +20,31 @@ import { instructorSchema, type Instructor } from "./types";
  * Never carried over (§11): ratings, review counts, student counts,
  * testimonials, placeholder qualifications.
  *
- * Portraits: the owner's own final files (20 Nov 2026), used exactly as
+ * Portraits, hero five: the owner's own final files (20 Nov 2026), used exactly as
  * supplied: no crop, scale, background change or re-encode. All five share one
  * framing (eyes at 35% of the height, same face size, centred, on --surface
  * #F1F5F9), so every card shows them the same way (object-fit: cover,
  * object-position: 50% 50%). Four are 600 × 600; Hafez Nurul Ahsan's is the
  * earlier 370 × 370 file, kept by the owner. Replace a file at the same path
  * and update its size here.
- * Everyone else has `photo: null` and keeps the arch monogram (spec §7.1);
- * the live images for the sisters are shared placeholders and are never used.
+ * Four more brothers use their live-site portraits at native size, marked
+ * to re-frame (see liveSitePortrait below). Everyone else has `photo: null`
+ * and keeps the arch monogram (spec §7.1): Mufti Muaj Al-Juhany has no live
+ * portrait, and the live images for the sisters are shared placeholders and
+ * are never used.
  */
 /** A square portrait at its native pixel size. */
-const portrait = (id: string, size: 600 | 370 = 600) => ({ src: `/instructors/${id}.webp`, width: size, height: size });
+const portrait = (id: string, size: 600 | 370 | 334 = 600) => ({ src: `/instructors/${id}.webp`, width: size, height: size });
+
+/**
+ * Live-site portraits (owner, 20 Nov 2026): each teacher's iq_instructor
+ * featured image (334 × 393), read from the live site. Originals in
+ * design/brand-source/instructors-original/; here a centred square crop at
+ * native size (334 × 334), never upscaled, re-keyed or retouched (the
+ * originals are cut-outs, so the arch's --surface shows behind them). Their
+ * framing is tighter than the hero set, so each is marked to re-frame.
+ */
+const liveSitePortrait = (id: string) => ({ ...portrait(id, 334), reframe: true as const });
 
 export const instructors: Instructor[] = instructorSchema.array().parse([
   /* ── Leadership ───────────────────────────────────────────────────────── */
@@ -165,7 +178,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Certified Mufti, serving at a fatwa center in Bangladesh",
       "Proficient in Quranic Arabic, Tafsir, Fiqh, Aqeedah and Hadith",
     ]),
-    photo: null,
+    photo: liveSitePortrait("mufti-mushfiqur-rahman"),
   },
   {
     id: "mufti-shamsuddin-rois",
@@ -183,7 +196,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Full Hifz with Tajweed",
       "Teaches Qur’an, Fiqh and Aqeedah online and in person",
     ]),
-    photo: null,
+    photo: liveSitePortrait("mufti-shamsuddin-rois"),
   },
   {
     id: "mufti-sajidullah",
@@ -201,7 +214,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Hafiz with Tajweed and Tarteel",
       "Fluent in Quranic Arabic, translation and tafsir",
     ]),
-    photo: null,
+    photo: liveSitePortrait("mufti-sajidullah"),
   },
   {
     id: "mufti-jubayer-bin-jalaluddin",
@@ -220,7 +233,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Strong in Tajweed, recitation and translation",
     ]),
     legacyPath: "/instructor/mufti-harun-izhar/",
-    photo: null,
+    photo: liveSitePortrait("mufti-jubayer-bin-jalaluddin"),
   },
   {
     id: "mawlana-mouinul-islam",

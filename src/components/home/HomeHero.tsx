@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
+import { teachersSection } from "@/content/home";
 import { instructors } from "@/content/instructors";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ButtonLink } from "@/components/ui/Button";
@@ -63,11 +64,12 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
               </li>
             ))}
           </InstructorRow>
-          {/* The subhead's promise to sisters, answered from the data without photos (owner, 20 Nov 2026). */}
+          {/* The subhead's promise to sisters, answered from the data without photos (owner, 20 Nov 2026).
+              It opens Home §5, where the female teachers are listed. */}
           {femaleTeachers > 0 ? (
             <p className="mt-4 text-center text-ui text-ink-body">
               <Link
-                href="/instructors"
+                href={`#${teachersSection.id}`}
                 className="inline-flex min-h-11 items-center rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
               >
                 Plus {femaleTeachers} female teachers for sisters and boys up to&nbsp;10

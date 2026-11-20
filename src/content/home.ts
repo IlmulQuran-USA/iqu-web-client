@@ -1,11 +1,13 @@
 import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, usd, type CourseId } from "./pricing";
-import { courseFaq, courseRules, teacherMatching } from "./courses";
+import { courseContent, courseFaq, courseRules, teacherMatching } from "./courses";
+import { instructors } from "./instructors";
 import { PENDING, site } from "./site";
+import { LANGUAGES, type Instructor } from "./types";
 
 /*
  * Home page copy for sections 2–10 (spec §7.1), as approved by the owner on
- * 19 Nov 2026. Sections 5 (instructors), 6 (progress) and 7 (testimonials)
- * are left out until real content exists. Every fact names its source.
+ * 19 Nov 2026, and sections 5–7 (owner, 20 Nov 2026). Every fact names its
+ * source; numbers and credentials are computed from the data, never typed.
  * Prices are never typed here: they come from ./pricing. Course names and
  * day counts are read from ./pricing too, so this copy stays true when a
  * course changes.
@@ -126,6 +128,116 @@ export const howItWorks = {
       example: "In Hifz this means Sabaq (the new lesson), Sabqi (recent lessons) and Manzil (older portions revised).",
     },
   ],
+} as const;
+
+/* ── 5 · Our teachers ────────────────────────────────────────────────────── */
+
+const byId = (id: string): Instructor => {
+  const person = instructors.find((i) => i.id === id);
+  if (!person) throw new Error(`Unknown instructor ${id}`);
+  return person;
+};
+
+/** A credential shown word for word: every item must exist in the teacher's qualifications. */
+function credential(id: string, items: string[]) {
+  const person = byId(id);
+  const listed = person.qualifications.status === "pending" ? [] : person.qualifications.items;
+  for (const item of items) {
+    if (!listed.includes(item)) throw new Error(`"${item}" is not in ${person.name}'s qualifications`);
+  }
+  return { text: items.join(" · "), name: person.name };
+}
+
+/*
+ * The facts line, counted from src/content/instructors.ts (owner, 20 Nov 2026):
+ *   Muftis       the name carries "Mufti";
+ *   Huffaz       the name carries Hafez/Hafezah, or a qualification mentions
+ *                Hifz, Hafiz or Hafizah (Ustadha Maha Rashed is a Hafizah by
+ *                her bio, but her qualifications are pending, so not counted);
+ *   languages    every language a teacher teaches in, in LANGUAGES order.
+ * "20 of our teachers": the hero trust strip says "25+ qualified instructors"
+ * (owner), and the directory lists 20.
+ */
+const isHafiz = (p: Instructor) =>
+  /^Hafez(ah)?\b/.test(p.name) ||
+  (p.qualifications.status !== "pending" && p.qualifications.items.some((q) => /\b(Hifz|Hafiz|Hafizah)\b/.test(q)));
+const teachingLanguages = LANGUAGES.filter((l) => instructors.some((p) => p.languages.includes(l)));
+
+export const teachersSection = {
+  id: "our-teachers",
+  heading: "Our teachers",
+  facts: [
+    `${instructors.length} of our teachers`,
+    `${instructors.filter((p) => /^Mufti\b/.test(p.name)).length} Muftis`,
+    `${instructors.filter(isHafiz).length} Huffaz and Hafizahs`,
+    `${instructors.filter((p) => p.gender === "female").length} female teachers`,
+    listOf([...teachingLanguages]),
+  ],
+  /** Owner, 20 Nov 2026: two rows, excluding the five hero instructors. */
+  rows: [
+    {
+      heading: "For brothers",
+      // Instructor ids, checked against src/content/instructors.ts.
+      ids: ["mufti-muaj-al-juhany", "mufti-jubayer-bin-jalaluddin", "mufti-shamsuddin-rois", "mufti-mushfiqur-rahman", "mufti-sajidullah"].map((id) => byId(id).id),
+      credential: credential("mufti-muaj-al-juhany", ["M.A. in Arabic Literature, Darul Uloom Deoband, India"]),
+    },
+    {
+      heading: "For sisters and boys up to 10",
+      ids: ["ustadha-najiba-mahzabin-jeba", "ustadha-maha-rashed", "hafezah-nuha-rashed", "shifa-jalal", "afra-humayra"].map((id) => byId(id).id),
+      credential: credential("ustadha-najiba-mahzabin-jeba", ["Hafizah", "‘Alimah"]),
+    },
+  ],
+  all: { label: "See all teachers", href: "/instructors" },
+} as const;
+
+/* ── 6 · How progress is measured ────────────────────────────────────────── */
+
+const noorani = courseContent("noorani-qaidah");
+const hifzCopy = courseContent("quran-hifz");
+const arabic = courseContent("quranic-arabic-level-1");
+
+/** "10, 20, 30, 40 and 48", read from the Noorani Qaidah class plan's checkpoints. */
+const examClasses =
+  noorani.curriculum?.kind === "classPlan"
+    ? listOf(noorani.curriculum.rows.map((r) => r.checkpoint.match(/class (\d+)/)?.[1]).filter((n): n is string => !!n))
+    : "";
+const hifzParts = hifzCopy.method?.kind === "steps" ? listOf(hifzCopy.method.steps.map((s) => s.title)) : "";
+const arabicChecks = arabic.assessment?.status === "live" ? arabic.assessment.items : [];
+if (!examClasses || !hifzParts || arabicChecks.length === 0) throw new Error("Progress facts are missing from courses.ts");
+
+/*
+ * Real assessment facts only (COURSE-CONTENT.md §1, §3, §5, §6, all live).
+ * No dashboard, weekly reports or portal promises: there is no parent portal
+ * yet (owner, 20 Nov 2026).
+ */
+export const progressSection = {
+  heading: "How progress is measured",
+  rows: [
+    { label: courseById("noorani-qaidah").label, href: "/courses/noorani-qaidah#curriculum", text: `Revision and an exam after classes ${examClasses}.` },
+    { label: courseById("quran-hifz").label, href: "/courses/quran-hifz#curriculum", text: `${hifzParts} in every class: the new lesson, recent lessons and older portions.` },
+    {
+      label: courseById("quranic-arabic-level-1").label,
+      href: "/courses/quranic-arabic-level-1#curriculum",
+      text: `${listOf(arabicChecks.map((c, i) => (i === 0 ? c : c.charAt(0).toLowerCase() + c.slice(1))))}.`,
+    },
+    { label: "Every course", href: null, text: courseRules.certificate.text },
+  ],
+  /*
+   * Proof (live results page, read 20 Nov 2026). Linked on the live site until
+   * /results/summer-2026 exists (summerOpen.resultsHref in ./courses).
+   */
+  proof: {
+    status: "live",
+    title: "Summer Ilm Camp 2026: final results",
+    text: "Every student was assessed in Qur’an & Tajweed, Aqeedah, Fiqh, Akhlaq and Seerah, 20 marks each.",
+    link: { label: "See the 2026 results", href: "https://ilmulquranus.org/summer-program-results/" },
+  },
+} as const;
+
+/* ── 7 · What families say ───────────────────────────────────────────────── */
+
+export const familiesSection = {
+  heading: "What families say",
 } as const;
 
 /* ── 8 · Giving (the only giving section on Home) ────────────────────────── */

@@ -74,6 +74,8 @@ export const instructorSchema = z.object({
       src: z.string().startsWith("/instructors/"),
       width: z.number().int().positive(),
       height: z.number().int().positive(),
+      /** The framing differs from the hero set (eyes at 35%, same face size): re-frame when a better original exists. Listed by content:check. */
+      reframe: z.literal(true).optional(),
     })
     .nullable(),
 });

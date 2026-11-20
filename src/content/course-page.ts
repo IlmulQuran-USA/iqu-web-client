@@ -78,7 +78,7 @@ export function teachersOf(course: Course): Instructor[] {
  * Highlights, minus any claim about male and female teachers when the
  * course's teacher list does not have both (owner, 20 Nov 2026).
  */
-const BOTH_GENDERS_CLAIM = /male.*female|female.*male/i;
+const BOTH_GENDERS_CLAIM = /\bmale\b.*\bfemale\b|\bfemale\b.*\bmale\b/i;
 export function highlightsOf(course: Course): string[] {
   const items = shownList(course.content.highlights);
   const genders = new Set(teachersOf(course).map((p) => p.gender));
