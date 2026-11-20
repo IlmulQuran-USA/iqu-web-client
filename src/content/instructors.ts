@@ -27,24 +27,17 @@ import { instructorSchema, type Instructor } from "./types";
  * object-position: 50% 50%). Four are 600 × 600; Hafez Nurul Ahsan's is the
  * earlier 370 × 370 file, kept by the owner. Replace a file at the same path
  * and update its size here.
- * Four more brothers use their live-site portraits at native size, marked
- * to re-frame (see liveSitePortrait below). Everyone else has `photo: null`
- * and keeps the arch monogram (spec §7.1): Mufti Muaj Al-Juhany has no live
- * portrait, and the live images for the sisters are shared placeholders and
- * are never used.
+ * Everyone else has `photo: null` and keeps the arch monogram (spec §7.1).
+ * Mufti Mushfiqur Rahman, Mufti Shamsuddin Rois, Mufti Sajidullah and Mufti
+ * Jubayer bin Jalaluddin: their live-site portraits were removed (owner,
+ * 21 Nov 2026) until the owner supplies new ones; the live-site originals
+ * stay in design/brand-source/instructors-original/. Mufti Muaj Al-Juhany
+ * has no live portrait, and the live images for the sisters are shared
+ * placeholders and are never used. A photo that is usable but needs better
+ * framing can carry `reframe: true`; `npm run content:check` lists it.
  */
 /** A square portrait at its native pixel size. */
-const portrait = (id: string, size: 600 | 370 | 334 = 600) => ({ src: `/instructors/${id}.webp`, width: size, height: size });
-
-/**
- * Live-site portraits (owner, 20 Nov 2026): each teacher's iq_instructor
- * featured image (334 × 393), read from the live site. Originals in
- * design/brand-source/instructors-original/; here a centred square crop at
- * native size (334 × 334), never upscaled, re-keyed or retouched (the
- * originals are cut-outs, so the arch's --surface shows behind them). Their
- * framing is tighter than the hero set, so each is marked to re-frame.
- */
-const liveSitePortrait = (id: string) => ({ ...portrait(id, 334), reframe: true as const });
+const portrait = (id: string, size: 600 | 370 = 600) => ({ src: `/instructors/${id}.webp`, width: size, height: size });
 
 export const instructors: Instructor[] = instructorSchema.array().parse([
   /* ── Leadership ───────────────────────────────────────────────────────── */
@@ -178,7 +171,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Certified Mufti, serving at a fatwa center in Bangladesh",
       "Proficient in Quranic Arabic, Tafsir, Fiqh, Aqeedah and Hadith",
     ]),
-    photo: liveSitePortrait("mufti-mushfiqur-rahman"),
+    photo: null, // Removed 21 Nov 2026; the owner will supply a new portrait.
   },
   {
     id: "mufti-shamsuddin-rois",
@@ -196,7 +189,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Full Hifz with Tajweed",
       "Teaches Qur’an, Fiqh and Aqeedah online and in person",
     ]),
-    photo: liveSitePortrait("mufti-shamsuddin-rois"),
+    photo: null, // Removed 21 Nov 2026; the owner will supply a new portrait.
   },
   {
     id: "mufti-sajidullah",
@@ -214,7 +207,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Hafiz with Tajweed and Tarteel",
       "Fluent in Quranic Arabic, translation and tafsir",
     ]),
-    photo: liveSitePortrait("mufti-sajidullah"),
+    photo: null, // Removed 21 Nov 2026; the owner will supply a new portrait.
   },
   {
     id: "mufti-jubayer-bin-jalaluddin",
@@ -233,7 +226,7 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Strong in Tajweed, recitation and translation",
     ]),
     legacyPath: "/instructor/mufti-harun-izhar/",
-    photo: liveSitePortrait("mufti-jubayer-bin-jalaluddin"),
+    photo: null, // Removed 21 Nov 2026; the owner will supply a new portrait.
   },
   {
     id: "mawlana-mouinul-islam",
