@@ -1,4 +1,5 @@
 import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, usd, type CourseId } from "./pricing";
+import { courseFaq, teacherMatching } from "./courses";
 import { PENDING, site } from "./site";
 
 /*
@@ -56,11 +57,18 @@ export const schedule = {
       body: "Pick the session length that suits your child. The fee depends only on the number of days.",
     },
   ],
-  /**
-   * Spec §7.1 lists free make-up sessions. Owner, 19 Nov 2026: not shown
-   * until the make-up policy is confirmed.
-   */
-  makeUpSessions: PENDING,
+  // Spec §7.1's "free make-up sessions" is replaced by the cancelled-class
+  // rule (Tuition & Refund Policy, CONTENT-ADDENDUM.md §2), which appears
+  // only in the FAQ.
+} as const;
+
+/* ── Fees and aid (shared by Home, course pages and the scholarship copy) ── */
+
+export const aid = {
+  // PRODUCT.md "Positioning".
+  studyFree: "Nearly half of our students study free.",
+  // Live, Donate page (CONTENT-ADDENDUM.md §1).
+  subsidized: { status: "live", text: "The rest pay subsidized fees, with tuition reduced by 50%, 45% or 30%." },
 } as const;
 
 /* ── 3 · Programs ────────────────────────────────────────────────────────── */
@@ -76,8 +84,8 @@ export const programsSection = {
   intro: "Live classes for children, teens and adults, priced by course and by the number of days you choose.",
   monthlyLabel: "Monthly classes",
   programsLabel: "Seasonal and weekend programs",
-  // PRODUCT.md "Positioning": nearly half of students study free.
-  scholarshipNote: "Scholarships are available. Nearly half of our students study free.",
+  // PRODUCT.md "Positioning"; the subsidy line is live (Donate page).
+  scholarshipNote: `Scholarships are available. ${aid.studyFree} ${aid.subsidized.text}`,
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
   daysLine: (min: number, max: number) =>
@@ -100,10 +108,10 @@ export const howItWorks = {
       body: "A short form: who is learning, which course, and the days that suit you.",
     },
     {
-      // Spec §7.1 section 4. TO CONFIRM the matching criteria.
-      status: "draft",
+      // CONTENT-ADDENDUM.md §3.4 (draft).
+      status: teacherMatching.status,
       title: "We match you with a teacher",
-      body: "By level, preferred teacher gender, language and schedule.",
+      body: teacherMatching.text,
     },
     {
       title: "Your first month is free",
@@ -122,8 +130,8 @@ export const howItWorks = {
 /* ── 8 · Giving (the only giving section on Home) ────────────────────────── */
 
 export const giving = {
-  // PRODUCT.md "Positioning".
-  heading: "Nearly half of our students study free.",
+  heading: aid.studyFree,
+  subsidized: aid.subsidized.text,
   // Rendered as: <name> is the teaching name of <legal name>, <rest>. Names are marked translate="no".
   bodyJoin: "is the teaching name of",
   bodyRest: `, a ${site.taxStatus}. Donations, including Zakat, go to the scholarship fund that pays for those places.`,
@@ -179,8 +187,8 @@ export const faq = {
     {
       status: "draft",
       q: "Is the first month really free?",
-      // PRODUCT.md decision 4; owner's wording for the scholarship route.
-      a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your first month. After that, the monthly fee is charged on the 1st of each month. Families asking for a scholarship are contacted by our team instead.",
+      // PRODUCT.md decision 4; owner's wording for the scholarship route. Billing date: PRODUCT.md open decision K1.
+      a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your first month. After that, the fee is charged monthly on your billing date. Families asking for a scholarship are contacted by our team instead.",
     },
     {
       status: "draft",
@@ -202,6 +210,8 @@ export const faq = {
       // Owner, 19 Nov 2026. Program ages: PLUGIN-INVENTORY §1 via ./pricing.
       a: `Monthly classes usually start from age 6 or 7, depending on the child’s readiness. The ${programs.weekend.label} (ages ${programs.weekend.ages}) and the ${programs.summer.label} (ages ${programs.summer.ages}) welcome children from age 5.`,
     },
+    // The cancelled-class rule (Tuition & Refund Policy), worded as on the course pages.
+    courseFaq[2],
     {
       status: "draft",
       q: "What do we need for classes?",

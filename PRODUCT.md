@@ -52,7 +52,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   - **WhatsApp is manual only.** The admin uses a *Copy message* button and pastes the text into WhatsApp. There is no WhatsApp API.
   - Whether the portal later replaces Telegram is still open.
 - **Donations:** Zeffy, synced into `iqu_zeffy_payments`. That table is the only record of giving.
-- **Tuition billing:** Stripe checkout during enrolment, then monthly billing on the 1st of each month (see Capabilities).
+- **Tuition billing:** Stripe checkout during enrolment, then charged monthly on the family's billing date (see Capabilities and open decision K1).
 - **Other tools:** Brevo (email), Meta Ads (the Meta CAPI Lead event fires on enrolment confirmation, with deduplication), WordPress. The live site and the `iqu-registration` plugin stay the source for current data.
 - **Existing data:** `iqu_registrations` (50 fields per enrolment), `iqu_zeffy_payments`, and `iqu_coupons`. The enrolment redesign changes how these are presented, not the data model.
 
@@ -68,7 +68,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 1. **Fees are published.** Course cards and pages show a from-price with a scholarship note. Real per-course fees already exist in the live `iqu-registration` WordPress plugin, which prices by course. Take fees from there and never invent one. Until they are connected, show `$XX`.
 2. **No sibling discount.** Every child pays the full fee. *This conflicts with* spec §7.3 section 7, §7.11, §7.17 Step 4 and §7D.4 Billing. Do not build a sibling discount line, an auto-apply, or a sibling column in the fee table.
 3. **Tuition is in USD only.** *This conflicts with* spec §9.2 ("note where CAD is accepted") for tuition. The donor FAQ question about giving in CAD (§7.10) is a Zeffy matter and is separate from this.
-4. **The trial is the first month free.** After *Enroll for Free*, the guardian adds a card at Stripe checkout. Regular monthly billing follows, charged on the 1st of each month. *This conflicts with* spec §7.17 ("No payment is taken in this flow") and the Step 1 reassurance line *"No payment is required to start."* Copy must not claim that no card is needed. Say that nothing is charged during the free month.
+4. **The trial is the first month free.** After *Enroll for Free*, the guardian adds a card at Stripe checkout. Regular monthly billing follows, charged monthly on your billing date (open decision K1). *This conflicts with* spec §7.17 ("No payment is taken in this flow") and the Step 1 reassurance line *"No payment is required to start."* Copy must not claim that no card is needed. Say that nothing is charged during the free month.
 5. **Home hero: Concept B is the default; A and C are selectable.** Admins edit the hero's layout, text, image and featured instructors without code, in the Next.js admin portal at /a/settings/home, built with the portal after the public site. Until then the hero is changed only in src/content/home-hero.ts.
 
 **Hard constraints carried from the spec:**
@@ -84,7 +84,8 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 **Open product decisions (do not resolve silently):**
 - Whether the portal replaces Telegram after v1.
 - How the first-month-free trial works for reduced-fee and Zakat scholarship families: is a card still required, and what do they pay after the first month?
-- How the first month's billing lines up with the 1st-of-month cycle (proration).
+- **K1 · Billing date** (CONTENT-ADDENDUM.md §7). The published Tuition Policy (16 Nov 2026) charges each family on its own billing date (the day the free month ends), which can be moved on request; this file and the site's FAQ used to say "charged on the 1st of each month". Until the owner decides, all copy says "charged monthly on your billing date". This also settles or replaces the old question of how the first month lines up with a 1st-of-month cycle (proration).
+- **K2 · Phone number** (CONTENT-ADDENDUM.md §7). The live About page lists (214) 662-1591; the Contact page and the new site list +1 (214) 529-3544. The site keeps +1 (214) 529-3544 until the owner confirms which is correct, or whether both are in use.
 - Whether Bengali launches as a second locale in v1 or v2 (§10.3 Q6).
 - Whether parents see exact minutes or only a status (§10.3 Q7).
 - Who may approve a correction (§10.3 Q8).

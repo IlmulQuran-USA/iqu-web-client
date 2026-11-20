@@ -134,6 +134,8 @@ export function courseContentSchema(instructorIds: readonly string[]) {
     id: slugSchema,
     /** The live WordPress path, for the 301 at launch (COURSE-CONTENT.md §11, C6); null when there is none. */
     livePath: z.string().startsWith("/").nullable(),
+    /** Keep the page out of search and the sitemap until its content is live. */
+    noindex: z.literal(true).optional(),
     /** Meta description. */
     meta: copyTextSchema,
     overview: copyTextSchema,
@@ -143,6 +145,8 @@ export function courseContentSchema(instructorIds: readonly string[]) {
     placement: copyTextSchema.optional(),
     /** The course's aim. Never presented as a guarantee. */
     objective: copyTextSchema.optional(),
+    /** Length of the whole course, when it has one ("48 classes", "One year"). */
+    duration: copyTextSchema.optional(),
     /** Fixed schedule, ages and dates. */
     schedule: copyListSchema.optional(),
     highlights: copyListSchema.optional(),

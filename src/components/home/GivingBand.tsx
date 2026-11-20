@@ -1,5 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Fragment } from "react";
 import { GirihLattice } from "@/components/ui/GirihLattice";
 import { giving } from "@/content/home";
 import { site } from "@/content/site";
@@ -26,8 +27,19 @@ export function GivingBand() {
         <div className="lg:col-span-5 lg:pt-3">
           <p className="max-w-measure text-body-lg text-pretty text-ink-body">
             <span translate="no">{site.name}</span> {giving.bodyJoin} <span translate="no">{site.legalName}</span>
-            {giving.bodyRest}
+            {/* "501(c)(3)" never breaks at its parentheses. */}
+            {giving.bodyRest.split(site.taxStatus).map((part, i) =>
+              i === 0 ? (
+                part
+              ) : (
+                <Fragment key={i}>
+                  <span className="whitespace-nowrap">{site.taxStatus}</span>
+                  {part}
+                </Fragment>
+              ),
+            )}
           </p>
+          <p className="mt-4 max-w-measure text-body text-pretty text-ink-body">{giving.subsidized}</p>
           <p className="mt-4 text-ui font-medium text-ink tabular-nums">{giving.legal}</p>
           <ul className="mt-6 flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:gap-x-8">
             {giving.links.map((link) => (

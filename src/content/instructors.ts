@@ -1,4 +1,4 @@
-import { live, liveList, pending, pendingList } from "./copy";
+import { draft, draftList, live, liveList, pending, pendingList } from "./copy";
 import { instructorSchema, type Instructor } from "./types";
 
 /*
@@ -64,8 +64,14 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
     bio: live(
       "Mufti Ahmed Mostafa Raian is a Hafiz and ‘Alim serving as Qur’an instructor and Education Secretary at Ilm-Ul-Quran USA. He is also an Imam and Khateeb, with deep expertise in Qur’anic memorization, Tajweed and the classical Islamic sciences.",
     ),
-    // §10: the live field holds course copy and lorem ipsum (§11).
-    qualifications: pendingList,
+    // §10: the live field holds course copy and lorem ipsum (§11). This list
+    // is taken from his live bio: CONTENT-ADDENDUM.md §4 (draft).
+    qualifications: draftList([
+      "Hafiz of the Qur’an",
+      "‘Alim",
+      "Imam and Khateeb",
+      "Qur’an instructor and Education Secretary at Ilm-Ul-Quran USA",
+    ]),
     legacyPath: "/instructor/muhamad-raiyan/",
     photo: portrait("mufti-ahmed-mostafa-raian"),
   },
@@ -113,8 +119,12 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
     role: "Qur’an & Islamic Studies",
     roleFull: live("Qur’an & Islamic Education Teacher"),
     languages: ["Bengali", "Arabic", "Urdu"],
-    // §10: the live fields hold course copy and lorem ipsum (§11).
-    bio: pending,
+    // §10: the live fields hold course copy and lorem ipsum (§11). Bio:
+    // CONTENT-ADDENDUM.md §4 (draft). Qualifications stay pending: never
+    // invent credentials for a real person.
+    bio: draft(
+      "Mufti Shaker Waliullah teaches Qur’an and Islamic education at Ilm-Ul-Quran USA, in Bengali, Arabic and Urdu.",
+    ),
     qualifications: pendingList,
     photo: portrait("mufti-shaker-waliullah"),
   },

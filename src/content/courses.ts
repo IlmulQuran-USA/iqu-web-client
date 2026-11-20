@@ -4,8 +4,9 @@ import { monthlyCourses, programs, type CourseId, type MonthlyCourse, type Progr
 import { courseContentSchema, type CourseContent } from "./types";
 
 /*
- * Course and program copy, from docs/spec/COURSE-CONTENT.md §1–§9 (owner,
- * 20 Nov 2026). Names, slugs and prices are not here: they come from
+ * Course and program copy, from docs/spec/COURSE-CONTENT.md §1–§9 and
+ * docs/spec/CONTENT-ADDENDUM.md §3 and §5 (owner, 20 Nov 2026). Where the
+ * two differ, the addendum wins. Names, slugs and prices are not here: they come from
  * ./pricing, matched by id, and this file fails to load if the two lists
  * drift apart.
  *
@@ -45,6 +46,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
       "For beginners who want to learn to read the Qur’an with proper pronunciation and Tajweed. It builds a strong foundation in recognizing Arabic letters, joining words and articulating each sound correctly.",
     ),
     audience: live("Children and adults starting from the beginning."),
+    // The 48-class plan below (live).
+    duration: live("48 classes"),
     highlights: liveList([
       "Step by step, from single letters to complete words",
       "Correct pronunciation and Tajweed rules",
@@ -198,6 +201,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
     ),
     audience: live("Students who can read the Qur’an fluently with harakat and sukun. No prior Arabic grammar is needed."),
     // Owner, 20 Nov 2026. The fee is the 4-day fee in ./pricing.
+    duration: live("One year"),
     schedule: liveList(["Four days a week, for one year."]),
     highlights: liveList([
       "Practical, Qur’an-focused learning",
@@ -300,22 +304,59 @@ const courseCopy: Record<CourseId, CourseContent> = {
     ),
     audience: draft("Students who can already read the Qur’an."),
     certificate: { status: "live", value: true },
-    // Several teachers list Qur’an translation among their skills; the owner has not assigned any.
-    teachers: { status: "pending", ids: [] },
+    // CONTENT-ADDENDUM.md §3.2 (draft): every teacher whose profile lists Qur’an translation.
+    teachers: {
+      status: "draft",
+      ids: [
+        "mufti-sajidullah",
+        "mufti-jubayer-bin-jalaluddin",
+        "ustad-alauddin-khilzi",
+        "jawadul-islam-khan-jami",
+        "mawlana-nazrul-islam",
+        "ustadha-najiba-mahzabin-jeba",
+      ],
+    },
   },
 
   "islamic-studies": {
     id: "islamic-studies",
     livePath: null,
-    // The owner has not supplied these. Until then the page shows only its
-    // price, schedule options and the rules in courseRules. Never borrow the
-    // Weekend program's curriculum.
+    // CONTENT-ADDENDUM.md §3.1 (draft). The page stays noindex, and out of
+    // the sitemap, until its overview is live (owner, 20 Nov 2026). Never
+    // borrow the Weekend program's curriculum.
+    noindex: true,
     meta: pending,
-    overview: pending,
-    audience: pending,
-    curriculum: { kind: "pending", status: "pending" },
+    overview: draft(
+      "Islamic Studies gives children, teens and adults a clear, practical grounding in their faith: what Muslims believe, how to worship correctly and how to live with good character. It is taught by qualified ‘Ulama and Muftis.",
+    ),
+    audience: draft(
+      "Anyone who wants structured Islamic knowledge alongside their Qur’an classes. Lessons are pitched to the student’s age and level.",
+    ),
+    curriculum: {
+      kind: "topics",
+      status: "draft",
+      groups: [
+        { title: "Aqeedah", items: ["The six pillars of Iman and Tawheed"] },
+        { title: "Fiqh of worship", items: ["Purification, wudu, salah, fasting, zakah and Hajj"] },
+        { title: "Seerah", items: ["The life of the Prophet ﷺ"] },
+        { title: "Stories", items: ["The Prophets and the Sahabah"] },
+        { title: "Akhlaq and Adab", items: ["Character and manners"] },
+        { title: "Daily life", items: ["Duas and adhkar"] },
+        { title: "Advanced students", items: ["Selected topics in Hadith and Tafsir"] },
+      ],
+    },
     certificate: { status: "live", value: true },
-    teachers: { status: "pending", ids: [] },
+    // CONTENT-ADDENDUM.md §3.1 (draft, from their profiles).
+    teachers: {
+      status: "draft",
+      ids: [
+        "mufti-ariful-islam",
+        "mufti-mushfiqur-rahman",
+        "mufti-shamsuddin-rois",
+        "mawlana-nazrul-islam",
+        "mufti-sajidullah",
+      ],
+    },
   },
 };
 
@@ -394,10 +435,12 @@ const programCopy: Record<ProgramId, CourseContent> = {
     overview: live(
       "An online summer program that keeps children connected to the Qur’an and Islamic learning during their summer break, with qualified teachers in a nurturing environment.",
     ),
-    // 2026 dates and schedule (live). Ages and levels: PLUGIN-INVENTORY §1.
+    // 2026 dates and schedule: CONTENT-ADDENDUM.md §5 (live, the Summer
+    // Program page, which replaces the old course post). Ages and levels:
+    // PLUGIN-INVENTORY §1.
     schedule: liveList([
-      "1 Jun – 31 Jul 2026.",
-      "Five days a week (Saturday, Sunday and Tuesday–Thursday), 10:00 AM–12:00 PM CT.",
+      "1 Jun – 31 Jul 2026, 8 weeks.",
+      "Monday–Thursday, 10 AM–12 PM CT.",
       "Evening homework support.",
       "Ages 5–15, in two levels: Level 1 for ages 5–10, Level 2 for ages 11–15.",
     ]),
@@ -455,6 +498,40 @@ export const summerOpen = {
   dates2027: pending,
   /** The 2026 results page moves from /summer-program-results/ to here at launch. */
   resultsHref: "/results/summer-2026",
+} as const;
+
+/* ── Course page FAQs and teacher matching (CONTENT-ADDENDUM.md §3.3–§3.4) ── */
+
+/** The same five questions on every course page, worded as in the addendum (draft). */
+export const courseFaq = [
+  {
+    status: "draft",
+    q: "Can I choose a male or female teacher?",
+    a: "Male teachers teach brothers; female teachers teach sisters and young children.",
+  },
+  { status: "draft", q: "One-on-one or group?", a: "Both. Choose one-on-one or a small batch when you enroll." },
+  {
+    status: "draft",
+    q: "What if a class is cancelled?",
+    // Tuition & Refund Policy, 16 Nov 2026 (CONTENT-ADDENDUM.md §2). Never promise make-ups beyond it.
+    a: "If your teacher or we cancel a class and it isn’t made up, it is refunded or taken off your next month.",
+  },
+  { status: "draft", q: "Is there a certificate?", a: "Yes, at the end of the course." },
+  {
+    status: "draft",
+    q: "Can we change days or the course later?",
+    a: "Yes. The new monthly amount starts from your next billing date, and we confirm it with you first.",
+  },
+] as const;
+
+/**
+ * "We match you with a teacher" (CONTENT-ADDENDUM.md §3.4, draft). The
+ * addendum says "girls and young children" here; the owner's decision of
+ * 20 Nov 2026 and the addendum's own §3.3 say "sisters", which is kept.
+ */
+export const teacherMatching = {
+  status: "draft",
+  text: "We match by the student’s level, the teacher gender the family prefers (female teachers for sisters and young children), and the days and times that suit the family.",
 } as const;
 
 /* ── Validation and lookup ───────────────────────────────────────────────── */

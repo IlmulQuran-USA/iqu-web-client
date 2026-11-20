@@ -134,7 +134,8 @@ export const programs = {
     label: "Summer Ilm Camp",
     href: "/programs/summer-ilm-camp",
     ages: "5–15",
-    length: "two months",
+    /** CONTENT-ADDENDUM.md §5 (live): 1 Jun – 31 Jul 2026, Monday–Thursday. */
+    length: "8 weeks",
     /** One-time fee for the whole program: admin setting `summer_fee` (§2.4). */
     fee: 40,
     /**
