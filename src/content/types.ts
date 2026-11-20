@@ -8,13 +8,49 @@ import { wholePhraseIndex } from "@/lib/text";
  * so that no layout can break, whatever an editor types.
  */
 
+/* ── Copy status (owner, 20 Nov 2026) ───────────────────────────────────── */
+
+/**
+ * Every text carried over from docs/spec/COURSE-CONTENT.md says how far it is
+ * approved:
+ *   live     the owner's own wording (lightly edited for grammar and US English)
+ *   draft    written to fill a gap; the owner must approve it before launch
+ *   pending  not supplied yet; the value is empty and nothing is invented
+ * `npm run content:check` lists every draft and pending item.
+ */
+export const COPY_STATUSES = ["live", "draft", "pending"] as const;
+export type CopyStatus = (typeof COPY_STATUSES)[number];
+const approved = z.enum(["live", "draft"]);
+const pendingStatus = z.literal("pending");
+
+/** One paragraph or sentence. */
+export const copyTextSchema = z.union([
+  z.object({ status: approved, text: z.string().trim().min(1) }),
+  z.object({ status: pendingStatus, text: z.null() }),
+]);
+export type CopyText = z.infer<typeof copyTextSchema>;
+
+/** A list of short items (highlights, qualifications, schedule lines). */
+export const copyListSchema = z.union([
+  z.object({ status: approved, items: z.array(z.string().trim().min(1)).min(1) }),
+  z.object({ status: pendingStatus, items: z.array(z.string()).max(0) }),
+]);
+export type CopyList = z.infer<typeof copyListSchema>;
+
+const slugSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lowercase-hyphenated slug");
+
 /* ── Instructors ─────────────────────────────────────────────────────────── */
 
+export const LANGUAGES = ["English", "Bengali", "Arabic", "Urdu"] as const;
+export type Language = (typeof LANGUAGES)[number];
+
 export const instructorSchema = z.object({
-  /** URL slug, made from the name. Never the old site's instructor URL. */
-  id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lowercase-hyphenated slug"),
-  /** Full name including its title ("Mufti …", "Hafez …"), as the owner writes it. */
+  /** URL slug (COURSE-CONTENT.md §10). Never the old site's instructor URL. */
+  id: slugSchema,
+  /** Full name including its title ("Mufti …", "Hafez …"), exactly as COURSE-CONTENT.md §10 writes it. */
   name: z.string().min(1).max(60),
+  /** Brothers are taught by male teachers; sisters and young children by female teachers (COURSE-CONTENT.md §1). */
+  gender: z.enum(["male", "female"]),
   /**
    * Short caption under the name on cards. Never repeats the title that is
    * already in the name. At most 24 characters so it stays within two lines
@@ -22,7 +58,16 @@ export const instructorSchema = z.object({
    */
   role: z.string().trim().min(1).max(24),
   /** Full wording of the role, for the instructor profile page. */
-  roleFull: z.string().trim().min(1),
+  roleFull: copyTextSchema,
+  /** The languages this teacher teaches in. */
+  languages: z.array(z.enum(LANGUAGES)).min(1),
+  /** Profile text, in full sentences. */
+  bio: copyTextSchema,
+  qualifications: copyListSchema,
+  /** The live profile is noindex: keep it out of search until the owner says otherwise. */
+  noindex: z.literal(true).optional(),
+  /** The old site's profile path when it does not match the teacher (COURSE-CONTENT.md §11, C6), for the 301. */
+  legacyPath: z.string().startsWith("/instructor/").optional(),
   /** Square portrait in public/instructors/; null keeps the arch monogram. */
   photo: z
     .object({
@@ -33,6 +78,99 @@ export const instructorSchema = z.object({
     .nullable(),
 });
 export type Instructor = z.infer<typeof instructorSchema>;
+
+/* ── Courses and programs (COURSE-CONTENT.md §1–§9) ──────────────────────── */
+
+/** A curriculum or teaching method. Its shape follows the owner's source. */
+export const curriculumSchema = z.discriminatedUnion("kind", [
+  /** Numbered class plan with checkpoints (Noorani Qaidah's 48 classes). */
+  z.object({
+    kind: z.literal("classPlan"),
+    status: approved,
+    rows: z.array(z.object({ classes: z.string(), focus: z.string(), checkpoint: z.string() })).min(1),
+  }),
+  /** Ordered steps or parts, each with a title and a sentence. */
+  z.object({
+    kind: z.literal("steps"),
+    status: approved,
+    steps: z.array(z.object({ title: z.string().min(1), text: z.string().min(1) })).min(1),
+  }),
+  /** Phases with a goal, topics and practice (Quranic Arabic Mastery). */
+  z.object({
+    kind: z.literal("phases"),
+    status: approved,
+    phases: z
+      .array(
+        z.object({
+          title: z.string().min(1),
+          months: z.string().min(1),
+          goal: z.string().min(1),
+          topics: z.array(z.string().min(1)).min(1),
+          practice: z.string().min(1),
+        }),
+      )
+      .min(1),
+  }),
+  /** Topic groups, each a heading and a list (programs). */
+  z.object({
+    kind: z.literal("topics"),
+    status: approved,
+    groups: z.array(z.object({ title: z.string().min(1), items: z.array(z.string().min(1)).min(1) })).min(1),
+  }),
+  /** Not supplied yet. */
+  z.object({ kind: z.literal("pending"), status: pendingStatus }),
+]);
+export type Curriculum = z.infer<typeof curriculumSchema>;
+
+/**
+ * The copy for one course or program. Its name, slug and prices are not here:
+ * they come from src/content/pricing.ts, matched by id. Builds the schema
+ * against the instructor list, so teachers can only be chosen by id.
+ */
+export function courseContentSchema(instructorIds: readonly string[]) {
+  const ids = new Set(instructorIds);
+  const teacherId = z.string().refine((id) => ids.has(id), { message: "not in the instructor list" });
+  return z.object({
+    id: slugSchema,
+    /** The live WordPress path, for the 301 at launch (COURSE-CONTENT.md §11, C6); null when there is none. */
+    livePath: z.string().startsWith("/").nullable(),
+    /** Meta description. */
+    meta: copyTextSchema,
+    overview: copyTextSchema,
+    /** Who it's for. */
+    audience: copyTextSchema.optional(),
+    /** Where it sits in the learning path, or what it covers. */
+    placement: copyTextSchema.optional(),
+    /** The course's aim. Never presented as a guarantee. */
+    objective: copyTextSchema.optional(),
+    /** Fixed schedule, ages and dates. */
+    schedule: copyListSchema.optional(),
+    highlights: copyListSchema.optional(),
+    curriculum: curriculumSchema.optional(),
+    /** How it is taught, as ordered steps or parts. */
+    method: curriculumSchema.optional(),
+    /** How it is taught, as a plain list. */
+    teaching: copyListSchema.optional(),
+    /** A path through the course, in order. */
+    path: copyListSchema.optional(),
+    assessment: copyListSchema.optional(),
+    outcomes: copyListSchema.optional(),
+    support: copyTextSchema.optional(),
+    note: copyTextSchema.optional(),
+    certificate: z.union([
+      z.object({ status: approved, value: z.boolean() }),
+      z.object({ status: pendingStatus, value: z.null() }),
+    ]),
+    /** The course that usually follows (COURSE-CONTENT.md §1 learning path). */
+    nextStepId: slugSchema.optional(),
+    /** Teachers listed on the live course page, by instructor id. */
+    teachers: z.union([
+      z.object({ status: approved, ids: z.array(teacherId).min(1) }),
+      z.object({ status: pendingStatus, ids: z.array(z.string()).max(0) }),
+    ]),
+  });
+}
+export type CourseContent = z.infer<ReturnType<typeof courseContentSchema>>;
 
 /* ── Home hero (spec §7.1 section 1; PRODUCT.md owner decision 5) ──────── */
 

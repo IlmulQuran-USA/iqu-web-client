@@ -180,7 +180,8 @@ function Column({
       <h2 id={headingId} className="eyebrow">
         {column.title}
       </h2>
-      <ul className="mt-2 flex flex-col">
+      {/* gap-y-1: a link that wraps to two lines stays visibly separate from the next. */}
+      <ul className="mt-2 flex flex-col gap-y-1">
         {column.links.map((link) => (
           <li key={link.href}>
             <FooterLink

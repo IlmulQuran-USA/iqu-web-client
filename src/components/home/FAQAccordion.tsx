@@ -65,7 +65,20 @@ export function FAQAccordion() {
                     className="size-5 shrink-0 text-ink-muted transition-transform duration-(--duration-default) ease-riwaq group-open:rotate-180 motion-reduce:transition-none"
                   />
                 </summary>
-                <p className="max-w-measure pb-6 text-body text-pretty text-ink-body">{item.a}</p>
+                <div className="flex max-w-measure flex-col gap-3 pb-6 text-body text-pretty text-ink-body">
+                  <p>{item.a}</p>
+                  {/* An answer may carry a short list (the cost answer's prices) and a closing line. */}
+                  {"points" in item ? (
+                    <ul className="flex list-disc flex-col gap-1.5 pl-5 marker:text-ink-muted">
+                      {item.points.map((point) => (
+                        <li key={point} className="tabular-nums">
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  {"after" in item ? <p>{item.after}</p> : null}
+                </div>
               </details>
             ))}
           </div>

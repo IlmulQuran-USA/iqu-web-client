@@ -1,12 +1,30 @@
-import { fromPrice, monthlyCourses, programs, usd } from "./pricing";
+import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, usd, type CourseId } from "./pricing";
 import { PENDING, site } from "./site";
 
 /*
  * Home page copy for sections 2–10 (spec §7.1), as approved by the owner on
  * 19 Nov 2026. Sections 5 (instructors), 6 (progress) and 7 (testimonials)
  * are left out until real content exists. Every fact names its source.
- * Prices are never typed here: they come from ./pricing.
+ * Prices are never typed here: they come from ./pricing. Course names and
+ * day counts are read from ./pricing too, so this copy stays true when a
+ * course changes.
+ *
+ * Copy that still needs the owner carries `status: "draft"` and is listed by
+ * `npm run content:check`.
  */
+
+const NUMBER_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven"];
+const inWords = (n: number) => NUMBER_WORDS[n] ?? String(n);
+/** "A", "A and B", "A, B and C". */
+const listOf = (items: string[]) =>
+  items.length < 2 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+
+const hifz = courseById("quran-hifz");
+/** Courses offered at one day count only (Quranic Arabic Mastery — Level 1). */
+const fixedCourses = monthlyCourses.filter(isFixedSchedule);
+const fixedDaysSentence = fixedCourses
+  .map((c) => `${c.label} is taught ${inWords(c.minDays)} days a week`)
+  .join("; ");
 
 /* ── 2 · Scheduling ──────────────────────────────────────────────────────── */
 
@@ -14,21 +32,27 @@ export const schedule = {
   // "time\u00A0zone" stays on one line when the heading is balanced.
   heading: "Your time\u00A0zone, not ours.",
   /** Spec §7.1 section 2. TO CONFIRM with the owner before launch. */
-  teachingHours: { from: 6, to: 23, label: "6 AM–11 PM", zones: "ET, CT, MT and PT" },
+  teachingHours: { status: "draft", from: 6, to: 23, label: "6 AM–11 PM", zones: "ET, CT, MT and PT" },
   points: [
     {
-      title: "6 AM–11 PM, your time",
       // Spec §7.1 section 2. TO CONFIRM.
+      status: "draft",
+      title: "6 AM–11 PM, your time",
       body: "Classes run from 6 AM to 11 PM in Eastern, Central, Mountain and Pacific time.",
     },
     {
-      title: "Choose your days",
       // PLUGIN-INVENTORY §2.1: 1–7 days a week; Hifz needs at least 3.
-      body: "Anywhere from one to seven days a week. Hifz needs at least three to make steady progress.",
+      // COURSE-CONTENT.md §6: Quranic Arabic Mastery — Level 1 is fixed at 4.
+      status: "live",
+      title: "Choose your days",
+      body: `Anywhere from one to seven days a week. Hifz needs at least ${inWords(hifz.minDays)} to make steady progress${
+        fixedDaysSentence ? `, and ${fixedDaysSentence}` : ""
+      }.`,
     },
     {
-      title: "30 or 45 minutes",
       // Lengths: spec §7.1 section 2, TO CONFIRM. Price rule: PLUGIN-INVENTORY §2.1.
+      status: "draft",
+      title: "30 or 45 minutes",
       body: "Pick the session length that suits your child. The fee depends only on the number of days.",
     },
   ],
@@ -43,6 +67,12 @@ export const schedule = {
 
 export const programsSection = {
   heading: "Programs for every stage",
+  /**
+   * The only courses Home lists, in this order (owner, 20 Nov 2026):
+   * Noorani Qaidah · Qur’an Nazirah · Qur’an Hifz, then the Weekend and Summer
+   * programs below. Every other course is in the catalog only ("See all courses").
+   */
+  courseIds: ["noorani-qaidah", "quran-nazirah", "quran-hifz"] satisfies CourseId[],
   intro: "Live classes for children, teens and adults, priced by course and by the number of days you choose.",
   monthlyLabel: "Monthly classes",
   programsLabel: "Seasonal and weekend programs",
@@ -50,7 +80,8 @@ export const programsSection = {
   scholarshipNote: "Scholarships are available. Nearly half of our students study free.",
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
-  daysLine: (min: number, max: number) => `${min}–${max} days a week · 30 or 45 minutes`,
+  daysLine: (min: number, max: number) =>
+    `${min === max ? min : `${min}–${max}`} days a week · 30 or 45 minutes`,
   weekendMeta: `Ages ${programs.weekend.ages} · on weekends`,
   summerMeta: `Ages ${programs.summer.ages} · ${programs.summer.length}`,
   // Owner, 19 Nov 2026: the reduced amount appears only in the enrolment flow.
@@ -69,8 +100,9 @@ export const howItWorks = {
       body: "A short form: who is learning, which course, and the days that suit you.",
     },
     {
-      title: "We match you with a teacher",
       // Spec §7.1 section 4. TO CONFIRM the matching criteria.
+      status: "draft",
+      title: "We match you with a teacher",
       body: "By level, preferred teacher gender, language and schedule.",
     },
     {
@@ -106,8 +138,26 @@ export const giving = {
 
 /* ── 9 · Common questions ────────────────────────────────────────────────── */
 
-const monthlyFrom = (key: (typeof monthlyCourses)[number]["key"]) => usd(fromPrice(monthlyCourses.find((c) => c.key === key)!));
-const twentyCourses = monthlyCourses.filter((c) => fromPrice(c) === fromPrice(monthlyCourses[0]));
+/*
+ * The cost answer: one lead sentence, then a short price list built from
+ * ./pricing so it names every catalog course and stays true when a price or
+ * day count changes:
+ *   - courses from the lowest one-day price, together;
+ *   - courses with a higher minimum (Hifz), each with its minimum;
+ *   - fixed-schedule courses (Arabic Level 1), each with its single fee;
+ *   - the two programs.
+ */
+const flexible = monthlyCourses.filter((c) => !isFixedSchedule(c));
+const lowestFrom = Math.min(...flexible.map(fromPrice));
+const fromLowest = flexible.filter((c) => fromPrice(c) === lowestFrom);
+const fromHigher = flexible.filter((c) => fromPrice(c) !== lowestFrom);
+const costPoints = [
+  `${listOf(fromLowest.map((c) => c.label))}: from ${usd(lowestFrom)} a month`,
+  ...fromHigher.map((c) => `${c.label}: from ${usd(fromPrice(c))} a month (at least ${c.minDays} days a week)`),
+  ...fixedCourses.map((c) => `${c.label}: ${usd(fromPrice(c))} a month (${c.minDays} days a week)`),
+  `${programs.weekend.label}: free`,
+  `${programs.summer.label}: ${usd(programs.summer.fee)} one-time, with a reduced option`,
+];
 
 /**
  * DRAFT answers, built only from the sources named on each. The owner reviews
@@ -118,34 +168,42 @@ export const faq = {
   all: { label: "All questions", href: "/faq" },
   items: [
     {
+      status: "draft",
       q: "How much do classes cost?",
-      // PLUGIN-INVENTORY §2.1–§2.5 via ./pricing; PRODUCT.md decision 4; owner's scholarship route.
-      a: `Monthly classes are priced by course and by the number of days a week. ${twentyCourses
-        .map((c) => c.label)
-        .join(", ")
-        .replace(/, ([^,]*)$/, " and $1")} start from ${monthlyFrom("qaidah")} a month, and Qur’an Hifz from ${monthlyFrom("hifz")} a month at its minimum of three days. Session length does not change the price, and fees are in US dollars. The ${programs.weekend.label} is free, and the ${programs.summer.label} is ${usd(programs.summer.fee)} one-time, with a reduced option. On monthly classes your first month is free. Families asking for a scholarship are contacted by our team.`,
+      // PLUGIN-INVENTORY §2.1–§2.5 and COURSE-CONTENT.md via ./pricing; PRODUCT.md decision 4; owner's scholarship route.
+      a: `Monthly classes start from ${usd(lowestFrom)} a month, and your first month is free. The fee depends on the course and the number of days a week:`,
+      points: costPoints,
+      after:
+        "Fees are in US dollars, and session length does not change the price. Families asking for a scholarship are contacted by our team.",
     },
     {
+      status: "draft",
       q: "Is the first month really free?",
       // PRODUCT.md decision 4; owner's wording for the scholarship route.
       a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your first month. After that, the monthly fee is charged on the 1st of each month. Families asking for a scholarship are contacted by our team instead.",
     },
     {
+      status: "draft",
       q: "What times are classes?",
-      // Spec §7.1 section 2 (hours, lengths: TO CONFIRM); PLUGIN-INVENTORY §2.1 (days).
-      a: "Classes run from 6 AM to 11 PM in Eastern, Central, Mountain and Pacific time. You choose from one to seven days a week (at least three for Hifz) and a 30- or 45-minute session.",
+      // Spec §7.1 section 2 (hours, lengths: TO CONFIRM); PLUGIN-INVENTORY §2.1 (days); COURSE-CONTENT.md §6 (Arabic).
+      a: `Classes run from 6 AM to 11 PM in Eastern, Central, Mountain and Pacific time. You choose from one to seven days a week (at least ${inWords(hifz.minDays)} for Hifz) and a 30- or 45-minute session.${
+        fixedDaysSentence ? ` ${fixedDaysSentence}.` : ""
+      }`,
     },
     {
+      status: "draft",
       q: "Are female teachers available?",
       // PRODUCT.md "Users"; spec §7.1 section 4 (matching by gender preference).
       a: "Yes. Female teachers are offered for girls and young children. Tell us your preference on the form and we take it into account when we match a teacher.",
     },
     {
+      status: "draft",
       q: "What is the youngest age you teach?",
       // Owner, 19 Nov 2026. Program ages: PLUGIN-INVENTORY §1 via ./pricing.
       a: `Monthly classes usually start from age 6 or 7, depending on the child’s readiness. The ${programs.weekend.label} (ages ${programs.weekend.ages}) and the ${programs.summer.label} (ages ${programs.summer.ages}) welcome children from age 5.`,
     },
     {
+      status: "draft",
       q: "What do we need for classes?",
       // Owner, 19 Nov 2026.
       a: "Classes are live on Zoom. We recommend a laptop or tablet with a steady internet connection. A phone works, but we don’t recommend it: the screen is too small for reading the Qur’an comfortably.",

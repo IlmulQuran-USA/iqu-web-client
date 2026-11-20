@@ -7,11 +7,12 @@
  * Course names and routes come from src/content/pricing.ts.
  */
 
-import { monthlyCourses, programs as pricedPrograms } from "./pricing";
+import { courseById, monthlyCourses, programs as pricedPrograms, type CourseId } from "./pricing";
 
-const course = (key: (typeof monthlyCourses)[number]["key"]): NavLink => {
-  const c = monthlyCourses.find((m) => m.key === key)!;
-  return { label: c.label, href: c.href };
+/** A course link for tight columns (footer): uses the short navLabel when there is one. */
+const course = (id: CourseId): NavLink => {
+  const c = courseById(id);
+  return { label: c.navLabel ?? c.label, href: c.href };
 };
 
 export type NavLink = {
@@ -24,9 +25,9 @@ export type NavLink = {
 
 /**
  * Courses ▾ › By level.
- * DECIDED: the five priced courses from PLUGIN-INVENTORY §2.1, not the spec
- * §6.1 list. Qa'idah and Nazirah are one priced course. The slugs are still
- * provisional until course pages exist.
+ * DECIDED: the full catalog from src/content/pricing.ts, in the owner's order
+ * (COURSE-CONTENT.md §2, 20 Nov 2026), with its slugs. Noorani Qaidah and
+ * Qur’an Nazirah are separate courses that share one rate.
  */
 export const coursesByLevel: NavLink[] = monthlyCourses.map((c) => ({ label: c.label, href: c.href }));
 
@@ -49,8 +50,8 @@ export const coursesByAge: NavLink[] = [
  * (inventory §1: ages 5–12, free for everyone).
  */
 export const featuredProgram = {
-  label: "Weekend Ilm Program",
-  href: "/programs/weekend-school",
+  label: pricedPrograms.weekend.label,
+  href: pricedPrograms.weekend.href,
   summary: "Islamic education on weekends for children aged 5–12.",
   note: "Free for every family",
 };
@@ -62,8 +63,8 @@ export const featuredProgram = {
  * route.
  */
 export const programs: NavLink[] = [
-  { label: "Summer Ilm Camp", href: "/programs/summer-ilm-camp" },
-  { label: "Weekend Ilm Program", href: "/programs/weekend-school" },
+  { label: pricedPrograms.summer.label, href: pricedPrograms.summer.href },
+  { label: pricedPrograms.weekend.label, href: pricedPrograms.weekend.href },
   { label: "One-on-one classes", href: "/programs/one-on-one" },
 ];
 
@@ -102,8 +103,8 @@ export const footerColumns: { title: string; links: NavLink[]; giving?: boolean 
     title: "Learn",
     links: [
       { label: "All courses", href: "/courses" },
-      course("hifz"),
-      course("arabic"),
+      course("quran-hifz"),
+      course("quranic-arabic-level-1"),
       { label: pricedPrograms.weekend.label, href: pricedPrograms.weekend.href },
       { label: pricedPrograms.summer.label, href: pricedPrograms.summer.href },
       { label: "Free trial", href: "/enroll" },

@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "content:check": "node --disable-warning=ExperimentalWarning scripts/content-check.mjs"
   },
   "dependencies": {
     "lucide-react": "1.76.0",

@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { programsSection as copy } from "@/content/home";
-import { fromPrice, monthlyCourses, programs, usd } from "@/content/pricing";
+import { courseById, fromPrice, programs, usd } from "@/content/pricing";
 
 /**
  * Home §3 · Programs for every stage (spec §7.1; owner decision 19 Nov 2026).
@@ -11,7 +11,13 @@ import { fromPrice, monthlyCourses, programs, usd } from "@/content/pricing";
  * and the price set right in tabular figures. No filter chips on Home and no
  * images (no course photography exists; never stock). Prices come only from
  * src/content/pricing.ts.
+ *
+ * Home lists five only, in the owner's order (20 Nov 2026): the courses in
+ * programsSection.courseIds, then the Weekend and Summer programs. The rest
+ * of the catalog is behind "See all courses".
  */
+const homeCourses = copy.courseIds.map(courseById);
+
 export function ProgramsLedger() {
   return (
     <section aria-labelledby="programs-title" className="container-content">
@@ -40,9 +46,9 @@ export function ProgramsLedger() {
 
           <div className="flex flex-col gap-10 lg:col-span-8">
             <Group label={copy.monthlyLabel}>
-              {monthlyCourses.map((course) => (
+              {homeCourses.map((course) => (
                 <Row
-                  key={course.key}
+                  key={course.id}
                   href={course.href}
                   name={course.label}
                   meta={copy.daysLine(course.minDays, course.maxDays)}
