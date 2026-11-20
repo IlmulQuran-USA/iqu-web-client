@@ -305,6 +305,8 @@ function InstructorArch({ person }: { person: Instructor }) {
       // All five are in the first view at 1440, so none is lazy. None is
       // preloaded or raised in priority: on a phone they sit below the
       // fold, and the H1 is the LCP element. 370 × 370, about 100 KB in all.
+      // ArchFrame gives eager images fetchPriority "low", which also stops
+      // React from emitting a <link rel="preload"> for each portrait.
       loading="eager"
     />
   );

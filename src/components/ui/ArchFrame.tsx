@@ -41,7 +41,7 @@ export type ArchFrameProps = ImageSource & {
   sizes?: string;
   /** Hero image only (CLAUDE.md §4): preloads, loads eagerly, high fetch priority. */
   preload?: boolean;
-  /** "eager" loads without preload or raised priority (images in the first view that are not the LCP). */
+  /** "eager" loads without lazy-loading, preload or raised priority (fetchPriority low; images in the first view that are not the LCP). */
   loading?: "eager" | "lazy";
   /** Low-quality placeholder shown blurred until the image paints (spec §7.1 hero LQIP). */
   blurDataURL?: string;
@@ -102,7 +102,11 @@ export function ArchFrame({
             sizes={sizes}
             preload={preload}
             loading={preload ? undefined : loading}
-            fetchPriority={preload ? "high" : undefined}
+            // React's server renderer emits <link rel="preload"> for every
+            // non-lazy <img> unless fetchPriority is "low". Without this, the
+            // "eager" images (e.g. five hero portraits) are preloaded ahead of
+            // the page's JS on a slow connection, contrary to the prop's contract.
+            fetchPriority={preload ? "high" : loading === "eager" ? "low" : undefined}
             placeholder={blurDataURL ? "blur" : "empty"}
             blurDataURL={blurDataURL}
             onError={() => setFailed(true)}
