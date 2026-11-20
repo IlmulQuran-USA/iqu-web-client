@@ -30,17 +30,14 @@ export function ProgramsLedger() {
             <p className="mt-4 max-w-measure text-body-lg text-pretty text-ink-body">{copy.intro}</p>
             <p className="mt-6 max-w-measure text-body text-ink-body">{copy.scholarshipNote}</p>
             <ul className="mt-4 flex flex-col items-start">
-              {[copy.scholarshipLink, copy.allCourses].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-                  >
-                    {link.label}
-                    <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-                  </Link>
-                </li>
-              ))}
+              <li>
+                <TextLink {...copy.scholarshipLink} />
+              </li>
+              {/* From lg the left column sits beside the list; below lg it sits above it, so
+                  "See all courses" moves under the list (critique P2, owner 20 Nov 2026). */}
+              <li className="hidden lg:block">
+                <TextLink {...copy.allCourses} />
+              </li>
             </ul>
           </div>
 
@@ -81,10 +78,25 @@ export function ProgramsLedger() {
                 }
               />
             </Group>
+            <p className="-mt-6 lg:hidden">
+              <TextLink {...copy.allCourses} />
+            </p>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function TextLink({ label, href }: { label: string; href: string }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+    >
+      {label}
+      <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+    </Link>
   );
 }
 

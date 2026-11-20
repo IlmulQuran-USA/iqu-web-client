@@ -193,8 +193,8 @@ export const faq = {
     {
       status: "draft",
       q: "Are female teachers available?",
-      // PRODUCT.md "Users"; spec §7.1 section 4 (matching by gender preference).
-      a: "Yes. Female teachers are offered for girls and young children. Tell us your preference on the form and we take it into account when we match a teacher.",
+      // COURSE-CONTENT.md §1 (owner, 20 Nov 2026); spec §7.1 section 4 (matching by gender preference).
+      a: "Yes. Female teachers are offered for sisters and young children. Tell us your preference on the form and we take it into account when we match a teacher.",
     },
     {
       status: "draft",
