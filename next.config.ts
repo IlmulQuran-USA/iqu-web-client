@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  // Development only: lets the owner's phone load dev resources from this
+  // machine over the LAN (http://192.168.0.94:3000). No effect in production.
+  allowedDevOrigins: ["192.168.0.94"],
   turbopack: {
     rules: {
       "*.css": {

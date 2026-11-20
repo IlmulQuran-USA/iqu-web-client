@@ -63,3 +63,7 @@ next-env.d.ts
 
 # Playwright MCP session logs and snapshots
 /.playwright-mcp/
+
+# Playwright test runner output
+/test-results/
+/playwright-report/
