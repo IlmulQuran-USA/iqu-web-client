@@ -1,0 +1,65 @@
+# Checks every pull request and every push to main. Vercel deploys on its own
+# (main -> dev.ilmulquranus.org, each PR -> a preview); see DEPLOYMENT.md.
+# No Playwright here for now, to keep the run fast.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # docs/spec (public repo, https URL in .gitmodules); content:check reads it.
+          submodules: recursive
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json # "engines.node"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**', 'public/**', 'next.config.ts') }}
+          restore-keys: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        # next-env.d.ts and the route types are generated, not committed.
+        run: |
+          npx next typegen
+          npx tsc --noEmit
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Build
+        # NEXT_PUBLIC_SITE_ENV is unset here, so this is a staging build.
+        run: npm run build
+
+      - name: Content check (non-blocking)
+        # Lists draft, pending and sample content. Informational until launch.
+        continue-on-error: true
+        run: npm run content:check
