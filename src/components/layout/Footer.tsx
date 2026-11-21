@@ -21,10 +21,11 @@ import { NewsletterCard } from "./NewsletterCard";
  *   between) and share one height (the brand group's content sits at its
  *   top). Below lg: brand, then Learn and
  *   Organization side by side, then Support us.
- * - Brand group: the logo at the header's 40 px, a one- or two-line
- *   description, Phone and Email. Each link column has exactly six rows; the
- *   sixth row of Support us is the 501(c)(3) · EIN line, the only place the
- *   EIN appears.
+ * - Brand group: the logo at the header's 40 px, the description, the
+ *   mission line, then Phone and Email. From lg its bottom never falls below
+ *   the last row of the link columns (owner, 21 Nov 2026). Each link column
+ *   has exactly six rows; the sixth row of Support us is the 501(c)(3) · EIN
+ *   line, the only place the EIN appears.
  * - Bottom bar on the same edges: © year, legal name and the street address
  *   on the left; legal links and Facebook on the right, on one row from xl
  *   (where both fit); stacked below.
@@ -92,11 +93,17 @@ export async function Footer() {
         {/* 48 px between the newsletter card and the link columns at every width. */}
         <div className="container-content pt-12 pb-12 md:pb-16">
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:flex lg:items-stretch lg:justify-between lg:gap-x-8">
-            {/* Brand group: logo, description, then Phone and Email directly beneath. */}
+            {/* Brand group: logo, description, mission line, then Phone and Email directly beneath.
+                From lg the two paragraphs take 352 px (3 + 2 lines) and line-height 1.5, so the
+                group ends above the last row of the link columns (measured, owner rule 21 Nov 2026). */}
             <div className="col-span-2">
               <div>
                 <Logo variant="footer" />
-                <p className="mt-3 max-w-72 text-body text-on-band-muted">{site.footerLine}</p>
+                <p className="mt-3 max-w-72 text-body text-on-band-muted lg:max-w-88 lg:leading-normal">{site.footerLine}</p>
+                {/* The band's secondary colour (--ink-muted would fail contrast on --band); the label in white. */}
+                <p className="mt-3 max-w-72 text-body text-on-band-muted lg:max-w-88 lg:leading-normal">
+                  <span className="font-medium text-on-band">{site.missionLine.label}</span> {site.missionLine.text}
+                </p>
               </div>
               <dl className="mt-6 grid grid-cols-[auto_1fr] items-center gap-x-3 text-ui">
                 <dt className="text-on-band-muted">Phone</dt>
