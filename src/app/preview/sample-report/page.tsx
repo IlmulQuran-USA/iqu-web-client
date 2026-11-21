@@ -6,6 +6,7 @@ import { PrintButton } from "@/components/portal/PrintButton";
 import { courseById } from "@/content/pricing";
 import { sampleReport as report } from "@/content/sample-parent";
 import { site } from "@/content/site";
+import { pageMetadata } from "@/lib/metadata";
 
 /*
  * /preview/sample-report: a one-page monthly progress report with sample
@@ -15,10 +16,13 @@ import { site } from "@/content/site";
  * noindex.
  */
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Sample monthly report (preview)",
+  description:
+    "A sample monthly progress report: attendance, progress in each part of the course, teacher comments and next month’s targets.",
+  path: "/preview/sample-report",
   robots: { index: false, follow: false },
-};
+});
 
 export default function SampleReport() {
   const { child, attendance: a } = report;

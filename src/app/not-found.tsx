@@ -6,10 +6,15 @@ import { Header } from "@/components/layout/Header";
 import { courses } from "@/content/courses";
 import { fromPrice, usd } from "@/content/pricing";
 import { site } from "@/content/site";
+import { robotsFor, socialDefaults, TITLE_TEMPLATE } from "@/lib/metadata";
 
+// No canonical: a 404 has no address of its own.
+const notFoundDescription = "This page has moved or no longer exists. Find a course, see the fees or contact Ilm-Ul-Quran USA.";
 export const metadata: Metadata = {
   title: "Page not found",
-  robots: { index: false, follow: true },
+  description: notFoundDescription,
+  ...socialDefaults(TITLE_TEMPLATE.replace("%s", "Page not found"), notFoundDescription),
+  robots: robotsFor({ index: false, follow: true }),
 };
 
 /**

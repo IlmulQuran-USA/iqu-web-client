@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { AllChildren, ChildDashboard, childHref } from "@/components/portal/ParentDashboard";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { childById, parentDashboardSample as family } from "@/content/sample-parent";
+import { pageMetadata } from "@/lib/metadata";
 
 /*
  * /preview/parent-dashboard: the parent dashboard as it will really be
@@ -14,10 +15,16 @@ import { childById, parentDashboardSample as family } from "@/content/sample-par
  * noindex: never in search.
  */
 
-export const metadata: Metadata = {
-  title: "Parent dashboard (preview)",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata({ params }: PageProps<"/preview/parent-dashboard/[[...view]]">): Promise<Metadata> {
+  const { view = [] } = await params;
+  return pageMetadata({
+    title: "Parent dashboard (preview)",
+    description:
+      "A preview of the parent dashboard with sample data: each child’s classes, attendance and progress in one place.",
+    path: ["/preview/parent-dashboard", ...view].join("/"),
+    robots: { index: false, follow: false },
+  });
+}
 
 export function generateStaticParams() {
   return [{ view: [] }, ...family.children.slice(1).map((c) => ({ view: [c.id] })), { view: ["all"] }];

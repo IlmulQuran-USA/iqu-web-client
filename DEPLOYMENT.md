@@ -43,6 +43,7 @@ There is no Playwright in CI for now, to keep it fast. Run `npm run test:e2e` lo
 | Name | Production (dev.ilmulquranus.org) | Preview (PRs) | Notes |
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_ENV` | `staging` | `staging` | Set to `production` **only** when this project serves the real public site. |
+| `NEXT_PUBLIC_SITE_URL` | `https://dev.ilmulquranus.org` | `https://dev.ilmulquranus.org` | The origin for canonical and Open Graph URLs. `https://ilmulquranus.org` at launch. If unset, it follows `NEXT_PUBLIC_SITE_ENV`. |
 | `BREVO_API_KEY` | set | leave unset* | Server only. |
 | `BREVO_LIST_ID` | set | leave unset* | Numeric list id. |
 | `BREVO_DOI_TEMPLATE_ID` | set | leave unset* | Numeric double opt-in template id. |
@@ -57,14 +58,17 @@ There is no Playwright in CI for now, to keep it fast. Run `npm run test:e2e` lo
 
 Staging shows sample content and repeats text from the live WordPress site, so search engines must never index it. Unless `NEXT_PUBLIC_SITE_ENV` is exactly `production` (`src/lib/site-env.ts`):
 
-- `/robots.txt` returns `User-Agent: *` / `Disallow: /` (`src/app/robots.ts`);
+- every page carries `<meta name="robots" content="noindex, nofollow">` (`src/lib/metadata.ts`);
 - every response, pages and static files alike, sends `X-Robots-Tag: noindex, nofollow` (`next.config.ts` › `headers`);
 - no sitemap is served: `/sitemap*.xml` and `/sitemap/*` answer 404 (`next.config.ts` › `rewrites`).
+
+`/robots.txt` is `User-Agent: *` / `Allow: /` on staging too (`src/app/robots.ts`). That is deliberate: Google can only see a noindex on a page it may crawl, and link-preview bots (Facebook, WhatsApp, LinkedIn, X, Telegram, Slack) honour robots.txt, so a `Disallow` would break link previews without keeping pages out of the index.
 
 A missing, empty or misspelt value counts as staging, so a misconfiguration can't expose staging. To check a deployment:
 
 ```sh
-curl -s https://dev.ilmulquranus.org/robots.txt          # Disallow: /
+curl -s https://dev.ilmulquranus.org/robots.txt          # Allow: /
+curl -s https://dev.ilmulquranus.org/ | grep -o '<meta name="robots"[^>]*>' # noindex, nofollow
 curl -sI https://dev.ilmulquranus.org/ | grep -i x-robots # noindex, nofollow
 ```
 
@@ -89,6 +93,6 @@ curl -sI https://dev.ilmulquranus.org/ | grep -i x-robots # noindex, nofollow
 
 When this project replaces WordPress at `ilmulquranus.org`:
 
-1. Set `NEXT_PUBLIC_SITE_ENV=production` for the environment that serves the public domain only, never for previews, and redeploy.
+1. Set `NEXT_PUBLIC_SITE_ENV=production` and `NEXT_PUBLIC_SITE_URL=https://ilmulquranus.org` for the environment that serves the public domain only, never for previews, and redeploy.
 2. Add a sitemap and the `Sitemap:` line in `src/app/robots.ts`.
 3. Keep `dev.ilmulquranus.org` on a separate project or environment with `staging`, so it stays out of search results.

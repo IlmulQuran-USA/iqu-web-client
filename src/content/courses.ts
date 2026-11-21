@@ -316,7 +316,10 @@ const courseCopy: Record<CourseId, CourseContent> = {
     id: "tarjumatul-quran",
     forAdults: true,
     livePath: livePaths["tarjumatul-quran"],
-    meta: pending,
+    // No live meta (COURSE-CONTENT.md §7): written from the overview below (owner to confirm).
+    meta: draft(
+      "Understand what you recite. Tarjumatul Quran teaches the meaning of the Quran, word by word and ayah by ayah, in live online classes.",
+    ),
     // Owner, 20 Nov 2026.
     placement: live("Tarjumatul Quran teaches only the meaning of the Quran."),
     overview: draft(
@@ -345,7 +348,10 @@ const courseCopy: Record<CourseId, CourseContent> = {
     // the sitemap, until its overview is live (owner, 20 Nov 2026). Never
     // borrow the Weekend program's curriculum.
     noindex: true,
-    meta: pending,
+    // No live meta: written from the draft overview and topics below (owner to confirm).
+    meta: draft(
+      "Islamic Studies for children, teens and adults: Aqeedah, worship, Seerah and Akhlaq, taught live online by qualified ‘Ulama and Muftis.",
+    ),
     overview: draft(
       "Islamic Studies gives children, teens and adults a clear, practical grounding in their faith: what Muslims believe, how to worship correctly and how to live with good character. It is taught by qualified ‘Ulama and Muftis.",
     ),

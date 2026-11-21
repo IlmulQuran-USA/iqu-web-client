@@ -8,12 +8,15 @@ import { NewsletterCard } from "@/components/layout/NewsletterCard";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { Button, ButtonLink, type ButtonVariant } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { pageMetadata } from "@/lib/metadata";
 import { BlurValidationDemo, LoadingButtonDemo } from "./demos";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "Component reference",
+  description: "Development reference: every interface component of the Ilm-Ul-Quran USA site, in every state.",
+  path: "/dev/components",
   robots: { index: false, follow: false },
-};
+});
 
 /*
  * Development-only reference: every primitive in every state.

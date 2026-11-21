@@ -11,6 +11,7 @@ import { courseBySlug, ctas, fromLine, sectionsOf, shown } from "@/content/cours
 import { courses, type Course } from "@/content/courses";
 import { fromPrice } from "@/content/pricing";
 import { site } from "@/content/site";
+import { pageMetadata } from "@/lib/metadata";
 
 /*
  * Course detail (spec §7.3; plan approved by the owner, 20 Nov 2026). One
@@ -27,19 +28,21 @@ export function generateStaticParams() {
   return courses.map((c) => ({ slug: c.id }));
 }
 
+/** The course's meta description (COURSE-CONTENT.md; live, or draft where the owner gave none). */
 function description(course: Course): string {
-  return shown(course.content.meta) ?? shown(course.content.overview) ?? `${course.label} at ${site.name}.`;
+  return shown(course.content.meta) ?? `${course.label}: live online classes at ${site.name}.`;
 }
 
 export async function generateMetadata({ params }: PageProps<"/courses/[slug]">): Promise<Metadata> {
   const course = courseBySlug((await params).slug);
   if (!course) return {};
-  return {
+  return pageMetadata({
     title: course.label,
     description: description(course),
+    path: course.href,
     // Islamic Studies stays out of search (and any sitemap) until its content is live (owner, 20 Nov 2026).
-    ...(course.content.noindex ? { robots: { index: false, follow: true } } : {}),
-  };
+    robots: course.content.noindex ? { index: false, follow: true } : undefined,
+  });
 }
 
 /** Course + Offer structured data (spec §7.3 "Schema"). No AggregateRating: there are no reviews. */

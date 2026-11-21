@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import type { HomeHeroLayout } from "@/content/types";
 import { getHomeHero } from "@/lib/content/home-hero";
+import { pageMetadata } from "@/lib/metadata";
 
 /*
  * Development previews of the three Home hero layouts (owner decision 5),
@@ -31,10 +32,12 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/dev/hero/[concept]">): Promise<Metadata> {
   const { concept } = await params;
-  return {
+  return pageMetadata({
     title: isConcept(concept) ? `Hero preview ${concepts[concept].label}` : "Hero preview",
+    description: "Development preview of one of the three Home hero layouts, with the live Home content.",
+    path: `/dev/hero/${concept}`,
     robots: { index: false, follow: false },
-  };
+  });
 }
 
 export default async function HeroPreviewPage({ params }: PageProps<"/dev/hero/[concept]">) {

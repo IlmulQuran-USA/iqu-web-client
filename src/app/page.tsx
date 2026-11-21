@@ -15,6 +15,15 @@ import { finalCta } from "@/content/home";
 import { socialLinks } from "@/content/navigation";
 import { site } from "@/content/site";
 import { getHomeHero } from "@/lib/content/home-hero";
+import { pageMetadata } from "@/lib/metadata";
+
+// Owner, 21 Nov 2026: the Home title and description, as supplied.
+export const metadata = pageMetadata({
+  title: { absolute: "Online Quran Classes for Kids & Adults · Ilm-Ul-Quran USA" },
+  description:
+    "Live Quran classes with qualified Huffaz, Ulama and Muftis for families in the US and Canada. Choose your own times. Your first month is free.",
+  path: "/",
+});
 
 /*
  * Home (spec §7.1), as approved by the owner on 19–20 Nov 2026:

@@ -20,3 +20,24 @@ export function isProductionSite(value: string | undefined = process.env.NEXT_PU
 
 /** Sent on every response of a non-production build (next.config.ts). */
 export const NOINDEX_HEADER = { key: "X-Robots-Tag", value: "noindex, nofollow" } as const;
+
+const SITE_URLS = { production: "https://ilmulquranus.org", staging: "https://dev.ilmulquranus.org" } as const;
+
+/**
+ * The site's origin, used as metadataBase for canonical and Open Graph URLs.
+ * Reads NEXT_PUBLIC_SITE_URL (set in Vercel; read at build time). If it is
+ * missing or not an http(s) URL, falls back to the origin for this site
+ * environment, so a staging build never points canonicals at production.
+ */
+export function siteUrl(
+  value: string | undefined = process.env.NEXT_PUBLIC_SITE_URL,
+  env: string | undefined = process.env.NEXT_PUBLIC_SITE_ENV,
+): URL {
+  try {
+    const url = new URL((value ?? "").trim());
+    if (url.protocol === "https:" || url.protocol === "http:") return new URL(url.origin);
+  } catch {
+    // fall through to the default
+  }
+  return new URL(SITE_URLS[siteEnv(env)]);
+}
