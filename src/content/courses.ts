@@ -100,7 +100,8 @@ const courseCopy: Record<CourseId, CourseContent> = {
     nextStepId: "quran-nazirah",
     teachers: { status: "live", ids: ["mufti-shaker-waliullah"] },
     // Owner, 20 Nov 2026: both teach reading foundations to children and beginners (§10 profiles).
-    profileTeachers: { status: "draft", ids: ["shifa-jalal", "afra-humayra"] },
+    // Hafez Nurul Ahsan from his own live bio (owner's assistant, 22 Nov 2026).
+    profileTeachers: { status: "draft", ids: ["shifa-jalal", "afra-humayra", "hafez-nurul-ahsan"] },
   },
 
   "quran-nazirah": {
@@ -158,6 +159,12 @@ const courseCopy: Record<CourseId, CourseContent> = {
         "mufti-shamsuddin-rois",
       ],
     },
+    // Not on the live page: four teachers with no live course, from their own live bios
+    // (owner's assistant, 22 Nov 2026).
+    profileTeachers: {
+      status: "draft",
+      ids: ["mufti-sajidullah", "mufti-jubayer-bin-jalaluddin", "hafez-nurul-ahsan", "hafezah-humayra-afrin"],
+    },
   },
 
   "quran-hifz": {
@@ -196,10 +203,20 @@ const courseCopy: Record<CourseId, CourseContent> = {
     ]),
     certificate: { status: "live", value: true },
     teachers: { status: "live", ids: ["mawlana-mouinul-islam", "mawlana-nazrul-islam"] },
-    // Owner, 20 Nov 2026: all four list memorization in their §10 profiles.
+    // Owner, 20 Nov 2026: all four list memorization in their §10 profiles. Then Mufti
+    // Sajidullah, Mufti Jubayer bin Jalaluddin and Hafez Nurul Ahsan from their own live
+    // bios (owner's assistant, 22 Nov 2026).
     profileTeachers: {
       status: "draft",
-      ids: ["maha-rashed", "hafezah-nuha-rashed", "hafezah-humayra-afrin", "najiba-mahzabin-jeba"],
+      ids: [
+        "maha-rashed",
+        "hafezah-nuha-rashed",
+        "hafezah-humayra-afrin",
+        "najiba-mahzabin-jeba",
+        "mufti-sajidullah",
+        "mufti-jubayer-bin-jalaluddin",
+        "hafez-nurul-ahsan",
+      ],
     },
   },
 

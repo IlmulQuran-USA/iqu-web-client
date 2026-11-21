@@ -49,41 +49,80 @@ const slugSchema = z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "lowercase-hyp
 export const LANGUAGES = ["English", "Bengali", "Arabic", "Urdu"] as const;
 export type Language = (typeof LANGUAGES)[number];
 
-export const instructorSchema = z.object({
-  /** URL slug (COURSE-CONTENT.md §10). Never the old site's instructor URL. */
-  id: slugSchema,
-  /** Full name including its title ("Mufti …", "Hafez …"), exactly as COURSE-CONTENT.md §10 writes it. */
-  name: z.string().min(1).max(60),
-  /** Brothers learn with male teachers; sisters, and boys up to age 10, can learn with a female teacher (owner, 20 Nov 2026). */
-  gender: z.enum(["male", "female"]),
-  /**
-   * Short caption under the name on cards. Never repeats the title that is
-   * already in the name. At most 24 characters so it stays within two lines
-   * on a 375 px three-up row.
-   */
-  role: z.string().trim().min(1).max(24),
-  /** Full wording of the role, for the instructor profile page. */
-  roleFull: copyTextSchema,
-  /** The languages this teacher teaches in. */
-  languages: z.array(z.enum(LANGUAGES)).min(1),
-  /** Profile text, in full sentences. */
-  bio: copyTextSchema,
-  qualifications: copyListSchema,
-  /** The live profile is noindex: keep it out of search until the owner says otherwise. */
-  noindex: z.literal(true).optional(),
-  /** The old site's profile path when it does not match the teacher (COURSE-CONTENT.md §11, C6), for the 301. */
-  legacyPath: z.string().startsWith("/instructor/").optional(),
-  /** Square portrait in public/instructors/; null keeps the arch monogram. */
-  photo: z
-    .object({
-      src: z.string().startsWith("/instructors/"),
-      width: z.number().int().positive(),
-      height: z.number().int().positive(),
-      /** The framing differs from the hero set (eyes at 35%, same face size): re-frame when a better original exists. Listed by content:check. */
-      reframe: z.literal(true).optional(),
-    })
-    .nullable(),
-});
+export const instructorSchema = z
+  .object({
+    /** URL slug (COURSE-CONTENT.md §10). Never the old site's instructor URL. */
+    id: slugSchema,
+    /** Full name including its title ("Mufti …", "Hafez …"), exactly as COURSE-CONTENT.md §10 writes it. */
+    name: z.string().min(1).max(60),
+    /** Brothers learn with male teachers; sisters, and boys up to age 10, can learn with a female teacher (owner, 20 Nov 2026). */
+    gender: z.enum(["male", "female"]),
+    /**
+     * Short caption under the name on cards. Never repeats the title that is
+     * already in the name. At most 24 characters so it stays within two lines
+     * on a 375 px three-up row.
+     */
+    role: z.string().trim().min(1).max(24),
+    /** Full wording of the role, for the instructor profile page. */
+    roleFull: copyTextSchema,
+    /** The languages this teacher teaches in. */
+    languages: z.array(z.enum(LANGUAGES)).min(1),
+    /** Profile text, in full sentences. */
+    bio: copyTextSchema,
+    qualifications: copyListSchema,
+    /** The live profile is noindex: keep it out of search until the owner says otherwise. */
+    noindex: z.literal(true).optional(),
+    /**
+     * A recitation recording (spec §7.5 section 5). Optional: the profile shows a
+     * Recitation section only when this is set (owner, 22 Nov 2026). Self-hosted
+     * under public/instructors/audio/.
+     */
+    recitationAudio: z
+      .object({
+        src: z.string().startsWith("/instructors/audio/"),
+        /** What is recited, with its citation, e.g. "Surah Ar-Rahman 55:1–16". */
+        title: z.string().trim().min(1).max(80),
+        durationSeconds: z.number().int().positive().max(600),
+        status: approved,
+      })
+      .optional(),
+    /**
+     * Certificates and ijazahs as the owner supplies them. Optional: the profile
+     * shows a Certificates section only when this is set (owner, 22 Nov 2026).
+     * Never invented: no year or issuer unless the document gives it.
+     */
+    certificates: z
+      .object({
+        status: approved,
+        items: z
+          .array(
+            z.object({
+              title: z.string().trim().min(1).max(120),
+              issuer: z.string().trim().min(1).max(120).optional(),
+              year: z.number().int().min(1950).max(2100).optional(),
+            }),
+          )
+          .min(1),
+      })
+      .optional(),
+    /** A conflict in this record for the owner to resolve. Never rendered; listed by content:check. */
+    dataNote: z.object({ status: z.literal("draft"), text: z.string().trim().min(1) }).optional(),
+    /** Square portrait in public/instructors/; null keeps the arch monogram. */
+    photo: z
+      .object({
+        src: z.string().startsWith("/instructors/"),
+        width: z.number().int().positive(),
+        height: z.number().int().positive(),
+        /** The framing differs from the hero set (eyes at 35%, same face size): re-frame when a better original exists. Listed by content:check. */
+        reframe: z.literal(true).optional(),
+      })
+      .nullable(),
+  })
+  // Female teachers never show a photo: the live images are shared placeholders (COURSE-CONTENT.md §10).
+  .refine((p) => p.gender === "male" || p.photo === null, {
+    message: "a female teacher has no photo",
+    path: ["photo"],
+  });
 export type Instructor = z.infer<typeof instructorSchema>;
 
 /* ── Courses and programs (COURSE-CONTENT.md §1–§9) ──────────────────────── */

@@ -28,17 +28,39 @@ export const renamedInstructorSlugs: Record<string, string> = {
   "ustadha-maha-rashed": "maha-rashed",
 };
 
+/**
+ * Live WordPress instructor profiles whose slug does not match the teacher
+ * (COURSE-CONTENT.md §11, C6). Old path (no trailing slash) → new slug.
+ */
+export const wrongLiveInstructorPaths: Record<string, string> = {
+  "/instructor/sheikh-hussain-muhammad": "mawlana-nazrul-islam",
+  "/instructor/mufti-harun-izhar": "mufti-jubayer-bin-jalaluddin",
+  "/instructor/muhamad-raiyan": "mufti-ahmed-mostafa-raian",
+};
+
 export function instructorSlugRedirects() {
-  return Object.entries(renamedInstructorSlugs).map(([from, to]) => ({
-    source: `/instructors/${from}`,
-    destination: `/instructors/${to}`,
-    statusCode: 301 as const,
-  }));
+  return [
+    ...Object.entries(renamedInstructorSlugs).map(([from, to]) => ({
+      source: `/instructors/${from}`,
+      destination: `/instructors/${to}`,
+      statusCode: 301 as const,
+    })),
+    // The three wrong live slugs first, so the catch-all below never takes them.
+    ...Object.entries(wrongLiveInstructorPaths).map(([from, to]) => ({
+      source: from,
+      destination: `/instructors/${to}`,
+      statusCode: 301 as const,
+    })),
+    // The other live profile URLs are not documented: send them to the directory,
+    // never to a 404 (owner plan, 22 Nov 2026). The live directory moves too.
+    { source: "/instructor/:slug", destination: "/instructors", statusCode: 301 as const },
+    { source: "/instructor", destination: "/instructors", statusCode: 301 as const },
+  ];
 }
 
 /**
- * 301s from the live course paths to the new course pages. Programs and
- * instructors are added when their pages are built. Next.js drops the
+ * 301s from the live course paths to the new course pages. Programs are
+ * added when their pages are built. Next.js drops the
  * trailing slash first, so the source has none.
  */
 export function legacyCourseRedirects() {

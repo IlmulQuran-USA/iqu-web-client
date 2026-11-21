@@ -48,16 +48,24 @@ export function CatalogHeader() {
  * a two-column list below it, so a dot never starts a line. The caller sets
  * display (cn() does not resolve conflicts).
  */
-export function FactsStrip({ className }: { className?: string }) {
+export function FactsStrip({
+  className,
+  facts = catalogHeader.facts,
+  label = "True of every monthly course",
+}: {
+  className?: string;
+  facts?: readonly string[];
+  label?: string;
+}) {
   return (
     <ul
-      aria-label="True of every monthly course"
+      aria-label={label}
       className={cn(
         "grid-cols-2 items-start gap-x-4 gap-y-2 border-y border-rule py-4 text-ui font-medium text-ink-body md:flex-wrap md:items-center md:gap-x-0",
         className,
       )}
     >
-      {catalogHeader.facts.map((fact, i) => (
+      {facts.map((fact, i) => (
         <li key={fact} className="flex items-center">
           {i > 0 ? (
             <span aria-hidden="true" className="hidden px-3 text-ink-muted md:inline">

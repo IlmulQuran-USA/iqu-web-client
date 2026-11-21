@@ -1,4 +1,5 @@
 import { draft, draftList, live, liveList, pending, pendingList } from "./copy";
+import { renamedInstructorSlugs, wrongLiveInstructorPaths } from "./legacy-paths";
 import { instructorSchema, type Instructor } from "./types";
 
 /*
@@ -78,7 +79,6 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Imam and Khateeb",
       "Quran instructor and Education Secretary at Ilm-Ul-Quran USA",
     ]),
-    legacyPath: "/instructor/muhamad-raiyan/",
     photo: portrait("mufti-ahmed-mostafa-raian"),
   },
   {
@@ -225,7 +225,6 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Ifta course",
       "Strong in Tajweed, recitation and translation",
     ]),
-    legacyPath: "/instructor/mufti-harun-izhar/",
     photo: null, // Removed 21 Nov 2026; the owner will supply a new portrait.
   },
   {
@@ -260,7 +259,6 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
       "Teaches Quranic Arabic and Quran translation",
       "Fluent in Bengali, proficient in English",
     ]),
-    legacyPath: "/instructor/sheikh-hussain-muhammad/",
     photo: null,
   },
   {
@@ -359,6 +357,11 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
     role: "Quran & Islamic Studies",
     roleFull: pending,
     languages: ["Bengali", "Arabic"],
+    // Owner, 22 Nov 2026: keep the field until this is resolved.
+    dataNote: {
+      status: "draft",
+      text: "The languages field says Bengali and Arabic; her live bio says she teaches in English and Bengali. Confirm which is right.",
+    },
     bio: live(
       "Shifa Jalal is a Quran teacher focused on a solid foundation in reading and recitation, who teaches basic Islamic education to children and beginners with a calm, caring style.",
     ),
@@ -385,6 +388,11 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
 ]);
 
 export const instructorIds = instructors.map((i) => i.id);
+
+// Every redirect target in ./legacy-paths is a teacher here (that file stays free of content imports).
+for (const to of [...Object.values(wrongLiveInstructorPaths), ...Object.values(renamedInstructorSlugs)]) {
+  if (!instructorIds.includes(to)) throw new Error(`legacy-paths.ts redirects to unknown instructor "${to}"`);
+}
 
 export function instructorById(id: string): Instructor | undefined {
   return instructors.find((i) => i.id === id);

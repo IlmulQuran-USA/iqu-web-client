@@ -340,3 +340,22 @@ export function programsCta(href: string = featuredProgram.href) {
 
 /** The catalog's instance (exported as a value so `npm run content:check` lists the draft). */
 export const catalogProgramsCta = programsCta();
+
+/** A catalog row (name, summary, days, price, link) by course or program id, for lists elsewhere. */
+export function catalogRowFor(id: string): CatalogRow | undefined {
+  for (const group of catalogGroups) {
+    const row = group.rows.find((r) => r.id === id);
+    if (row) return row;
+  }
+  return undefined;
+}
+
+/**
+ * The final band's copy for a page: the free-first-month wording for monthly
+ * courses (Home's approved finalCta, optionally with a course pre-filled), or
+ * the programs wording where the free month does not apply.
+ */
+export function finalCtaFor(kind: "course" | "program", href?: string) {
+  if (kind === "program") return programsCta(href);
+  return { ...finalCta, button: { ...finalCta.button, href: href ?? finalCta.button.href } };
+}
