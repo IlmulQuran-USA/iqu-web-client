@@ -4,6 +4,7 @@ import { courseFaq, courseRules, courses, programList, type Course, type Program
 import { homeHero } from "./home-hero";
 import { faq as homeFaq, finalCta, programsSection, teachersSection } from "./home";
 import { instructors } from "./instructors";
+import { featuredProgram } from "./navigation";
 import { courseById, fromPrice, monthlyCourses, programs, usd, type CourseId } from "./pricing";
 import type { CopyText } from "./types";
 
@@ -311,3 +312,31 @@ export const catalogFaq = {
 } as const;
 
 export const catalogFinal = finalCta;
+
+/* ── Programs call to action (owner, 21 Nov 2026; draft copy) ─────────────── */
+
+/** "5–15": the widest age range across the programs, from ./pricing. */
+function programAges(): string {
+  const ranges = Object.values(programs).map((p) => p.ages.split("–").map(Number));
+  return `${Math.min(...ranges.map((r) => r[0]))}–${Math.max(...ranges.map((r) => r[1]))}`;
+}
+
+/**
+ * Final band and phone bottom bar wherever the free first month does not
+ * apply: /courses?type=programs now, and the Weekend and Summer program pages
+ * when they are built (pass that program's href). Amounts come from
+ * ./pricing. On the catalog the button goes to the flagship program the
+ * owner chose for the Courses menu (featuredProgram: the Weekend Ilm Program).
+ */
+export function programsCta(href: string = featuredProgram.href) {
+  const weekend = programs.weekend.fee === 0 ? "Weekend is free." : `Weekend is ${usd(programs.weekend.fee)}.`;
+  return {
+    status: "draft",
+    heading: `Weekend and summer programs for ages ${programAges()}.`,
+    button: { label: "Enroll in a program", href },
+    reassurance: `${weekend} Summer is a one-time ${usd(programs.summer.fee)} fee, with a reduced option.`,
+  } as const;
+}
+
+/** The catalog's instance (exported as a value so `npm run content:check` lists the draft). */
+export const catalogProgramsCta = programsCta();

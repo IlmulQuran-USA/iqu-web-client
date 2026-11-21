@@ -42,6 +42,7 @@ const SCROLL_THRESHOLD = 40;
 
 export function Header({
   yieldCtaTo,
+  yieldOnLoad = false,
 }: {
   /**
    * Ids of on-page elements holding the page's own filled CTAs (the Home hero
@@ -50,12 +51,19 @@ export function Header({
    * (CLAUDE.md §4; spec §6.1 and §7.1 each ask for a filled "Start free trial").
    */
   yieldCtaTo?: string | string[];
+  /**
+   * True when one of those elements is in the first view (the Home hero
+   * buttons, the course page's price card): the header CTA is then rendered
+   * secondary from the server. Otherwise it is rendered filled from the
+   * server, so it never changes style after hydration (owner, 21 Nov 2026).
+   */
+  yieldOnLoad?: boolean;
 } = {}) {
   const pathname = usePathname() ?? "/";
   const [scrolled, setScrolled] = useState(false);
   const yieldIds = (Array.isArray(yieldCtaTo) ? yieldCtaTo : yieldCtaTo ? [yieldCtaTo] : []).join(" ");
-  // Start yielded when a target is named, so the server render never shows two filled CTAs.
-  const [ctaYielded, setCtaYielded] = useState(yieldIds !== "");
+  // The first paint is final: yielded only when the page says a target starts in view.
+  const [ctaYielded, setCtaYielded] = useState(yieldOnLoad && yieldIds !== "");
 
   useEffect(() => {
     if (!yieldIds) return;

@@ -80,7 +80,7 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
         // Escape "<" so the JSON can never close the script element.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd(course)).replace(/</g, "\\u003c") }}
       />
-      <Header yieldCtaTo={[COURSE_RAIL_ID, FINAL_CTA_ID]} />
+      <Header yieldCtaTo={[COURSE_RAIL_ID, FINAL_CTA_ID]} yieldOnLoad />
       <main id="main-content" aria-labelledby="course-title">
         <div className="container-content">
           {/* DOM order is hero, card, then the sections, so keyboard users reach the

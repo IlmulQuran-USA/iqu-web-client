@@ -11,7 +11,14 @@ import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { catalogFinal, catalogGroups, catalogHeader, catalogMeta, catalogType } from "@/content/catalog";
+import {
+  catalogFinal,
+  catalogGroups,
+  catalogProgramsCta,
+  catalogHeader,
+  catalogMeta,
+  catalogType,
+} from "@/content/catalog";
 import { courses } from "@/content/courses";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
@@ -56,6 +63,8 @@ function itemListJsonLd() {
 
 export default async function CatalogPage({ searchParams }: PageProps<"/courses">) {
   const type = catalogType((await searchParams).type);
+  // The free first month applies to monthly courses only: the programs view gets the programs CTA.
+  const cta = type === "programs" ? catalogProgramsCta : catalogFinal;
   return (
     <>
       <script
@@ -63,6 +72,7 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
         // Escape "<" so the JSON can never close the script element.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd()).replace(/</g, "\\u003c") }}
       />
+      {/* No hero CTA here: the header CTA is filled from the server and yields only to the final band. */}
       <Header yieldCtaTo={FINAL_CTA_ID} />
       <main id="main-content" aria-labelledby="catalog-title">
         <div className="container-content">
@@ -74,15 +84,10 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
         <WhereToStart />
         <CatalogTeachers />
         <CatalogFAQ />
-        <FinalCta />
+        <FinalCta copy={cta} />
       </main>
       <Footer />
-      <StickyCTA
-        label={catalogFinal.button.label}
-        href={catalogFinal.button.href}
-        afterId={catalogHeader.id}
-        beforeId={FINAL_CTA_ID}
-      />
+      <StickyCTA label={cta.button.label} href={cta.button.href} afterId={catalogHeader.id} beforeId={FINAL_CTA_ID} />
     </>
   );
 }

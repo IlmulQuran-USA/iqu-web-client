@@ -50,7 +50,7 @@ export default async function HeroPreviewPage({ params }: PageProps<"/dev/hero/[
 
   return (
     <>
-      <Header yieldCtaTo={HERO_CTAS_ID} />
+      <Header yieldCtaTo={HERO_CTAS_ID} yieldOnLoad />
       <main id="main-content" className="flex flex-col">
         <HomeHero hero={hero} layout={current.layout} />
         <aside aria-label="Hero preview (dev only)" className="border-t border-rule bg-surface-2">
