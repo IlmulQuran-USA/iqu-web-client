@@ -32,18 +32,15 @@ export type NavLink = {
 export const coursesByLevel: NavLink[] = monthlyCourses.map((c) => ({ label: c.label, href: c.href }));
 
 /**
- * Courses ▾ › By age. Filter state lives in the URL (CLAUDE.md §7).
- * DECIDED: spec §6.1's "Sisters only" is renamed "Female teachers". It is the
- * female-instructor pathway for sisters and boys up to age 10 (owner, 20 Nov 2026),
- * not a women-only class list.
+ * Courses ▾ › By type: the catalog's filter (/courses?type=…), the only one
+ * backed by real data (owner, 21 Nov 2026). The age and teacher links it
+ * replaces had no filter behind them: the data gives no age for every course,
+ * and the female-teacher pathway is answered on each course page.
  */
-export const coursesByAge: NavLink[] = [
-  { label: "Kids 5–12", href: "/courses?age=kids" },
-  { label: "Teens", href: "/courses?age=teens" },
-  { label: "Adults", href: "/courses?age=adults" },
-  { label: "Female teachers", href: "/courses?teacher=female" },
+export const coursesByType: NavLink[] = [
+  { label: "Monthly courses", href: "/courses?type=monthly" },
+  { label: "Programs", href: "/courses?type=programs" },
 ];
-
 /**
  * The promoted card in the Courses panel ("current flagship program").
  * DECIDED: Weekend Ilm Program. Every fact on the card is confirmed

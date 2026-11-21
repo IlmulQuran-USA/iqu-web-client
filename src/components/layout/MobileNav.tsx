@@ -6,7 +6,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   about,
-  coursesByAge,
+  coursesByType,
   coursesByLevel,
   featuredProgram,
   primaryLinks,
@@ -109,12 +109,12 @@ export function MobileNav({ pathname, className }: { pathname: string; className
               <li>
                 <Section
                   label="Courses"
-                  current={[...coursesByLevel, ...coursesByAge, { label: "", href: "/courses" }].some((l) => isCurrent(pathname, l.href))}
+                  current={[...coursesByLevel, ...coursesByType, { label: "", href: "/courses" }].some((l) => isCurrent(pathname, l.href))}
                 >
                   <p className="eyebrow px-3 pt-1 pb-1">By level</p>
                   <DrawerLinks links={coursesByLevel} pathname={pathname} onNavigate={closeDrawer} />
-                  <p className="eyebrow px-3 pt-4 pb-1">By age</p>
-                  <DrawerLinks links={coursesByAge} pathname={pathname} onNavigate={closeDrawer} />
+                  <p className="eyebrow px-3 pt-4 pb-1">By type</p>
+                  <DrawerLinks links={coursesByType} pathname={pathname} onNavigate={closeDrawer} />
                   <Link
                     href="/courses"
                     onClick={closeDrawer}

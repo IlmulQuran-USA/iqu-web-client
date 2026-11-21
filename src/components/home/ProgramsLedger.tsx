@@ -1,6 +1,5 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { Amount, PriceList, PriceRow as Row, TextLink } from "@/components/course/PriceList";
 import { programsSection as copy } from "@/content/home";
 import { courseById, fromPrice, programs, usd } from "@/content/pricing";
 
@@ -88,18 +87,6 @@ export function ProgramsLedger() {
   );
 }
 
-function TextLink({ label, href }: { label: string; href: string }) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-    >
-      {label}
-      <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-    </Link>
-  );
-}
-
 function Group({ label, children }: { label: string; children: ReactNode }) {
   const id = `programs-${label.toLowerCase().replace(/[^a-z]+/g, "-")}`;
   return (
@@ -107,41 +94,9 @@ function Group({ label, children }: { label: string; children: ReactNode }) {
       <h3 id={id} className="font-sans text-ui font-medium text-ink-muted">
         {label}
       </h3>
-      <ul aria-labelledby={id} className="mt-3 border-t border-ink">
+      <PriceList labelledBy={id} className="mt-3">
         {children}
-      </ul>
+      </PriceList>
     </div>
   );
-}
-
-/**
- * One course: the whole row is the link. Hover tints the row (--surface-2),
- * underlines the name and nudges the arrow; focus draws the global ring.
- */
-function Row({ href, name, meta, price }: { href: string; name: string; meta: string; price: ReactNode }) {
-  return (
-    <li className="border-b border-rule">
-      <Link
-        href={href}
-        className="group -mx-3 grid grid-cols-[1fr_auto] items-center gap-x-4 gap-y-1 rounded-card px-3 py-4 transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface-2 sm:grid-cols-[1fr_auto_auto] sm:gap-x-6 sm:py-5"
-      >
-        <span className="min-w-0">
-          <span className="block font-display text-heading-md font-semibold text-ink decoration-1 decoration-accent-strong underline-offset-4 group-hover:underline sm:text-heading-lg">
-            {name}
-          </span>
-          <span className="mt-1 block text-ui text-ink-muted">{meta}</span>
-        </span>
-        <span className="col-start-1 row-start-2 sm:col-start-2 sm:row-start-1 sm:text-right">{price}</span>
-        <ArrowRight
-          aria-hidden="true"
-          strokeWidth={1.5}
-          className="col-start-2 row-span-2 row-start-1 size-5 text-ink-muted transition-transform sm:col-start-3 sm:row-span-1 duration-(--duration-micro) ease-riwaq group-hover:translate-x-0.5 group-hover:text-ink motion-reduce:transition-none"
-        />
-      </Link>
-    </li>
-  );
-}
-
-function Amount({ children }: { children: ReactNode }) {
-  return <span className="font-display text-heading-md font-semibold text-ink tabular-nums sm:text-heading-lg">{children}</span>;
 }

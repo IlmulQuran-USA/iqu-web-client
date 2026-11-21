@@ -7,7 +7,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   about,
-  coursesByAge,
+  coursesByType,
   coursesByLevel,
   featuredProgram,
   primaryLinks,
@@ -116,7 +116,7 @@ export function Header({
   const panelId = (key: MenuKey) => `${baseId}-${key}`;
 
   const groupCurrent = {
-    courses: [...coursesByLevel, ...coursesByAge, { label: "", href: "/courses" }].some((l) =>
+    courses: [...coursesByLevel, ...coursesByType, { label: "", href: "/courses" }].some((l) =>
       isCurrent(pathname, l.href),
     ),
     programs: programs.some((l) => isCurrent(pathname, l.href)),
@@ -381,7 +381,7 @@ function CoursesPanel({
   onNavigate: () => void;
 }) {
   const levelId = `${id}-level`;
-  const ageId = `${id}-age`;
+  const typeId = `${id}-type`;
   return (
     <div id={id} hidden={hidden} className="absolute inset-x-0 top-full border-b border-rule bg-paper shadow-overlay">
       <div className="container-content grid grid-cols-12 gap-6 py-8">
@@ -401,10 +401,10 @@ function CoursesPanel({
         </div>
 
         <div className="col-span-3 border-l border-rule pl-6">
-          <p id={ageId} className="eyebrow px-3 pb-2">
-            By age
+          <p id={typeId} className="eyebrow px-3 pb-2">
+            By type
           </p>
-          <LinkList links={coursesByAge} pathname={pathname} onNavigate={onNavigate} labelledBy={ageId} />
+          <LinkList links={coursesByType} pathname={pathname} onNavigate={onNavigate} labelledBy={typeId} />
         </div>
 
         <div className="col-span-5">
