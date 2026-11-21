@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
@@ -53,8 +54,13 @@ export function TeachersSection() {
               <h3 className="border-b border-rule pb-3 font-sans text-ui font-medium text-ink">{row.heading}</h3>
               <div className="mt-6">
                 <InstructorRow count={people.length}>
-                  {people.map((person) => (
-                    <li key={person.id} className="snap-start">
+                  {people.map((person, i) => (
+                    <li
+                      key={person.id}
+                      className="snap-start"
+                      data-reveal-item=""
+                      style={{ "--reveal-i": i } as CSSProperties}
+                    >
                       <InstructorCard
                         person={person}
                         lazy

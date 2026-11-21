@@ -1,4 +1,5 @@
 import { ArrowRight, ChevronDown } from "lucide-react";
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { faq } from "@/content/home";
 import { PENDING, site } from "@/content/site";
@@ -80,8 +81,14 @@ export type FAQItem = {
 export function FAQList({ items, className }: { items: readonly FAQItem[]; className?: string }) {
   return (
     <div className={cn("border-t border-ink", className)}>
-      {items.map((item) => (
-        <details key={item.q} className="group border-b border-rule">
+      {items.map((item, i) => (
+        // faq-item: the answer eases open (globals.css). data-reveal-item: staggers in when a Reveal wraps the list.
+        <details
+          key={item.q}
+          className="faq-item group border-b border-rule"
+          data-reveal-item=""
+          style={{ "--reveal-i": i } as CSSProperties}
+        >
           <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink [&::-webkit-details-marker]:hidden">
             {item.q}
             <ChevronDown

@@ -49,7 +49,9 @@ type ContentProps = {
 
 const base =
   "relative box-border inline-flex min-h-11 min-w-11 items-center justify-center gap-2 font-sans font-medium " +
-  "transition-[color,background-color,border-color,text-decoration-color] duration-(--duration-micro) ease-riwaq " +
+  "transition-[color,background-color,border-color,text-decoration-color,scale] duration-(--duration-micro) ease-riwaq " +
+  // A press registers as a slight give (120 ms); nothing moves under reduced motion.
+  "motion-safe:act:not-disabled:scale-[0.98] " +
   "disabled:cursor-not-allowed";
 
 const variants: Record<ButtonVariant, string> = {

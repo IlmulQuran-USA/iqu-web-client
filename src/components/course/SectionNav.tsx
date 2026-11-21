@@ -23,11 +23,13 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
   const listRef = useRef<HTMLUListElement>(null);
   const [active, setActive] = useState<string | null>(null);
   const [moreRight, setMoreRight] = useState(false);
+  // The one indicator bar under the current link: x and width in px, moved by transform only.
+  const [bar, setBar] = useState<{ x: number; w: number } | null>(null);
+  // The first placement is instant (no slide in from the left edge); later moves glide.
+  const [glide, setGlide] = useState(false);
 
   useEffect(() => {
-    const targets = sections
-      .map((s) => document.getElementById(s.id))
-      .filter((el): el is HTMLElement => el !== null);
+    const targets = sections.map((s) => document.getElementById(s.id)).filter((el): el is HTMLElement => el !== null);
     if (targets.length === 0) return;
     let frame = 0;
     const update = () => {
@@ -76,6 +78,27 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
     };
   }, []);
 
+  // Place the indicator under the current link (the 12 px side padding of each link excluded).
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    let frame = 0;
+    const place = () => {
+      const link = active ? list.querySelector<HTMLElement>(`a[href="#${active}"]`) : null;
+      // No current section: keep the last position and fade out, rather than slide to x = 0.
+      if (!link) return;
+      setBar({ x: link.offsetLeft - list.offsetLeft + 12, w: link.offsetWidth - 24 });
+      frame = requestAnimationFrame(() => setGlide(true));
+    };
+    place();
+    const resize = new ResizeObserver(place);
+    resize.observe(list);
+    return () => {
+      resize.disconnect();
+      cancelAnimationFrame(frame);
+    };
+  }, [active]);
+
   // Keep the current link in view in the sideways-scrolling bar.
   useEffect(() => {
     const list = listRef.current;
@@ -96,7 +119,7 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
     >
       <ul
         ref={listRef}
-        className="flex overflow-x-auto px-1 [scrollbar-width:none] sm:px-3 lg:-mx-3 lg:px-0 [&::-webkit-scrollbar]:hidden"
+        className="relative flex overflow-x-auto px-1 [scrollbar-width:none] sm:px-3 lg:-mx-3 lg:px-0 [&::-webkit-scrollbar]:hidden"
       >
         {sections.map((section) => (
           <li key={section.id} className="shrink-0">
@@ -107,14 +130,25 @@ export function SectionNav({ sections }: { sections: { id: string; label: string
               className={cn(
                 "relative inline-flex min-h-12 items-center rounded-chip px-3 text-ui font-medium whitespace-nowrap",
                 "transition-colors duration-(--duration-micro) ease-riwaq motion-reduce:transition-none",
-                "after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:bg-accent-strong after:transition-transform after:duration-(--duration-default) after:ease-riwaq motion-reduce:after:transition-none",
-                active === section.id ? "text-ink after:scale-x-100" : "text-ink-muted after:scale-x-0 hov:text-ink",
+                active === section.id ? "text-ink" : "text-ink-muted hov:text-ink",
               )}
             >
               {section.label}
             </a>
           </li>
         ))}
+        {/* The indicator glides from link to link (200 ms, transform only); it jumps under reduced motion. */}
+        <li
+          aria-hidden="true"
+          className={cn(
+            "pointer-events-none absolute bottom-0 left-0 h-0.5 w-px origin-left bg-accent-strong",
+            glide
+              ? "transition-[transform,opacity] duration-(--duration-default) ease-riwaq motion-reduce:transition-none"
+              : "transition-opacity duration-(--duration-micro) motion-reduce:transition-none",
+            bar && active ? "opacity-100" : "opacity-0",
+          )}
+          style={bar ? { transform: `translateX(${bar.x}px) scaleX(${bar.w})` } : undefined}
+        />
         {/* Keeps the last link clear of the end cap when scrolled to the end. */}
         <li aria-hidden="true" className="w-8 shrink-0 lg:hidden" />
       </ul>

@@ -14,6 +14,7 @@ import { Header } from "@/components/layout/Header";
 import { finalCta } from "@/content/home";
 import { socialLinks } from "@/content/navigation";
 import { site } from "@/content/site";
+import { Reveal } from "@/components/motion/Reveal";
 import { getHomeHero } from "@/lib/content/home-hero";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -75,15 +76,35 @@ export default async function HomePage() {
       <Header yieldCtaTo={[HERO_CTAS_ID, FINAL_CTA_ID]} yieldOnLoad />
       <main id="main-content" className="flex flex-col">
         <HomeHero hero={hero} />
-        <ScheduleSection />
-        <ProgramsLedger />
-        <StepList />
-        <TeachersSection />
-        <ProgressSection />
-        <FamiliesSection />
-        <GivingBand />
-        <FAQAccordion />
-        <FinalCta />
+        {/* §2–§10 reveal on scroll (fade + 12 px rise, once); the hero never waits. Steps,
+            teacher cards and questions stagger in 60 ms apart. */}
+        <Reveal>
+          <ScheduleSection />
+        </Reveal>
+        <Reveal>
+          <ProgramsLedger />
+        </Reveal>
+        <Reveal stagger>
+          <StepList />
+        </Reveal>
+        <Reveal stagger>
+          <TeachersSection />
+        </Reveal>
+        <Reveal>
+          <ProgressSection />
+        </Reveal>
+        <Reveal>
+          <FamiliesSection />
+        </Reveal>
+        <Reveal>
+          <GivingBand />
+        </Reveal>
+        <Reveal stagger>
+          <FAQAccordion />
+        </Reveal>
+        <Reveal>
+          <FinalCta />
+        </Reveal>
       </main>
       <Footer />
       <StickyCTA label={finalCta.button.label} href={finalCta.button.href} afterId={HERO_CTAS_ID} beforeId={FINAL_CTA_ID} />

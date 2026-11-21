@@ -134,9 +134,11 @@ export function Header({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b bg-paper transition-colors duration-(--duration-default) ease-riwaq",
+        "header-shadow sticky top-0 z-40 border-b bg-paper transition-colors duration-(--duration-default) ease-riwaq",
         scrolled || openMenu ? "border-rule" : "border-transparent",
       )}
+      // A soft shadow fades in under the bar once the page scrolls (globals.css, opacity only).
+      data-scrolled={scrolled && !openMenu ? "" : undefined}
     >
       <a
         href="#main-content"
@@ -370,7 +372,7 @@ function Dropdown({
     <div
       id={id}
       hidden={hidden}
-      className="absolute top-full left-0 mt-2 w-72 rounded-card border border-rule bg-paper p-2 shadow-overlay"
+      className="menu-panel absolute top-full left-0 mt-2 w-72 rounded-card border border-rule bg-paper p-2 shadow-overlay"
     >
       <LinkList links={links} pathname={pathname} onNavigate={onNavigate} />
     </div>
@@ -391,7 +393,7 @@ function CoursesPanel({
   const levelId = `${id}-level`;
   const typeId = `${id}-type`;
   return (
-    <div id={id} hidden={hidden} className="absolute inset-x-0 top-full border-b border-rule bg-paper shadow-overlay">
+    <div id={id} hidden={hidden} className="menu-panel absolute inset-x-0 top-full border-b border-rule bg-paper shadow-overlay">
       <div className="container-content grid grid-cols-12 gap-6 py-8">
         <div className="col-span-4">
           <p id={levelId} className="eyebrow px-3 pb-2">

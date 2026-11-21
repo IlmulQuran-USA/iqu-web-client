@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Price, PriceList, PriceRow, TextLink } from "@/components/course/PriceList";
 import { FAQList } from "@/components/home/FAQAccordion";
 import { InstructorRow } from "@/components/home/InstructorRow";
@@ -16,6 +15,9 @@ import {
 } from "@/content/catalog";
 import { instructors } from "@/content/instructors";
 import { cn } from "@/lib/cn";
+import { AnimatedList } from "@/components/motion/AnimatedList";
+import { Reveal } from "@/components/motion/Reveal";
+import { SlidingFilter } from "@/components/motion/SlidingFilter";
 
 /*
  * Course catalog sections (spec §7.2; plan approved by the owner, 21 Nov 2026).
@@ -90,28 +92,13 @@ function TypeFilter({ type, shown }: { type: CatalogType; shown: number }) {
         <span aria-hidden="true" className="text-ui font-medium text-ink sm:mr-1">
           {typeFilter.label}
         </span>
-        <ul className="grid grid-cols-3 gap-2 sm:flex">
-          {typeFilter.options.map((option) => {
-            const selected = option.id === type;
-            return (
-              <li key={option.id} className="flex">
-                <Link
-                  href={option.href}
-                  scroll={false}
-                  aria-current={selected ? "true" : undefined}
-                  className={cn(
-                    "inline-flex min-h-11 w-full items-center justify-center rounded-button border px-3 text-center text-ui leading-tight transition-colors duration-(--duration-micro) ease-riwaq sm:px-4",
-                    selected
-                      ? "border-accent-strong bg-tint font-medium text-ink"
-                      : "border-rule text-ink-body hov:bg-surface-2 hov:text-ink",
-                  )}
-                >
-                  {option.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        {/* The selected tint slides to the chosen option (Motion layoutId); plain links underneath. */}
+        <SlidingFilter
+          id="catalog-type"
+          options={typeFilter.options}
+          selected={type}
+          className="grid grid-cols-3 gap-2 sm:flex"
+        />
       </nav>
       <p role="status" className="text-ui text-ink-muted tabular-nums">
         {type === "all" ? catalogHeader.showing(shown) : catalogHeader.showingFiltered(shown)}
@@ -127,40 +114,50 @@ export function CatalogResults({ type }: { type: CatalogType }) {
   return (
     <div>
       <TypeFilter type={type} shown={shown} />
-      {groups.map((group) => {
-        const headingId = `group-${group.id}`;
-        return (
-          <section
-            key={group.id}
-            aria-labelledby={headingId}
-            className="mt-10 grid gap-6 md:mt-12 lg:grid-cols-12 lg:gap-6"
-          >
-            {/* From lg the heading stays beside its rows while they scroll. */}
-            <div className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:col-span-4 lg:self-start">
-              <h2 id={headingId} className="text-heading-xl text-balance">
-                {group.heading}
-              </h2>
-              {group.intro ? (
-                <p className="mt-3 max-w-measure text-body text-pretty text-ink-body">{group.intro.text}</p>
-              ) : null}
-            </div>
-            <PriceList labelledBy={headingId} className="lg:col-span-8">
-              {group.rows.map((row, i) => (
-                <PriceRow
-                  key={row.id}
-                  href={row.href}
-                  name={row.name}
-                  summary={row.summary}
-                  meta={row.meta}
-                  step={group.steps ? i + 1 : undefined}
-                  price={<Price {...row.price} />}
-                />
-              ))}
-            </PriceList>
-          </section>
-        );
-      })}
+      {/* A filter change fades groups out and in and closes the gap (Motion); on scroll each
+          group's heading and rows reveal 60 ms apart (CSS). */}
+      <AnimatedList
+        as="div"
+        itemAs="div"
+        items={groups.map((group) => ({ key: group.id, node: <Group group={group} /> }))}
+      />
     </div>
+  );
+}
+
+function Group({ group }: { group: (typeof catalogGroups)[number] }) {
+  const headingId = `group-${group.id}`;
+  return (
+    <Reveal stagger>
+      <section aria-labelledby={headingId} className="mt-10 grid gap-6 md:mt-12 lg:grid-cols-12 lg:gap-6">
+        {/* From lg the heading stays beside its rows while they scroll. */}
+        <div
+          data-reveal-item=""
+          className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:col-span-4 lg:self-start"
+        >
+          <h2 id={headingId} className="text-heading-xl text-balance">
+            {group.heading}
+          </h2>
+          {group.intro ? (
+            <p className="mt-3 max-w-measure text-body text-pretty text-ink-body">{group.intro.text}</p>
+          ) : null}
+        </div>
+        <PriceList labelledBy={headingId} className="lg:col-span-8">
+          {group.rows.map((row, i) => (
+            <PriceRow
+              key={row.id}
+              href={row.href}
+              name={row.name}
+              summary={row.summary}
+              meta={row.meta}
+              step={group.steps ? i + 1 : undefined}
+              price={<Price {...row.price} />}
+              revealIndex={i + 1}
+            />
+          ))}
+        </PriceList>
+      </section>
+    </Reveal>
   );
 }
 

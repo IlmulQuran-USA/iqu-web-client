@@ -10,6 +10,7 @@ import {
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
+import { Reveal } from "@/components/motion/Reveal";
 import { Header } from "@/components/layout/Header";
 import {
   catalogFinal,
@@ -79,11 +80,20 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
           <CatalogHeader />
           <CatalogResults type={type} />
           <FactsStrip className="mt-12 grid md:hidden" />
-          <FeeNote />
+          <Reveal>
+            <FeeNote />
+          </Reveal>
         </div>
-        <WhereToStart />
-        <CatalogTeachers />
-        <CatalogFAQ />
+        {/* Below the list, each section reveals once on scroll (fade + 12 px rise); questions stagger. */}
+        <Reveal>
+          <WhereToStart />
+        </Reveal>
+        <Reveal>
+          <CatalogTeachers />
+        </Reveal>
+        <Reveal stagger>
+          <CatalogFAQ />
+        </Reveal>
         <FinalCta copy={cta} />
       </main>
       <Footer />

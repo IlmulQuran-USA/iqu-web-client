@@ -92,8 +92,8 @@ export function NewsletterForm() {
           <p
             className={
               formMessage.status === "success"
-                ? "mt-3 flex items-start gap-1.5 text-ui font-medium text-success"
-                : "mt-3 flex items-start gap-1.5 text-ui font-medium text-danger"
+                ? "message-in mt-3 flex items-start gap-1.5 text-ui font-medium text-success"
+                : "message-in mt-3 flex items-start gap-1.5 text-ui font-medium text-danger"
             }
           >
             {formMessage.status === "success" ? (

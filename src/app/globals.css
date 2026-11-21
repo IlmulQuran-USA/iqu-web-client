@@ -567,3 +567,156 @@
     }
   }
 }
+
+/*
+ * Site motion (owner plan approved 22 Nov 2026; DESIGN.md §6). CSS for
+ * everything CSS does well; Motion (motion/react, lazy) only for the filtered
+ * lists and the /courses filter indicator. Only transform and opacity move
+ * (the FAQ height is the one approved exception). Under prefers-reduced-motion
+ * nothing moves: opacity at most.
+ */
+@layer components {
+  /* Header edge on scroll: a shadow layer that fades in (opacity only). */
+  .header-shadow::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgb(15 23 42 / 0.08);
+    /* Downward only: nothing darkens the bar itself. */
+    clip-path: inset(0 0 -24px 0);
+    opacity: 0;
+    transition: opacity var(--duration-default) var(--ease-riwaq);
+  }
+  .header-shadow[data-scrolled]::after {
+    opacity: 1;
+  }
+
+  /* Header menus: open with a fade and a 4 px drop (200 ms). They close at once:
+     Tailwind's preflight sets [hidden] to display: none !important. */
+  .menu-panel:not([hidden]) {
+    transition:
+      opacity var(--duration-default) var(--ease-riwaq),
+      transform var(--duration-default) var(--ease-riwaq);
+  }
+  .menu-panel[hidden] {
+    display: none;
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  @starting-style {
+    .menu-panel:not([hidden]) {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+
+  /* Scroll reveal: fade + 12 px rise, once, 60 ms stagger (src/components/motion/Reveal.tsx).
+     Only sections that start below the fold are ever set to "pending". */
+  [data-reveal="pending"]:not([data-reveal-stagger]),
+  [data-reveal="pending"][data-reveal-stagger] [data-reveal-item] {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  [data-reveal="in"]:not([data-reveal-stagger]),
+  [data-reveal="in"][data-reveal-stagger] [data-reveal-item] {
+    transition:
+      opacity var(--duration-panel) var(--ease-riwaq),
+      transform var(--duration-panel) var(--ease-riwaq);
+    transition-delay: calc(min(var(--reveal-i, 0), 5) * 60ms);
+  }
+
+  /* FAQ accordion: native <details>; the answer's height and opacity ease open
+     where ::details-content is supported, and it opens at once elsewhere. */
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size var(--duration-default) var(--ease-riwaq),
+      opacity var(--duration-default) var(--ease-riwaq),
+      content-visibility var(--duration-default) allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
+
+  /* Newsletter result: fades in with a 4 px rise. */
+  .message-in {
+    transition:
+      opacity var(--duration-default) var(--ease-riwaq),
+      transform var(--duration-default) var(--ease-riwaq);
+  }
+  @starting-style {
+    .message-in {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+
+  /* Instructor cards: the portrait eases up 3% inside the arch on hover and focus. */
+  .arch-zoom img {
+    transition: transform var(--duration-default) var(--ease-riwaq);
+  }
+  .group:is(:hover, :focus-visible) .arch-zoom img {
+    transform: scale(1.03);
+  }
+  @media (hover: none) {
+    .group:hover .arch-zoom img {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-panel:not([hidden]) {
+      transition: opacity var(--duration-micro) linear;
+    }
+    .menu-panel[hidden] {
+      transform: none;
+    }
+    @starting-style {
+      .menu-panel:not([hidden]) {
+        transform: none;
+      }
+    }
+    [data-reveal="pending"]:not([data-reveal-stagger]),
+    [data-reveal="pending"][data-reveal-stagger] [data-reveal-item] {
+      transform: none;
+    }
+    [data-reveal="in"]:not([data-reveal-stagger]),
+    [data-reveal="in"][data-reveal-stagger] [data-reveal-item] {
+      transition: opacity var(--duration-micro) linear;
+      transition-delay: 0ms;
+    }
+    .faq-item::details-content {
+      transition: none;
+    }
+    .message-in {
+      transition: opacity var(--duration-micro) linear;
+    }
+    @starting-style {
+      .message-in {
+        transform: none;
+      }
+    }
+    .arch-zoom img,
+    .group:is(:hover, :focus-visible) .arch-zoom img {
+      transition: none;
+      transform: none;
+    }
+  }
+}
+
+/* Print: content waiting to reveal prints in full. */
+@media print {
+  [data-reveal],
+  [data-reveal] [data-reveal-item] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

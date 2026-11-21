@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /**
@@ -42,6 +42,7 @@ export function PriceRow({
   price,
   summary,
   step,
+  revealIndex,
 }: {
   href: string;
   name: string;
@@ -49,18 +50,24 @@ export function PriceRow({
   price: ReactNode;
   summary?: string | null;
   step?: number;
+  /** Inside a staggered Reveal: this row's place in the stagger (60 ms apart). */
+  revealIndex?: number;
 }) {
   const key = `row${href.replace(/[^a-z0-9]+/gi, "-")}`;
   const labelledBy = [step ? `${key}-step` : null, `${key}-name`, `${key}-price`].filter(Boolean).join(" ");
   const describedBy = [summary ? `${key}-summary` : null, `${key}-meta`].filter(Boolean).join(" ");
   return (
-    <li className="border-b border-rule">
+    <li
+      className="border-b border-rule"
+      data-reveal-item={revealIndex === undefined ? undefined : ""}
+      style={revealIndex === undefined ? undefined : ({ "--reveal-i": revealIndex } as CSSProperties)}
+    >
       <Link
         href={href}
         aria-labelledby={labelledBy}
         aria-describedby={describedBy}
         className={cn(
-          "group -mx-3 grid items-center gap-x-4 gap-y-1 rounded-card px-3 py-4 transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface-2 sm:gap-x-6 sm:py-5",
+          "group -mx-3 grid items-center gap-x-4 gap-y-1 rounded-card px-3 py-4 transition-[background-color,translate] duration-(--duration-micro) ease-riwaq hov:bg-surface-2 motion-safe:act:translate-y-px sm:gap-x-6 sm:py-5",
           step
             ? "grid-cols-[auto_1fr_auto] sm:grid-cols-[auto_1fr_auto_auto]"
             : "grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto]",

@@ -93,7 +93,8 @@ function InstructorArch({
       width={person.photo.width}
       height={person.photo.height}
       sizes={sizes}
-      className={cn("mx-auto", width)}
+      // The portrait eases up 3% inside the arch on hover and focus (globals.css .arch-zoom).
+      className={cn("arch-zoom mx-auto", width)}
       // The owner's files share one framing (eyes at 35%, centred), so every
       // portrait uses the same fit and position: cover, 50% 50% (20 Nov 2026).
       focalPoint={{ x: 50, y: 50 }}

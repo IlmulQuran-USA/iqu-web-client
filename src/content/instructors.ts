@@ -1,5 +1,5 @@
 import { draft, draftList, live, liveList, pending, pendingList } from "./copy";
-import { renamedInstructorSlugs, wrongLiveInstructorPaths } from "./legacy-paths";
+import { renamedInstructorSlugs, liveInstructorPaths } from "./legacy-paths";
 import { instructorSchema, type Instructor } from "./types";
 
 /*
@@ -390,7 +390,11 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
 export const instructorIds = instructors.map((i) => i.id);
 
 // Every redirect target in ./legacy-paths is a teacher here (that file stays free of content imports).
-for (const to of [...Object.values(wrongLiveInstructorPaths), ...Object.values(renamedInstructorSlugs)]) {
+// The live map covers all 20 profiles exactly once, so no teacher's old URL falls to the catch-all.
+if (new Set(Object.values(liveInstructorPaths)).size !== instructors.length) {
+  throw new Error("legacy-paths.ts: liveInstructorPaths must map every instructor exactly once");
+}
+for (const to of [...Object.values(liveInstructorPaths), ...Object.values(renamedInstructorSlugs)]) {
   if (!instructorIds.includes(to)) throw new Error(`legacy-paths.ts redirects to unknown instructor "${to}"`);
 }
 

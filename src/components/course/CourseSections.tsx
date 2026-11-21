@@ -1,9 +1,10 @@
 import { ArrowLeft, ArrowRight, Check, ClipboardCheck } from "lucide-react";
 import Link from "next/link";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { FAQList } from "@/components/home/FAQAccordion";
 import { LocalTime } from "@/components/home/LocalTime";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
+import { Reveal } from "@/components/motion/Reveal";
 import {
   curriculumHeading,
   faqFor,
@@ -42,7 +43,11 @@ function Section({ id, title, children }: { id: string; title: string; children:
     // Anchor offset: html scroll-padding covers the header and the sticky sub-nav (globals.css),
     // so a section's top rule lands on the bar's own bottom rule: one line, never two. The
     // first section drops its rule, since the bar's rule already sits right above it.
-    <section id={id} aria-labelledby={`${id}-title`} className="border-t border-rule py-12 md:py-16 [[data-sticky-subnav]+&]:border-t-0">
+    <section
+      id={id}
+      aria-labelledby={`${id}-title`}
+      className="border-t border-rule py-12 md:py-16 [[data-sticky-subnav]+&]:border-t-0"
+    >
       <h2 id={`${id}-title`} className="text-heading-xl text-balance md:text-display-md">
         {title}
       </h2>
@@ -203,7 +208,9 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
                   <span className="flex flex-col gap-1 md:flex-row md:gap-6">
                     <span className="flex items-baseline gap-2 md:w-32 md:shrink-0 md:flex-col md:gap-0">
                       <span className="text-ui text-ink-muted">Classes</span>
-                      <span className="font-display text-heading-lg font-semibold text-ink tabular-nums">{row.classes}</span>
+                      <span className="font-display text-heading-lg font-semibold text-ink tabular-nums">
+                        {row.classes}
+                      </span>
                     </span>
                     <span className="block max-w-measure text-body text-pretty text-ink-body">{row.focus}</span>
                   </span>
@@ -220,7 +227,12 @@ function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum
       );
     case "steps":
       return (
-        <ol className={cn("mt-6 grid gap-x-6 gap-y-8", curriculum.steps.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2")}>
+        <ol
+          className={cn(
+            "mt-6 grid gap-x-6 gap-y-8",
+            curriculum.steps.length === 3 ? "md:grid-cols-3" : "md:grid-cols-2",
+          )}
+        >
           {curriculum.steps.map((step) => (
             <li key={step.title} className="border-t border-ink pt-4">
               <StepHeading className="font-display text-heading-md font-semibold text-ink">{step.title}</StepHeading>
@@ -318,13 +330,18 @@ export function Teachers({ course }: { course: Course }) {
             ) : null}
           </h3>
           {group.people.length > 0 ? (
-            <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
-              {group.people.map((person) => (
-                <li key={person.id}>
+            // The cards reveal 60 ms apart on scroll; the reading text above them never moves (DESIGN.md §6).
+            <Reveal
+              as="ul"
+              stagger
+              className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6"
+            >
+              {group.people.map((person, i) => (
+                <li key={person.id} data-reveal-item="" style={{ "--reveal-i": i } as CSSProperties}>
                   <InstructorCard person={person} variant="grid" sizes="128px" />
                 </li>
               ))}
-            </ul>
+            </Reveal>
           ) : (
             <div className="mt-4">
               <p className="max-w-measure text-body text-pretty text-ink-body">{group.empty}</p>
@@ -428,9 +445,14 @@ export function WhereNext({ course }: { course: Course }) {
   return (
     <nav aria-label="Where next" className="border-t border-rule py-12 md:py-16">
       {links.length > 0 ? (
-        <ul className="mb-6 grid gap-4 sm:grid-cols-2">
-          {links.map(({ course: c, label, back }) => (
-            <li key={c.id} className={cn(!back && "sm:col-start-2")}>
+        <Reveal as="ul" stagger className="mb-6 grid gap-4 sm:grid-cols-2">
+          {links.map(({ course: c, label, back }, i) => (
+            <li
+              key={c.id}
+              className={cn(!back && "sm:col-start-2")}
+              data-reveal-item=""
+              style={{ "--reveal-i": i } as CSSProperties}
+            >
               <Link
                 href={c.href}
                 className="group flex h-full items-center gap-4 rounded-card border border-rule p-5 transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface-2"
@@ -451,7 +473,7 @@ export function WhereNext({ course }: { course: Course }) {
               </Link>
             </li>
           ))}
-        </ul>
+        </Reveal>
       ) : null}
       <TextLink label="See all courses" href="/courses" />
     </nav>

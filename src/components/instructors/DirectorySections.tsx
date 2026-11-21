@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { FactsStrip } from "@/components/catalog/CatalogSections";
 import { TextLink } from "@/components/course/PriceList";
@@ -20,6 +21,9 @@ import {
 import { instructors } from "@/content/instructors";
 import type { Instructor } from "@/content/types";
 import { cn } from "@/lib/cn";
+import { AnimatedList } from "@/components/motion/AnimatedList";
+import { HoldHeight } from "@/components/motion/HoldHeight";
+import { Reveal } from "@/components/motion/Reveal";
 import { CourseSelect } from "./CourseSelect";
 
 /*
@@ -125,15 +129,25 @@ function Filters({ filter, shown }: { filter: DirectoryFilter; shown: number }) 
 
 /* ── Groups ──────────────────────────────────────────────────────────────── */
 
-function Grid({ people }: { people: Instructor[] }) {
+/**
+ * The cards. A filter change fades the leavers out and the new set in (Motion; a
+ * glide here crossed the next group's heading, so cards take their new places at
+ * once). On scroll they reveal 60 ms apart (CSS).
+ */
+function Grid({ people, offset = 0 }: { people: Instructor[]; offset?: number }) {
   return (
-    <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6">
-      {people.map((person) => (
-        <li key={person.id}>
-          <InstructorCard person={person} variant="grid" sizes="128px" />
-        </li>
-      ))}
-    </ul>
+    <AnimatedList
+      glide={false}
+      className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6"
+      items={people.map((person, i) => ({
+        key: person.id,
+        node: (
+          <div data-reveal-item="" style={{ "--reveal-i": offset + i } as CSSProperties}>
+            <InstructorCard person={person} variant="grid" sizes="128px" />
+          </div>
+        ),
+      }))}
+    />
   );
 }
 
@@ -171,7 +185,7 @@ export function DirectoryResults({ filter }: { filter: DirectoryFilter }) {
           const rest = inGroup.filter((p) => !leaders.includes(p));
           const headingId = `group-${group.gender}`;
           return (
-            <section key={group.gender} aria-labelledby={headingId} className="mt-12 md:mt-16">
+            <Reveal as="section" stagger key={group.gender} aria-labelledby={headingId} className="mt-12 md:mt-16">
               <h2
                 id={headingId}
                 className="border-b border-ink pb-3 font-display text-heading-lg font-semibold text-balance text-ink"
@@ -188,38 +202,42 @@ export function DirectoryResults({ filter }: { filter: DirectoryFilter }) {
                 ) : null}
               </h2>
 
-              {inGroup.length === 0 ? (
-                <div className="mt-4">
-                  <p className="max-w-measure text-body text-pretty text-ink-body">
-                    {group.empty(filterWords(filter))}
-                  </p>
-                  <TextLink {...copy.ask} className="mt-1" />
-                </div>
-              ) : null}
+              {/* The group keeps its height while its cards glide after a filter change, so the next
+                  group's heading never jumps up under them (the leadership row leaves at once). */}
+              <HoldHeight signature={`${filter.course ?? ""}|${filter.lang ?? ""}`}>
+                {inGroup.length === 0 ? (
+                  <div className="mt-4">
+                    <p className="max-w-measure text-body text-pretty text-ink-body">
+                      {group.empty(filterWords(filter))}
+                    </p>
+                    <TextLink {...copy.ask} className="mt-1" />
+                  </div>
+                ) : null}
 
-              {leaders.length > 0 ? (
-                <div className="mt-8">
-                  <h3 className="text-ui font-medium text-ink">{copy.leadership}</h3>
-                  <ul className="mt-4 grid grid-cols-3 gap-x-3 gap-y-8 sm:gap-x-6 lg:w-3/4">
-                    {leaders.map((person) => (
-                      <li key={person.id}>
-                        <InstructorCard
-                          person={person}
-                          sizes="(min-width: 64rem) 200px, (min-width: 40rem) 25vw, 30vw"
-                          lazy
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
+                {leaders.length > 0 ? (
+                  <div className="mt-8">
+                    <h3 className="text-ui font-medium text-ink">{copy.leadership}</h3>
+                    <ul className="mt-4 grid grid-cols-3 gap-x-3 gap-y-8 sm:gap-x-6 lg:w-3/4">
+                      {leaders.map((person, i) => (
+                        <li key={person.id} data-reveal-item="" style={{ "--reveal-i": i } as CSSProperties}>
+                          <InstructorCard
+                            person={person}
+                            sizes="(min-width: 64rem) 200px, (min-width: 40rem) 25vw, 30vw"
+                            lazy
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
 
-              {rest.length > 0 ? (
-                <div className={leaders.length > 0 ? "mt-12 border-t border-rule pt-8" : "mt-8"}>
-                  <Grid people={rest} />
-                </div>
-              ) : null}
-            </section>
+                {rest.length > 0 ? (
+                  <div className={leaders.length > 0 ? "mt-12 border-t border-rule pt-8" : "mt-8"}>
+                    <Grid people={rest} offset={leaders.length} />
+                  </div>
+                ) : null}
+              </HoldHeight>
+            </Reveal>
           );
         })
       )}

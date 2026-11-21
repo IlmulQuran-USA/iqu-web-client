@@ -29,13 +29,36 @@ export const renamedInstructorSlugs: Record<string, string> = {
 };
 
 /**
- * Live WordPress instructor profiles whose slug does not match the teacher
- * (COURSE-CONTENT.md §11, C6). Old path (no trailing slash) → new slug.
+ * Every live WordPress instructor profile (the 20 `iq_instructor` posts,
+ * read-only from ilmulquranus.org on 22 Nov 2026; permalinks are
+ * /instructor/<slug>/), each to its own new profile. Old path (no trailing
+ * slash) → new slug. Matched by the post title, not the slug: three live
+ * slugs name the wrong teacher (COURSE-CONTENT.md §11, C6).
  */
-export const wrongLiveInstructorPaths: Record<string, string> = {
+export const liveInstructorPaths: Record<string, string> = {
+  // The three wrong live slugs (C6).
   "/instructor/sheikh-hussain-muhammad": "mawlana-nazrul-islam",
   "/instructor/mufti-harun-izhar": "mufti-jubayer-bin-jalaluddin",
   "/instructor/muhamad-raiyan": "mufti-ahmed-mostafa-raian",
+  // Live slug differs from the new one.
+  "/instructor/shaker-waliullah": "mufti-shaker-waliullah",
+  "/instructor/alauddin-khilzi": "ustad-alauddin-khilzi",
+  "/instructor/humayra-afrin": "hafezah-humayra-afrin",
+  "/instructor/muhammad-nurul-ahsan": "hafez-nurul-ahsan",
+  "/instructor/muhammad-faijullah": "mufti-muhammad-faijullah",
+  "/instructor/nuha-rashed": "hafezah-nuha-rashed",
+  // Same slug, new path (/instructor/ → /instructors/).
+  "/instructor/mufti-shamsuddin-rois": "mufti-shamsuddin-rois",
+  "/instructor/mufti-mushfiqur-rahman": "mufti-mushfiqur-rahman",
+  "/instructor/mufti-ariful-islam": "mufti-ariful-islam",
+  "/instructor/mawlana-mouinul-islam": "mawlana-mouinul-islam",
+  "/instructor/najiba-mahzabin-jeba": "najiba-mahzabin-jeba",
+  "/instructor/maha-rashed": "maha-rashed",
+  "/instructor/jawadul-islam-khan-jami": "jawadul-islam-khan-jami",
+  "/instructor/mufti-sajidullah": "mufti-sajidullah",
+  "/instructor/afra-humayra": "afra-humayra",
+  "/instructor/shifa-jalal": "shifa-jalal",
+  "/instructor/mufti-muaj-al-juhany": "mufti-muaj-al-juhany",
 };
 
 export function instructorSlugRedirects() {
@@ -45,14 +68,14 @@ export function instructorSlugRedirects() {
       destination: `/instructors/${to}`,
       statusCode: 301 as const,
     })),
-    // The three wrong live slugs first, so the catch-all below never takes them.
-    ...Object.entries(wrongLiveInstructorPaths).map(([from, to]) => ({
+    // Every live profile to its own new profile, before the catch-all below.
+    ...Object.entries(liveInstructorPaths).map(([from, to]) => ({
       source: from,
       destination: `/instructors/${to}`,
       statusCode: 301 as const,
     })),
-    // The other live profile URLs are not documented: send them to the directory,
-    // never to a 404 (owner plan, 22 Nov 2026). The live directory moves too.
+    // Anything else under /instructor/ (an unknown or future slug) goes to the
+    // directory, never to a 404 (owner plan, 22 Nov 2026). The live directory moves too.
     { source: "/instructor/:slug", destination: "/instructors", statusCode: 301 as const },
     { source: "/instructor", destination: "/instructors", statusCode: 301 as const },
   ];
