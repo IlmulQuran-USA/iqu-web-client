@@ -54,7 +54,7 @@ If a skill or detector suggestion contradicts 1–4, keep that choice and record
 **Content & trust**
 - The name is always written Ilm-Ul-Quran USA (capital U).
 - Always write Quran (no apostrophe), and Quranic. The organisation name stays Ilm-Ul-Quran USA. (Owner decision, 21 Nov 2026.)
-- Najiba Mahzabin Jeba and Maha Rashed are written with no title (owner, 21 Nov 2026). Every other teacher keeps their title.
+- Najiba Mahzabin Jeba, Maha Rashed (owner, 21 Nov 2026) and Alauddin Khilzi (owner, 22 Nov 2026) are written with no title. Every other teacher keeps their title.
 - No stock photos. Missing portrait → arch-framed monogram.
 - Never invent fees, testimonials, ratings, credentials or statistics. Use `$XX` and `[pending]` placeholders until spec §8 content arrives.
 - No fabricated review counts — honest empty state instead.

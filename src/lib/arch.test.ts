@@ -13,7 +13,6 @@ test("titles are never initials", () => {
   assert.equal(initialsOf("Mufti Muaj Al-Juhany"), "MA");
   assert.equal(initialsOf("Hafez Muhammad Nurul Ahsan"), "MA");
   assert.equal(initialsOf("Mawlana Nazrul Islam"), "NI");
-  assert.equal(initialsOf("Ustad Alauddin Khilzi"), "AK");
   assert.equal(initialsOf("Hafiz Abdullah Rahman"), "AR");
   assert.equal(initialsOf("Hafizah Amina Begum"), "AB");
   assert.equal(initialsOf("Shaykh Yusuf Ali"), "YA");
@@ -26,6 +25,8 @@ test("names without a title", () => {
   assert.equal(initialsOf("Maha Rashed"), "MR");
   assert.equal(initialsOf("Najiba Mahzabin Jeba"), "NJ");
   assert.equal(initialsOf("Jawadul Islam Khan Jami"), "JJ");
+  // Owner, 22 Nov 2026: the title is removed; the monogram stays AK.
+  assert.equal(initialsOf("Alauddin Khilzi"), "AK");
   assert.equal(initialsOf("Sarah H."), "SH");
 });
 

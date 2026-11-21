@@ -350,7 +350,7 @@ const courseCopy: Record<CourseId, CourseContent> = {
       ids: [
         "mufti-sajidullah",
         "mufti-jubayer-bin-jalaluddin",
-        "ustad-alauddin-khilzi",
+        "alauddin-khilzi",
         "jawadul-islam-khan-jami",
         "mawlana-nazrul-islam",
         "najiba-mahzabin-jeba",
@@ -467,7 +467,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
     },
     // The live database says "Certification: no"; the owner has not decided (COURSE-CONTENT.md C3).
     certificate: { status: "pending", value: null },
-    teachers: { status: "live", ids: ["mufti-ariful-islam", "ustad-alauddin-khilzi", "mawlana-nazrul-islam"] },
+    teachers: { status: "live", ids: ["mufti-ariful-islam", "alauddin-khilzi", "mawlana-nazrul-islam"] },
   },
 
   "summer-ilm-camp": {
@@ -523,7 +523,7 @@ const programCopy: Record<ProgramId, CourseContent> = {
       status: "live",
       ids: [
         "mufti-ariful-islam",
-        "ustad-alauddin-khilzi",
+        "alauddin-khilzi",
         "mawlana-nazrul-islam",
         "maha-rashed",
         "hafezah-nuha-rashed",

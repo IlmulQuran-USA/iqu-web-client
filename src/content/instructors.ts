@@ -262,14 +262,15 @@ export const instructors: Instructor[] = instructorSchema.array().parse([
     photo: null,
   },
   {
-    id: "ustad-alauddin-khilzi",
-    name: "Ustad Alauddin Khilzi",
+    // Owner, 22 Nov 2026: written with no title (as for Najiba Mahzabin Jeba and Maha Rashed).
+    id: "alauddin-khilzi",
+    name: "Alauddin Khilzi",
     gender: "male",
     role: "Quran & Islamic Studies",
     roleFull: pending,
     languages: ["Bengali", "English", "Arabic", "Urdu"],
     bio: live(
-      "Ustad Alauddin Khilzi is a Hafez and ‘Alim who teaches Quran reading, recitation, memorization, translation and foundational Islamic education.",
+      "Alauddin Khilzi is a Hafez and ‘Alim who teaches Quran reading, recitation, memorization, translation and foundational Islamic education.",
     ),
     qualifications: liveList([
       "Hafez with Tajweed",

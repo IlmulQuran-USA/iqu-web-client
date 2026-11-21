@@ -20,12 +20,14 @@ export const livePaths: Record<CourseId | ProgramId, string | null> = {
 };
 
 /**
- * Instructor slugs that changed (owner, 21 Nov 2026: these two teachers are
- * written with no title). Old slug → new slug, each a 301.
+ * Instructor slugs that changed because the teacher is now written with no
+ * title (owner, 21 and 22 Nov 2026). Old slug → new slug, each a 301.
  */
 export const renamedInstructorSlugs: Record<string, string> = {
   "ustadha-najiba-mahzabin-jeba": "najiba-mahzabin-jeba",
   "ustadha-maha-rashed": "maha-rashed",
+  // Owner, 22 Nov 2026: Alauddin Khilzi, written with no title too.
+  "ustad-alauddin-khilzi": "alauddin-khilzi",
 };
 
 /**
@@ -42,7 +44,7 @@ export const liveInstructorPaths: Record<string, string> = {
   "/instructor/muhamad-raiyan": "mufti-ahmed-mostafa-raian",
   // Live slug differs from the new one.
   "/instructor/shaker-waliullah": "mufti-shaker-waliullah",
-  "/instructor/alauddin-khilzi": "ustad-alauddin-khilzi",
+  "/instructor/alauddin-khilzi": "alauddin-khilzi",
   "/instructor/humayra-afrin": "hafezah-humayra-afrin",
   "/instructor/muhammad-nurul-ahsan": "hafez-nurul-ahsan",
   "/instructor/muhammad-faijullah": "mufti-muhammad-faijullah",
