@@ -38,7 +38,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 ## Positioning
 
 - **Qualified scholars teach every class.** Classes are live and led by Huffaz, Ulama and Mufti. Our teaching is hard to match on credentials, while commercial academies win on price and convenience.
-- **A real 501(c)(3) that gives about half its seats away.** Nearly half of students study free and the rest pay subsidised fees. Donations go to the scholarship fund.
+- **A real 501(c)(3) that gives about half its seats away.** Listed prices are the full monthly fees; families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship, and nearly half of students study free (owner, 22 Nov 2026). No discount applies to everyone. Donations go to the scholarship fund.
 - **Attendance is measured, not reported.** Zoom join and leave events give the *overlap*, meaning the minutes teacher and student were in the class at the same time. Nobody marks attendance. A teacher cannot claim a class that did not happen, and a teacher no-show is shown as clearly as a student absence. Teacher pay is calculated from verified minutes.
 - **Hifz is taught properly.** Sabaq / Sabqi / Manzil tracking matches how the classes are actually taught. We keep those terms and explain them once.
 
@@ -89,13 +89,15 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 - Whether the portal replaces Telegram after v1.
 - How the first-month-free trial works for reduced-fee and Zakat scholarship families: is a card still required, and what do they pay after the first month?
 - **K1 · Billing date** (CONTENT-ADDENDUM.md §7). The published Tuition Policy (16 Nov 2026) charges each family on its own billing date (the day the free month ends), which can be moved on request; this file and the site's FAQ used to say "charged on the 1st of each month". Until the owner decides, all copy says "charged monthly on your billing date". This also settles or replaces the old question of how the first month lines up with a 1st-of-month cycle (proration).
-- **K2 · Phone number** (CONTENT-ADDENDUM.md §7). The live About page lists (214) 662-1591; the Contact page and the new site list +1 (214) 529-3544. The site keeps +1 (214) 529-3544 until the owner confirms which is correct, or whether both are in use.
 - Whether Bengali launches as a second locale in v1 or v2 (§10.3 Q6).
 - Whether parents see exact minutes or only a status (§10.3 Q7).
 - Who may approve a correction (§10.3 Q8).
 - Whether a donation tab stays inside the student and teacher portals (§10.3 Q9).
 - How long raw Zoom events are kept (§10.3 Q10).
 - The attendance thresholds (§10.3 Q4, set from Phase 0 data).
+
+**Closed decisions:**
+- **K2 · Phone number** (CONTENT-ADDENDUM.md §7), closed by the owner, 22 Nov 2026: +1 (214) 529-3544 is correct (the live Contact page and the enrollment plugin). The (214) 662-1591 on the live About page is outdated; never use it.
 
 ## Brand Commitments
 

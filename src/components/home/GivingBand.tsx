@@ -39,7 +39,7 @@ export function GivingBand() {
               ),
             )}
           </p>
-          <p className="mt-4 max-w-measure text-body text-pretty text-ink-body">{giving.subsidized}</p>
+          <p className="mt-4 max-w-measure text-body text-pretty text-ink-body">{giving.help}</p>
           <p className="mt-4 text-ui font-medium text-ink tabular-nums">{giving.legal}</p>
           <ul className="mt-6 flex flex-col items-start gap-1 sm:flex-row sm:flex-wrap sm:gap-x-8">
             {giving.links.map((link) => (

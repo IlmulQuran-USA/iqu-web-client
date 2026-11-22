@@ -28,7 +28,8 @@ export const site = {
     postalCode: "75080",
     country: "US",
   },
-  // Supplied by the owner, 19 Nov 2026.
+  // Supplied by the owner, 19 Nov 2026; confirmed 22 Nov 2026 (PRODUCT.md K2, closed). The
+  // (214) 662-1591 on the live About page is outdated: never use it.
   phone: { display: "+1 (214) 529-3544", href: "tel:+12145293544" } as { display: string; href: string } | null,
   email: "info@ilmulquranus.org" as string | null,
 } as const;

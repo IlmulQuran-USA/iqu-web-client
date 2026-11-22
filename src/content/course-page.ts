@@ -230,7 +230,8 @@ export function feeNotes(course: Course): string[] {
 
 export const scholarship = {
   heading: "Scholarships",
-  body: `${aid.studyFree} ${aid.subsidized.text}`,
+  // Owner, 22 Nov 2026 (aid.help already ends with "Nearly half of our students study free.").
+  body: aid.help.text,
   // The owner's wording for the scholarship route (19 Nov 2026).
   route: "Families asking for a scholarship are contacted by our team.",
   link: scholarshipLink,

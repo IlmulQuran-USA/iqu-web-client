@@ -27,7 +27,7 @@ import { EASE, FADE, RISE, SPRING, STAGGER } from "./tokens";
  * Nothing above the fold waits on load: the server HTML is fully visible, and
  * after hydration only a section whose top is still below the viewport is
  * hidden (off screen, so the change is never seen). Keyboard focus inside a
- * section brings it in at once. No JavaScript, an old browser or print: the
+ * section shows it and its items at once, with no fade or stagger. No JavaScript, an old browser or print: the
  * content simply stays visible (print CSS overrides the inline styles).
  * Under reduced motion nothing moves: the same states, opacity only.
  *
@@ -44,6 +44,7 @@ type State =
   | "enterFromBelow"
   | "enterFromAbove"
   | "settle" // came back while still leaving
+  | "focused" // keyboard focus landed inside: shown at once, no fade or stagger
   | "leaveUp"
   | "leaveDown";
 
@@ -66,6 +67,7 @@ const section: Variants = {
     transition: { y: SPRING, opacity: FADE, delayChildren: 0.1, staggerChildren: STAGGER, staggerDirection: -1 },
   },
   settle: { opacity: 1, y: 0, transition: { y: SPRING, opacity: FADE } },
+  focused: { opacity: 1, y: 0, transition: { duration: 0 } },
   leaveUp: { opacity: 0, y: -DRIFT, transition: { ...LEAVE, staggerChildren: 0.03, staggerDirection: 1 } },
   leaveDown: { opacity: 0, y: DRIFT, transition: { ...LEAVE, staggerChildren: 0.03, staggerDirection: -1 } },
 };
@@ -76,6 +78,7 @@ const item: Variants = {
   enterFromBelow: { opacity: [0, 1], y: [RISE, 0], transition: { y: SPRING, opacity: FADE } },
   enterFromAbove: { opacity: [0, 1], y: [-RISE, 0], transition: { y: SPRING, opacity: FADE } },
   settle: { opacity: 1, y: 0, transition: { y: SPRING, opacity: FADE } },
+  focused: { opacity: 1, y: 0, transition: { duration: 0 } },
   leaveUp: { opacity: 0, y: -DRIFT, transition: LEAVE },
   leaveDown: { opacity: 0, y: DRIFT, transition: LEAVE },
 };
@@ -95,7 +98,7 @@ const withoutMovement = (variants: Variants): Variants =>
 const sectionStill = withoutMovement(section);
 const itemStill = withoutMovement(item);
 
-const isIn = (s: State) => s === "idle" || s === "settle" || s === "enterFromBelow" || s === "enterFromAbove";
+const isIn = (s: State) => s === "idle" || s === "settle" || s === "focused" || s === "enterFromBelow" || s === "enterFromAbove";
 const isOut = (s: State) => s === "hiddenBelow" || s === "leaveUp" || s === "leaveDown";
 
 type RevealProps<T extends Tag> = Omit<ComponentProps<T>, "onAnimationStart" | "onDrag" | "onDragStart" | "onDragEnd"> & {
@@ -148,11 +151,18 @@ export function Reveal<T extends Tag = "div">({ as, children, ...rest }: RevealP
       { threshold: [0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.75, 1] },
     );
     observer.observe(el);
-    // Keyboard focus never lands on something invisible: focusing inside brings it in at once.
-    el.addEventListener("focusin", enter);
+    // Keyboard focus never lands on something invisible: focusing inside shows the
+    // section and its items at once (a staggered fade left a focused link
+    // transparent for up to half a second; browser QA, 22 Nov 2026).
+    const onFocus = () => {
+      if (stateRef.current === "idle") return;
+      set("focused");
+      gone.current = false;
+    };
+    el.addEventListener("focusin", onFocus);
     return () => {
       observer.disconnect();
-      el.removeEventListener("focusin", enter);
+      el.removeEventListener("focusin", onFocus);
     };
   }, [direction]);
 

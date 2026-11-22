@@ -70,8 +70,13 @@ export const schedule = {
 export const aid = {
   // PRODUCT.md "Positioning".
   studyFree: "Nearly half of our students study free.",
-  // Live, Donate page (CONTENT-ADDENDUM.md §1).
-  subsidized: { status: "live", text: "The rest pay subsidized fees, with tuition reduced by 50%, 45% or 30%." },
+  // Owner, 22 Nov 2026: listed prices are the full fees; a reduced fee or a full
+  // scholarship is something a family asks for, never a discount everyone gets.
+  // Replaces "The rest pay subsidized fees, with tuition reduced by 50%, 45% or 30%."
+  help: {
+    status: "live",
+    text: "Listed prices are the full monthly fees. Families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship. Nearly half of our students study free.",
+  },
 } as const;
 
 /* ── 3 · Programs ────────────────────────────────────────────────────────── */
@@ -87,7 +92,7 @@ export const programsSection = {
   intro: "Live classes for children, teens and adults, priced by course and by the number of days you choose.",
   monthlyLabel: "Monthly classes",
   programsLabel: "Seasonal and weekend programs",
-  // Critique, owner 20 Nov 2026: the giving band owns "Nearly half…" and the subsidy line.
+  // Critique, owner 20 Nov 2026: the giving band owns "Nearly half…" and the fee-help line.
   scholarshipNote: "Scholarships are available.",
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
@@ -257,7 +262,7 @@ export const familiesSection = {
 
 export const giving = {
   heading: aid.studyFree,
-  subsidized: aid.subsidized.text,
+  help: aid.help.text,
   // Rendered as: <name> is the teaching name of <legal name>, <rest>. Names are marked translate="no".
   bodyJoin: "is the teaching name of",
   bodyRest: `, a ${site.taxStatus}. Donations, including Zakat, go to the scholarship fund that pays for those places.`,
