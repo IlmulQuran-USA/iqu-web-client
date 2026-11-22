@@ -43,7 +43,7 @@ export function InstructorCard({
           ? `${person.name}, ${person.role}. Teaches in ${person.languages.join(", ")}`
           : `${person.name}, ${person.role}`
       }
-      className="group flex flex-col rounded-card pb-2 text-center"
+      className="lift-plain group relative flex flex-col rounded-card pb-2 text-center"
     >
       <InstructorArch person={person} sizes={sizes} eager={!grid && !lazy} width={grid ? "max-w-32" : "max-w-50"} />
       <span
@@ -93,7 +93,7 @@ function InstructorArch({
       width={person.photo.width}
       height={person.photo.height}
       sizes={sizes}
-      // The portrait eases up 3% inside the arch on hover and focus (globals.css .arch-zoom).
+      // The card lifts and the portrait zooms 7% inside the arch on hover and focus (globals.css .lift-plain, .arch-zoom).
       className={cn("arch-zoom mx-auto", width)}
       // The owner's files share one framing (eyes at 35%, centred), so every
       // portrait uses the same fit and position: cover, 50% 50% (20 Nov 2026).

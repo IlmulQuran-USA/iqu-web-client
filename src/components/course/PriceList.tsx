@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
+import { RevealItem } from "@/components/motion/Reveal";
 import { cn } from "@/lib/cn";
 
 /**
@@ -42,7 +43,6 @@ export function PriceRow({
   price,
   summary,
   step,
-  revealIndex,
 }: {
   href: string;
   name: string;
@@ -50,18 +50,13 @@ export function PriceRow({
   price: ReactNode;
   summary?: string | null;
   step?: number;
-  /** Inside a staggered Reveal: this row's place in the stagger (60 ms apart). */
-  revealIndex?: number;
 }) {
   const key = `row${href.replace(/[^a-z0-9]+/gi, "-")}`;
   const labelledBy = [step ? `${key}-step` : null, `${key}-name`, `${key}-price`].filter(Boolean).join(" ");
   const describedBy = [summary ? `${key}-summary` : null, `${key}-meta`].filter(Boolean).join(" ");
   return (
-    <li
-      className="border-b border-rule"
-      data-reveal-item={revealIndex === undefined ? undefined : ""}
-      style={revealIndex === undefined ? undefined : ({ "--reveal-i": revealIndex } as CSSProperties)}
-    >
+    // Inside a Reveal, each row follows the one before it in (owner, 22 Nov 2026).
+    <RevealItem as="li" className="border-b border-rule">
       <Link
         href={href}
         aria-labelledby={labelledBy}
@@ -120,7 +115,7 @@ export function PriceRow({
           )}
         />
       </Link>
-    </li>
+    </RevealItem>
   );
 }
 

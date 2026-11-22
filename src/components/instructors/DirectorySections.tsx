@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { FactsStrip } from "@/components/catalog/CatalogSections";
 import { TextLink } from "@/components/course/PriceList";
@@ -23,7 +22,7 @@ import type { Instructor } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { AnimatedList } from "@/components/motion/AnimatedList";
 import { HoldHeight } from "@/components/motion/HoldHeight";
-import { Reveal } from "@/components/motion/Reveal";
+import { Reveal, RevealItem } from "@/components/motion/Reveal";
 import { CourseSelect } from "./CourseSelect";
 
 /*
@@ -130,21 +129,20 @@ function Filters({ filter, shown }: { filter: DirectoryFilter; shown: number }) 
 /* ── Groups ──────────────────────────────────────────────────────────────── */
 
 /**
- * The cards. A filter change fades the leavers out and the new set in (Motion; a
- * glide here crossed the next group's heading, so cards take their new places at
- * once). On scroll they reveal 60 ms apart (CSS).
+ * The cards. A filter change fades the leavers out, glides the cards that stay
+ * to their new places and brings the new ones in (Motion layout animation; the
+ * group holds its height meanwhile). On scroll they follow one another in.
  */
-function Grid({ people, offset = 0 }: { people: Instructor[]; offset?: number }) {
+function Grid({ people }: { people: Instructor[] }) {
   return (
     <AnimatedList
-      glide={false}
       className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6"
-      items={people.map((person, i) => ({
+      items={people.map((person) => ({
         key: person.id,
         node: (
-          <div data-reveal-item="" style={{ "--reveal-i": offset + i } as CSSProperties}>
+          <RevealItem>
             <InstructorCard person={person} variant="grid" sizes="128px" />
-          </div>
+          </RevealItem>
         ),
       }))}
     />
@@ -185,7 +183,7 @@ export function DirectoryResults({ filter }: { filter: DirectoryFilter }) {
           const rest = inGroup.filter((p) => !leaders.includes(p));
           const headingId = `group-${group.gender}`;
           return (
-            <Reveal as="section" stagger key={group.gender} aria-labelledby={headingId} className="mt-12 md:mt-16">
+            <Reveal as="section" key={group.gender} aria-labelledby={headingId} className="mt-12 md:mt-16">
               <h2
                 id={headingId}
                 className="border-b border-ink pb-3 font-display text-heading-lg font-semibold text-balance text-ink"
@@ -218,14 +216,14 @@ export function DirectoryResults({ filter }: { filter: DirectoryFilter }) {
                   <div className="mt-8">
                     <h3 className="text-ui font-medium text-ink">{copy.leadership}</h3>
                     <ul className="mt-4 grid grid-cols-3 gap-x-3 gap-y-8 sm:gap-x-6 lg:w-3/4">
-                      {leaders.map((person, i) => (
-                        <li key={person.id} data-reveal-item="" style={{ "--reveal-i": i } as CSSProperties}>
+                      {leaders.map((person) => (
+                        <RevealItem as="li" key={person.id}>
                           <InstructorCard
                             person={person}
                             sizes="(min-width: 64rem) 200px, (min-width: 40rem) 25vw, 30vw"
                             lazy
                           />
-                        </li>
+                        </RevealItem>
                       ))}
                     </ul>
                   </div>
@@ -233,7 +231,7 @@ export function DirectoryResults({ filter }: { filter: DirectoryFilter }) {
 
                 {rest.length > 0 ? (
                   <div className={leaders.length > 0 ? "mt-12 border-t border-rule pt-8" : "mt-8"}>
-                    <Grid people={rest} offset={leaders.length} />
+                    <Grid people={rest} />
                   </div>
                 ) : null}
               </HoldHeight>

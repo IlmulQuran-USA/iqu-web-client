@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { RevealItem } from "@/components/motion/Reveal";
 import { howItWorks } from "@/content/home";
 
 /**
@@ -22,12 +22,7 @@ export function StepList() {
           }
         >
           {howItWorks.steps.map((step, i) => (
-            <li
-              key={step.title}
-              className="relative pl-16 lg:pl-0"
-              data-reveal-item=""
-              style={{ "--reveal-i": i } as CSSProperties}
-            >
+            <RevealItem as="li" key={step.title} className="relative pl-16 lg:pl-0">
               <span
                 aria-hidden="true"
                 className="absolute top-0 left-0 flex size-10 items-center justify-center rounded-pill border border-ink-body bg-paper font-display text-heading-md font-semibold text-ink tabular-nums lg:static"
@@ -42,7 +37,7 @@ export function StepList() {
               {"example" in step ? (
                 <p className="mt-2 max-w-measure text-ui text-pretty text-ink-muted">{step.example}</p>
               ) : null}
-            </li>
+            </RevealItem>
           ))}
         </ol>
       </div>

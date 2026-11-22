@@ -76,18 +76,19 @@ export default async function HomePage() {
       <Header yieldCtaTo={[HERO_CTAS_ID, FINAL_CTA_ID]} yieldOnLoad />
       <main id="main-content" className="flex flex-col">
         <HomeHero hero={hero} />
-        {/* §2–§10 reveal on scroll (fade + 12 px rise, once); the hero never waits. Steps,
-            teacher cards and questions stagger in 60 ms apart. */}
+        {/* §2–§10 fade in and rise 30 px on a spring as they scroll into view, once; the hero
+            never waits. Cards, rows, steps, testimonials, teachers and questions follow one
+            another in (owner, 22 Nov 2026). */}
         <Reveal>
           <ScheduleSection />
         </Reveal>
         <Reveal>
           <ProgramsLedger />
         </Reveal>
-        <Reveal stagger>
+        <Reveal>
           <StepList />
         </Reveal>
-        <Reveal stagger>
+        <Reveal>
           <TeachersSection />
         </Reveal>
         <Reveal>
@@ -99,7 +100,7 @@ export default async function HomePage() {
         <Reveal>
           <GivingBand />
         </Reveal>
-        <Reveal stagger>
+        <Reveal>
           <FAQAccordion />
         </Reveal>
         <Reveal>

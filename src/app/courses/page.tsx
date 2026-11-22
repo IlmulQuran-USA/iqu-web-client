@@ -84,14 +84,14 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
             <FeeNote />
           </Reveal>
         </div>
-        {/* Below the list, each section reveals once on scroll (fade + 12 px rise); questions stagger. */}
+        {/* Below the list, each section rises in once on scroll (fade + 30 px, spring); questions follow one another. */}
         <Reveal>
           <WhereToStart />
         </Reveal>
         <Reveal>
           <CatalogTeachers />
         </Reveal>
-        <Reveal stagger>
+        <Reveal>
           <CatalogFAQ />
         </Reveal>
         <FinalCta copy={cta} />

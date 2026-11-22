@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
 import { teachersSection } from "@/content/home";
 import { instructors } from "@/content/instructors";
+import { Rise } from "@/components/motion/Rise";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { ButtonLink } from "@/components/ui/Button";
 import type { HomeHero as HomeHeroData, HomeHeroLayout } from "@/content/types";
@@ -46,11 +47,13 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
   return (
     <section aria-labelledby={TITLE_ID} className="pt-6 pb-12 md:py-16 lg:py-20">
       <div className="container-content flex flex-col items-center text-center">
-        <Eyebrow>{hero.eyebrow}</Eyebrow>
-        <Headline hero={hero} className="mt-4 max-w-220 text-display-md md:mt-5 md:text-display-lg" />
-        <Subhead className="mt-4 text-body-lg text-ink-body md:mt-6">{hero.subhead}</Subhead>
-        <Ctas hero={hero} className="mt-6 w-full sm:w-auto md:mt-8" center />
-        <Trust items={hero.trust} variant="centered" className="mt-6 md:mt-8" />
+        <Eyebrow order={0}>{hero.eyebrow}</Eyebrow>
+        <Headline hero={hero} order={0} className="mt-4 max-w-220 text-display-md md:mt-5 md:text-display-lg" />
+        <Subhead order={1} className="mt-4 text-body-lg text-ink-body md:mt-6">
+          {hero.subhead}
+        </Subhead>
+        <Ctas hero={hero} order={2} className="mt-6 w-full sm:w-auto md:mt-8" center />
+        <Trust items={hero.trust} order={3} variant="centered" className="mt-6 md:mt-8" />
       </div>
 
       {people.length > 0 ? (
@@ -58,10 +61,11 @@ function Teachers({ hero }: { hero: HomeHeroData }) {
           <h2 className="sr-only">Some of our instructors</h2>
           {/* One row, in order: a swipe row below 640 px, equal columns from 640. */}
           <InstructorRow count={people.length}>
-            {people.map((person) => (
-              <li key={person.id} className="snap-start">
+            {people.map((person, i) => (
+              // The portraits rise in after the copy, one after another.
+              <Rise as="li" key={person.id} order={4 + i} className="snap-start">
                 <InstructorCard person={person} sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw" />
-              </li>
+              </Rise>
             ))}
           </InstructorRow>
           {/* The subhead's promise to sisters, answered from the data without photos (owner, 20 Nov 2026).
@@ -101,19 +105,21 @@ function Editorial({ hero }: { hero: HomeHeroData }) {
             hero={hero}
             className="mt-4 text-display-md md:mt-5 md:text-display-lg xl:text-display-xl"
           />
-          <Subhead className="mt-4 text-body-lg text-ink-body md:mt-6">{hero.subhead}</Subhead>
-          <Ctas hero={hero} className="mt-6 md:mt-8" />
+          <Subhead order={1} className="mt-4 text-body-lg text-ink-body md:mt-6">
+            {hero.subhead}
+          </Subhead>
+          <Ctas hero={hero} order={2} className="mt-6 md:mt-8" />
         </div>
 
-        <Trust items={hero.trust} variant="strip" className="lg:order-last lg:col-span-12" />
+        <Trust items={hero.trust} order={3} variant="strip" className="lg:order-last lg:col-span-12" />
 
-        <div className="mx-auto w-full max-w-90 lg:col-span-5 lg:max-w-none lg:self-center lg:pl-6">
+        <Rise order={2} className="mx-auto w-full max-w-90 lg:col-span-5 lg:max-w-none lg:self-center lg:pl-6">
           <HeroImage
             hero={hero}
             ratio="portrait"
             sizes="(min-width: 64rem) 470px, (min-width: 30rem) 360px, calc(100vw - 2rem)"
           />
-        </div>
+        </Rise>
       </div>
     </section>
   );
@@ -126,17 +132,19 @@ function Spacious({ hero }: { hero: HomeHeroData }) {
         <div className="lg:col-span-5">
           <Eyebrow className="text-balance">{hero.eyebrow}</Eyebrow>
           <Headline hero={hero} className="mt-6 text-heading-xl md:text-display-md" />
-          <Subhead className="mt-6 text-body-lg text-ink-body">{hero.subhead}</Subhead>
-          <Ctas hero={hero} className="mt-10" />
-          <Trust items={hero.trust} variant="grid" className="mt-10" />
+          <Subhead order={1} className="mt-6 text-body-lg text-ink-body">
+            {hero.subhead}
+          </Subhead>
+          <Ctas hero={hero} order={2} className="mt-10" />
+          <Trust items={hero.trust} order={3} variant="grid" className="mt-10" />
         </div>
-        <div className="lg:col-span-6 lg:col-start-7">
+        <Rise order={2} className="lg:col-span-6 lg:col-start-7">
           <HeroImage
             hero={hero}
             ratio="window"
             sizes="(min-width: 75rem) 580px, (min-width: 64rem) 48vw, calc(100vw - 2rem)"
           />
-        </div>
+        </Rise>
       </div>
     </section>
   );
@@ -144,16 +152,20 @@ function Spacious({ hero }: { hero: HomeHeroData }) {
 
 /* ── Parts ───────────────────────────────────────────────────────────────── */
 
-function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
+function Eyebrow({ children, className, order = 0 }: { children: ReactNode; className?: string; order?: number }) {
   // Spec §7.1 mandates this eyebrow above the H1 (CLAUDE.md §5 exception).
-  return <p className={cn("eyebrow", className)}>{children}</p>;
+  return (
+    <Rise as="p" order={order} className={cn("eyebrow", className)}>
+      {children}
+    </Rise>
+  );
 }
 
 /**
  * The H1. The highlight phrase sits on --mark (DESIGN.md §2, --ink on it
  * 13.2:1). Hyphenated compounds ("one-on-one") never break at a hyphen.
  */
-function Headline({ hero, className }: { hero: HomeHeroData; className?: string }) {
+function Headline({ hero, className, order = 0 }: { hero: HomeHeroData; className?: string; order?: number }) {
   const { headline, highlight } = hero;
   // Validation guarantees a whole-word match exists; mark the first one that is.
   const at = highlight ? wholePhraseIndex(headline, highlight) : -1;
@@ -163,7 +175,7 @@ function Headline({ hero, className }: { hero: HomeHeroData; className?: string 
       : [headline, "", ""];
 
   return (
-    <h1 id={TITLE_ID} className={cn("font-medium text-balance", className)}>
+    <Rise as="h1" order={order} id={TITLE_ID} className={cn("font-medium text-balance", className)}>
       {keepCompounds(parts[0])}
       {parts[1] ? (
         <mark className="rounded-chip bg-mark px-1 text-ink [box-decoration-break:clone]">
@@ -171,7 +183,7 @@ function Headline({ hero, className }: { hero: HomeHeroData; className?: string 
         </mark>
       ) : null}
       {keepCompounds(parts[2])}
-    </h1>
+    </Rise>
   );
 }
 
@@ -189,13 +201,28 @@ function keepCompounds(text: string): ReactNode[] {
     );
 }
 
-function Subhead({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cn("max-w-measure text-pretty", className)}>{children}</p>;
+function Subhead({ children, className, order = 0 }: { children: ReactNode; className?: string; order?: number }) {
+  return (
+    <Rise as="p" order={order} className={cn("max-w-measure text-pretty", className)}>
+      {children}
+    </Rise>
+  );
 }
 
-function Ctas({ hero, className, center = false }: { hero: HomeHeroData; className?: string; center?: boolean }) {
+function Ctas({
+  hero,
+  className,
+  center = false,
+  order = 0,
+}: {
+  hero: HomeHeroData;
+  className?: string;
+  center?: boolean;
+  order?: number;
+}) {
   return (
-    <div
+    <Rise
+      order={order}
       id={HERO_CTAS_ID}
       className={cn("flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center", center && "sm:justify-center", className)}
     >
@@ -205,7 +232,7 @@ function Ctas({ hero, className, center = false }: { hero: HomeHeroData; classNa
       <ButtonLink href={hero.secondaryCta.href} variant="secondary" size="lg" className="w-full sm:w-auto">
         {hero.secondaryCta.label}
       </ButtonLink>
-    </div>
+    </Rise>
   );
 }
 
@@ -221,16 +248,20 @@ function Trust({
   items,
   variant,
   className,
+  order = 0,
 }: {
   items: string[];
   variant: "strip" | "centered" | "grid";
   className?: string;
+  order?: number;
 }) {
   if (items.length === 0) return null;
   const inline = variant === "grid" ? null : "lg";
 
   return (
-    <ul
+    <Rise
+      as="ul"
+      order={order}
       aria-label="About Ilm-Ul-Quran USA"
       className={cn(
         "grid grid-cols-2 gap-x-4 gap-y-3 text-ui font-medium text-ink-body",
@@ -253,7 +284,7 @@ function Trust({
           {item}
         </li>
       ))}
-    </ul>
+    </Rise>
   );
 }
 

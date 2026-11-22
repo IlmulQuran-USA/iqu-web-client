@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { RevealItem } from "@/components/motion/Reveal";
 import { familiesSection as copy } from "@/content/home";
 import { initialsOf } from "@/lib/arch";
 import { homeTestimonialIds, programOf, testimonialsById, type Testimonial } from "@/content/testimonials";
@@ -24,9 +25,9 @@ export function FamiliesSection({ items = testimonialsById(homeTestimonialIds) }
         </h2>
         <ul className="mt-8 grid gap-10 md:mt-10 md:grid-cols-3 md:gap-6">
           {shown.map((t) => (
-            <li key={t.id}>
+            <RevealItem as="li" key={t.id}>
               <Quote t={t} />
-            </li>
+            </RevealItem>
           ))}
         </ul>
       </div>

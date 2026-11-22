@@ -77,6 +77,12 @@
   --duration-default: 200ms;
   --duration-panel: 320ms;
   --ease-riwaq: cubic-bezier(0.2, 0, 0, 1);
+  /* Owner, 22 Nov 2026: hover lifts and portrait zooms settle on a spring
+     (a damped spring sampled into linear(); about 8% overshoot). */
+  --ease-spring: linear(0, 0.077, 0.254, 0.464, 0.662, 0.827, 0.948, 1.026, 1.068, 1.083, 1.08, 1.067, 1.05, 1.032, 1.018, 1.007, 0.999, 0.995, 0.993, 0.993, 1);
+  --duration-spring: 550ms;
+  /* The soft shadow under a lifted card or button (hover only). It fades in by opacity. */
+  --elevation-lift: 0 10px 24px -6px rgb(15 23 42 / 0.18), 0 2px 6px rgb(15 23 42 / 0.06);
 
   /* Layout (DESIGN.md §4, spec §6.1). Header: 64 px below lg, 72 px from lg
      (owner decision, 19 Nov 2026). The mobile drawer header matches. */
@@ -208,6 +214,7 @@
   /* Motion */
   --ease-*: initial;
   --ease-riwaq: var(--ease-riwaq);
+  --ease-spring: var(--ease-spring);
 }
 
 /* State variants. Each also matches [data-force~=…], which is set only by the
@@ -342,6 +349,15 @@
 @keyframes donate-fade {
   to {
     opacity: 0;
+  }
+}
+
+@keyframes hero-rise {
+  from {
+    transform: translateY(24px);
+  }
+  to {
+    transform: none;
   }
 }
 
@@ -502,78 +518,47 @@
     color: var(--eyebrow-color, var(--ink-muted));
   }
 
-  /* Mobile drawer: native <dialog>, slides from the right (spec §6.1). */
+  /* Mobile drawer: a native modal <dialog> that fills the screen, holding a
+     scrim and the panel on the right (spec §6.1). Motion slides the panel in
+     on a spring and fades the scrim (MobileNav); the dialog gives the focus
+     trap, the inert page and the top layer. */
   .drawer {
     position: fixed;
-    inset: 0 0 0 auto;
+    inset: 0;
     margin: 0;
-    width: min(100vw, var(--container-drawer));
-    max-width: 100vw;
+    width: 100%;
+    max-width: none;
     height: 100dvh;
     max-height: none;
     padding: 0;
     border: 0;
-    background-color: var(--paper);
+    overflow: hidden;
+    background: transparent;
     color: var(--ink);
-    box-shadow: var(--elevation-overlay);
-    transform: translateX(100%);
-    transition:
-      transform var(--duration-panel) var(--ease-riwaq),
-      overlay var(--duration-panel) allow-discrete,
-      display var(--duration-panel) allow-discrete;
-  }
-  .drawer[open] {
-    transform: translateX(0);
-  }
-  @starting-style {
-    .drawer[open] {
-      transform: translateX(100%);
-    }
   }
   .drawer::backdrop {
-    background-color: transparent;
-    transition:
-      background-color var(--duration-panel) var(--ease-riwaq),
-      overlay var(--duration-panel) allow-discrete,
-      display var(--duration-panel) allow-discrete;
+    background: transparent;
   }
-  .drawer[open]::backdrop {
+  .drawer-scrim {
+    position: absolute;
+    inset: 0;
     background-color: var(--scrim);
   }
-  @starting-style {
-    .drawer[open]::backdrop {
-      background-color: transparent;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .drawer {
-      transform: none;
-      opacity: 0;
-      transition:
-        opacity var(--duration-default) linear,
-        overlay var(--duration-default) allow-discrete,
-        display var(--duration-default) allow-discrete;
-    }
-    .drawer[open] {
-      transform: none;
-      opacity: 1;
-    }
-    @starting-style {
-      .drawer[open] {
-        transform: none;
-        opacity: 0;
-      }
-    }
+  .drawer-panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(100vw, var(--container-drawer));
+    background-color: var(--paper);
+    box-shadow: var(--elevation-overlay);
   }
 }
 
 /*
- * Site motion (owner plan approved 22 Nov 2026; DESIGN.md §6). CSS for
- * everything CSS does well; Motion (motion/react, lazy) only for the filtered
- * lists and the /courses filter indicator. Only transform and opacity move
- * (the FAQ height is the one approved exception). Under prefers-reduced-motion
- * nothing moves: opacity at most.
+ * Site motion (owner, 22 Nov 2026; DESIGN.md §6). Motion (motion/react)
+ * drives the reveals, the hero entrance, menus, the drawer, the FAQ, filter
+ * glides and the counters. CSS keeps what must work from the first paint:
+ * hover lifts, presses and the portrait zoom. Only transform and opacity
+ * move. Under prefers-reduced-motion nothing moves: opacity at most.
  */
 @layer components {
   /* Header edge on scroll: a shadow layer that fades in (opacity only). */
@@ -593,57 +578,78 @@
     opacity: 1;
   }
 
-  /* Header menus: open with a fade and a 4 px drop (200 ms). They close at once:
-     Tailwind's preflight sets [hidden] to display: none !important. */
-  .menu-panel:not([hidden]) {
-    transition:
-      opacity var(--duration-default) var(--ease-riwaq),
-      transform var(--duration-default) var(--ease-riwaq);
+  /*
+   * Lift: buttons and cards rise on hover and settle on a spring, with a soft
+   * shadow that fades in underneath (a layer behind the element, so only its
+   * opacity changes); a press gives a little. Hover only on devices that
+   * hover; the press works everywhere.
+   *   .lift        buttons: 2 px up, press to 97%
+   *   .lift-card   cards: 4 px up, press to 99%
+   *   .lift-plain  cards with no ground of their own (instructor cards):
+   *                the rise and press without the shadow
+   */
+  .lift,
+  .lift-card,
+  .lift-plain {
+    isolation: isolate;
+    transition-property: color, background-color, border-color, text-decoration-color, translate, scale;
+    transition-duration:
+      var(--duration-micro), var(--duration-micro), var(--duration-micro), var(--duration-micro),
+      var(--duration-spring), var(--duration-micro);
+    transition-timing-function:
+      var(--ease-riwaq), var(--ease-riwaq), var(--ease-riwaq), var(--ease-riwaq), var(--ease-spring),
+      var(--ease-riwaq);
   }
-  .menu-panel[hidden] {
-    display: none;
+  .lift::after,
+  .lift-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--elevation-lift);
     opacity: 0;
-    transform: translateY(-4px);
+    pointer-events: none;
+    transition: opacity var(--duration-default) var(--ease-riwaq);
   }
-  @starting-style {
-    .menu-panel:not([hidden]) {
-      opacity: 0;
-      transform: translateY(-4px);
+  @media (hover: hover) {
+    .lift:is(:hover, [data-force~="hover"]):not(:disabled, [aria-disabled="true"]) {
+      translate: 0 -2px;
+    }
+    :is(.lift-card, .lift-plain):is(:hover, [data-force~="hover"]) {
+      translate: 0 -4px;
+    }
+    :is(.lift, .lift-card):is(:hover, [data-force~="hover"]):not(:disabled, [aria-disabled="true"])::after {
+      opacity: 1;
     }
   }
-
-  /* Scroll reveal: fade + 12 px rise, once, 60 ms stagger (src/components/motion/Reveal.tsx).
-     Only sections that start below the fold are ever set to "pending". */
-  [data-reveal="pending"]:not([data-reveal-stagger]),
-  [data-reveal="pending"][data-reveal-stagger] [data-reveal-item] {
-    opacity: 0;
-    transform: translateY(12px);
+  .lift:is(:active, [data-force~="active"]):not(:disabled, [aria-disabled="true"]) {
+    translate: 0 0;
+    scale: 0.97;
   }
-  [data-reveal="in"]:not([data-reveal-stagger]),
-  [data-reveal="in"][data-reveal-stagger] [data-reveal-item] {
-    transition:
-      opacity var(--duration-panel) var(--ease-riwaq),
-      transform var(--duration-panel) var(--ease-riwaq);
-    transition-delay: calc(min(var(--reveal-i, 0), 5) * 60ms);
+  :is(.lift-card, .lift-plain):is(:active, [data-force~="active"]) {
+    translate: 0 -1px;
+    scale: 0.99;
   }
 
-  /* FAQ accordion: native <details>; the answer's height and opacity ease open
-     where ::details-content is supported, and it opens at once elsewhere. */
-  .faq-item {
-    interpolate-size: allow-keywords;
+  /* Hero entrance (src/components/motion/Rise.tsx): each part rises 24 px on a
+     spring from the first paint, 80 ms apart. Transform only. */
+  [data-rise] {
+    animation: hero-rise 800ms var(--ease-spring) both;
+    animation-delay: calc(50ms + var(--rise-order, 0) * 80ms);
   }
-  .faq-item::details-content {
-    block-size: 0;
-    overflow: clip;
-    opacity: 0;
-    transition:
-      block-size var(--duration-default) var(--ease-riwaq),
-      opacity var(--duration-default) var(--ease-riwaq),
-      content-visibility var(--duration-default) allow-discrete;
+
+  /* Portraits zoom slightly inside the arch on hover and focus, settling on a spring. */
+  .arch-zoom img {
+    transition: transform var(--duration-spring) var(--ease-spring);
   }
-  .faq-item[open]::details-content {
-    block-size: auto;
-    opacity: 1;
+  .group:is(:hover, :focus-visible) .arch-zoom img {
+    transform: scale(1.07);
+  }
+  @media (hover: none) {
+    .group:hover .arch-zoom img {
+      transform: none;
+    }
   }
 
   /* Newsletter result: fades in with a 4 px rise. */
@@ -659,42 +665,16 @@
     }
   }
 
-  /* Instructor cards: the portrait eases up 3% inside the arch on hover and focus. */
-  .arch-zoom img {
-    transition: transform var(--duration-default) var(--ease-riwaq);
-  }
-  .group:is(:hover, :focus-visible) .arch-zoom img {
-    transform: scale(1.03);
-  }
-  @media (hover: none) {
-    .group:hover .arch-zoom img {
-      transform: none;
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .menu-panel:not([hidden]) {
-      transition: opacity var(--duration-micro) linear;
+    .lift,
+    .lift-card,
+    .lift-plain,
+    :is(.lift, .lift-card, .lift-plain):is(:hover, :active, [data-force]) {
+      translate: none !important;
+      scale: none !important;
     }
-    .menu-panel[hidden] {
-      transform: none;
-    }
-    @starting-style {
-      .menu-panel:not([hidden]) {
-        transform: none;
-      }
-    }
-    [data-reveal="pending"]:not([data-reveal-stagger]),
-    [data-reveal="pending"][data-reveal-stagger] [data-reveal-item] {
-      transform: none;
-    }
-    [data-reveal="in"]:not([data-reveal-stagger]),
-    [data-reveal="in"][data-reveal-stagger] [data-reveal-item] {
-      transition: opacity var(--duration-micro) linear;
-      transition-delay: 0ms;
-    }
-    .faq-item::details-content {
-      transition: none;
+    [data-rise] {
+      animation: none;
     }
     .message-in {
       transition: opacity var(--duration-micro) linear;
@@ -712,10 +692,11 @@
   }
 }
 
-/* Print: content waiting to reveal prints in full. */
+/* Print: everything prints in place, whatever its reveal or entrance state. */
 @media print {
   [data-reveal],
-  [data-reveal] [data-reveal-item] {
+  [data-reveal-item],
+  [data-rise] {
     opacity: 1 !important;
     transform: none !important;
   }

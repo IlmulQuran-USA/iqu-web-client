@@ -130,6 +130,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 - Elevation — two levels only:
   - Card: `0 1px 2px rgba(15,23,42,.06)`
   - Overlay: `0 8px 24px rgba(15,23,42,.12)`
+  - Lift (owner, 22 Nov 2026): `--elevation-lift`, `0 10px 24px -6px rgba(15,23,42,.18), 0 2px 6px rgba(15,23,42,.06)`. Only under a button or card while it is hovered (§6); it fades in by opacity and is never a resting state.
   - Exception: `--glow-accent`, the soft coral glow that follows the Donate border light (§8). Not an elevation; used nowhere else.
 
 ---
@@ -152,10 +153,18 @@ Every screen is built and checked at **375** and **1440**; **768** where layout 
 
 ## 6. Motion
 
-- Durations: 120 ms micro · 200 ms default · 320 ms page/panel.
-- Easing: `cubic-bezier(0.2, 0, 0, 1)`.
-- Scroll reveal: fade + 12 px rise, once, 60 ms stagger. Never on text the user is reading.
-- `prefers-reduced-motion: reduce` → opacity only.
+> **Owner decision, 22 Nov 2026:** clearly visible motion across the site, built with Motion (`motion/react`). It replaces the earlier subtle CSS reveals (12 px, 60 ms) and lifts the earlier "never on reading text, no hero or counter motion" limits. Two rules remain: respect reduced motion, and move only transform and opacity.
+
+- Durations: 120 ms micro · 200 ms default · 320 ms page/panel · 550 ms spring (CSS `--ease-spring`, a sampled damped spring).
+- Easing: `cubic-bezier(0.2, 0, 0, 1)` for fades and exits; springs for everything that enters or moves (`src/components/motion/tokens.ts`: reveal spring 0.7 s / bounce 0.18; snappy spring 0.38 s / bounce 0.14).
+- One boundary: `MotionProvider` in the root layout (LazyMotion strict, features loaded after hydration; `MotionConfig reducedMotion="user"`).
+- Scroll reveal (`Reveal`, `RevealItem`): each section below the hero fades in and rises 30 px on a spring as it scrolls into view, once; its items (cards, rows, steps, questions, testimonials, instructor cards) follow 80 ms apart. Only sections that start below the fold are ever hidden; keyboard focus inside one reveals it at once; print shows everything.
+- Hero (`Rise`): eyebrow and H1, subhead, buttons, trust line, then the portraits rise 24 px into place, 80 ms apart, at full opacity. CSS keyframes, not Motion, so it plays with the first paint rather than after hydration (about 3 s later on a throttled phone).
+- Hover and press (CSS, works before hydration): buttons lift 2 px and cards 4 px with a soft shadow fading in (`.lift`, `.lift-card`), instructor cards lift without a shadow (`.lift-plain`); presses give to 97% (buttons) or 99% (cards); portraits zoom 7% inside the arch.
+- Menus, the mobile drawer and its sections, and the FAQ open and close on springs. The FAQ answer and drawer sections animate height: the one exception to transform/opacity, so the content below moves smoothly instead of jumping.
+- Filters on /courses and /instructors: cards glide to their new places (layout animation); leavers fade, arrivals rise in.
+- Numbers below the hero (the Home teacher facts) count up from 0 as they scroll into view; each keeps its final width.
+- `prefers-reduced-motion: reduce` → opacity only: no rise, lift, zoom, glide, count or slide.
 - Forbidden: parallax, auto-playing carousels, scroll-hijacking.
 
 ---

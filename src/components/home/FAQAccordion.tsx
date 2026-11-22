@@ -1,14 +1,14 @@
 import { ArrowRight, ChevronDown } from "lucide-react";
-import type { CSSProperties } from "react";
 import Link from "next/link";
 import { faq } from "@/content/home";
 import { PENDING, site } from "@/content/site";
 import { cn } from "@/lib/cn";
+import { FAQDetails } from "./FAQDetails";
 
 /**
  * FAQAccordion (spec §6.3) · Home §9 Common questions. Native <details>, so
  * it works without JavaScript and keeps keyboard and screen-reader behaviour
- * for free. The answers are owner-review drafts (src/content/home.ts); no
+ * for free; with JavaScript the answers spring open and closed (FAQDetails). The answers are owner-review drafts (src/content/home.ts); no
  * FAQPage structured data until they are approved.
  */
 const contactLink =
@@ -81,22 +81,21 @@ export type FAQItem = {
 export function FAQList({ items, className }: { items: readonly FAQItem[]; className?: string }) {
   return (
     <div className={cn("border-t border-ink", className)}>
-      {items.map((item, i) => (
-        // faq-item: the answer eases open (globals.css). data-reveal-item: staggers in when a Reveal wraps the list.
-        <details
+      {items.map((item) => (
+        // FAQDetails: the answer opens on a spring, and the question follows its section in when a Reveal wraps the list.
+        <FAQDetails
           key={item.q}
-          className="faq-item group border-b border-rule"
-          data-reveal-item=""
-          style={{ "--reveal-i": i } as CSSProperties}
+          summary={
+            <>
+              {item.q}
+              <ChevronDown
+                aria-hidden="true"
+                strokeWidth={1.5}
+                className="size-5 shrink-0 text-ink-muted transition-transform duration-(--duration-spring) ease-spring group-open:rotate-180 group-data-closing:rotate-0! motion-reduce:transition-none"
+              />
+            </>
+          }
         >
-          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink [&::-webkit-details-marker]:hidden">
-            {item.q}
-            <ChevronDown
-              aria-hidden="true"
-              strokeWidth={1.5}
-              className="size-5 shrink-0 text-ink-muted transition-transform duration-(--duration-default) ease-riwaq group-open:rotate-180 motion-reduce:transition-none"
-            />
-          </summary>
           <div className="flex max-w-measure flex-col gap-3 pb-6 text-body text-pretty text-ink-body">
             <p>{item.a}</p>
             {item.points ? (
@@ -110,7 +109,7 @@ export function FAQList({ items, className }: { items: readonly FAQItem[]; class
             ) : null}
             {item.after ? <p>{item.after}</p> : null}
           </div>
-        </details>
+        </FAQDetails>
       ))}
     </div>
   );

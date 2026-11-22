@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { COURSE_CTAS_ID, COURSE_RAIL_ID, CourseHero, CourseRail } from "@/components/course/CourseHero";
 import { CourseFAQ, CurriculumSection, Fees, Overview, Schedule, Teachers, WhereNext } from "@/components/course/CourseSections";
 import { SectionNav } from "@/components/course/SectionNav";
+import { Reveal } from "@/components/motion/Reveal";
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
@@ -103,7 +104,9 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
             </div>
           </div>
         </div>
-        <FinalCta href={enrol.href} />
+        <Reveal>
+          <FinalCta href={enrol.href} />
+        </Reveal>
       </main>
       <Footer />
       <StickyCTA

@@ -49,10 +49,27 @@ type ContentProps = {
 
 const base =
   "relative box-border inline-flex min-h-11 min-w-11 items-center justify-center gap-2 font-sans font-medium " +
-  "transition-[color,background-color,border-color,text-decoration-color,scale] duration-(--duration-micro) ease-riwaq " +
-  // A press registers as a slight give (120 ms); nothing moves under reduced motion.
-  "motion-safe:act:not-disabled:scale-[0.98] " +
   "disabled:cursor-not-allowed";
+
+/*
+ * Motion (owner, 22 Nov 2026). Buttons with a ground or an outline lift 2 px on
+ * hover with a soft shadow and settle on a spring, and give to 97% on press
+ * (globals.css .lift). Text-only variants (ghost, link) keep the slight give
+ * only. Nothing moves under reduced motion.
+ */
+const lift = "lift";
+const textMotion =
+  "transition-[color,background-color,border-color,text-decoration-color,scale] duration-(--duration-micro) ease-riwaq " +
+  "motion-safe:act:not-disabled:scale-[0.98]";
+const motionOf: Record<ButtonVariant, string> = {
+  primary: lift,
+  secondary: lift,
+  tonal: lift,
+  danger: lift,
+  band: lift,
+  ghost: textMotion,
+  link: textMotion,
+};
 
 const variants: Record<ButtonVariant, string> = {
   primary:
@@ -97,6 +114,7 @@ export function buttonClasses({
 }: StyleProps = {}): string {
   return cn(
     base,
+    motionOf[variant],
     variants[variant],
     sizes[variant][size],
     fullWidth ? "w-full text-center text-balance" : "whitespace-nowrap",

@@ -1,3 +1,4 @@
+import { RevealItem } from "@/components/motion/Reveal";
 import { schedule } from "@/content/home";
 import { LocalTime } from "./LocalTime";
 
@@ -22,10 +23,10 @@ export function ScheduleSection() {
           </div>
           <ul className="grid gap-8 sm:grid-cols-3 sm:gap-6 lg:col-span-8">
             {schedule.points.map((point) => (
-              <li key={point.title} className="border-t border-ink pt-5">
+              <RevealItem as="li" key={point.title} className="border-t border-ink pt-5">
                 <h3 className="font-display text-heading-md font-semibold text-ink">{point.title}</h3>
                 <p className="mt-2 text-body text-pretty text-ink-body">{point.body}</p>
-              </li>
+              </RevealItem>
             ))}
           </ul>
         </div>

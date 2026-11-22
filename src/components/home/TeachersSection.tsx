@@ -1,4 +1,5 @@
-import type { CSSProperties } from "react";
+import { CountUp } from "@/components/motion/CountUp";
+import { RevealItem } from "@/components/motion/Reveal";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
@@ -38,7 +39,8 @@ export function TeachersSection() {
                       ·
                     </span>
                   ) : null}
-                  <span>{fact}</span>
+                  {/* The numbers count up as the line scrolls into view (owner, 22 Nov 2026). */}
+                  <CountUp text={fact} />
                 </li>
               ))}
             </ul>
@@ -54,19 +56,14 @@ export function TeachersSection() {
               <h3 className="border-b border-rule pb-3 font-sans text-ui font-medium text-ink">{row.heading}</h3>
               <div className="mt-6">
                 <InstructorRow count={people.length}>
-                  {people.map((person, i) => (
-                    <li
-                      key={person.id}
-                      className="snap-start"
-                      data-reveal-item=""
-                      style={{ "--reveal-i": i } as CSSProperties}
-                    >
+                  {people.map((person) => (
+                    <RevealItem as="li" key={person.id} className="snap-start">
                       <InstructorCard
                         person={person}
                         lazy
                         sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw"
                       />
-                    </li>
+                    </RevealItem>
                   ))}
                 </InstructorRow>
               </div>

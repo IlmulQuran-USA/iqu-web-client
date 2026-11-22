@@ -1,10 +1,10 @@
 import { ArrowLeft, ArrowRight, Check, ClipboardCheck } from "lucide-react";
 import Link from "next/link";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { FAQList } from "@/components/home/FAQAccordion";
 import { LocalTime } from "@/components/home/LocalTime";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
-import { Reveal } from "@/components/motion/Reveal";
+import { Reveal, RevealItem } from "@/components/motion/Reveal";
 import {
   curriculumHeading,
   faqFor,
@@ -43,7 +43,9 @@ function Section({ id, title, children }: { id: string; title: string; children:
     // Anchor offset: html scroll-padding covers the header and the sticky sub-nav (globals.css),
     // so a section's top rule lands on the bar's own bottom rule: one line, never two. The
     // first section drops its rule, since the bar's rule already sits right above it.
-    <section
+    // Each section rises in as it scrolls into view (owner, 22 Nov 2026).
+    <Reveal
+      as="section"
       id={id}
       aria-labelledby={`${id}-title`}
       className="border-t border-rule py-12 md:py-16 [[data-sticky-subnav]+&]:border-t-0"
@@ -52,7 +54,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
         {title}
       </h2>
       {children}
-    </section>
+    </Reveal>
   );
 }
 
@@ -330,16 +332,15 @@ export function Teachers({ course }: { course: Course }) {
             ) : null}
           </h3>
           {group.people.length > 0 ? (
-            // The cards reveal 60 ms apart on scroll; the reading text above them never moves (DESIGN.md §6).
+            // The cards follow one another in on scroll (owner, 22 Nov 2026).
             <Reveal
               as="ul"
-              stagger
               className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-6"
             >
-              {group.people.map((person, i) => (
-                <li key={person.id} data-reveal-item="" style={{ "--reveal-i": i } as CSSProperties}>
+              {group.people.map((person) => (
+                <RevealItem as="li" key={person.id}>
                   <InstructorCard person={person} variant="grid" sizes="128px" />
-                </li>
+                </RevealItem>
               ))}
             </Reveal>
           ) : (
@@ -361,10 +362,10 @@ export function Schedule({ course }: { course: Course }) {
     <Section id="schedule" title="Schedule">
       <ul className="mt-8 grid gap-8 sm:grid-cols-3 sm:gap-6">
         {schedulePoints(course).map((point) => (
-          <li key={point.title} className="border-t border-ink pt-5">
+          <RevealItem as="li" key={point.title} className="border-t border-ink pt-5">
             <h3 className="font-display text-heading-md font-semibold text-ink">{point.title}</h3>
             <p className="mt-2 text-body text-pretty text-ink-body">{point.body}</p>
-          </li>
+          </RevealItem>
         ))}
       </ul>
       <div className="mt-8">
@@ -445,17 +446,12 @@ export function WhereNext({ course }: { course: Course }) {
   return (
     <nav aria-label="Where next" className="border-t border-rule py-12 md:py-16">
       {links.length > 0 ? (
-        <Reveal as="ul" stagger className="mb-6 grid gap-4 sm:grid-cols-2">
-          {links.map(({ course: c, label, back }, i) => (
-            <li
-              key={c.id}
-              className={cn(!back && "sm:col-start-2")}
-              data-reveal-item=""
-              style={{ "--reveal-i": i } as CSSProperties}
-            >
+        <Reveal as="ul" className="mb-6 grid gap-4 sm:grid-cols-2">
+          {links.map(({ course: c, label, back }) => (
+            <RevealItem as="li" key={c.id} className={cn(!back && "sm:col-start-2")}>
               <Link
                 href={c.href}
-                className="group flex h-full items-center gap-4 rounded-card border border-rule p-5 transition-colors duration-(--duration-micro) ease-riwaq hov:bg-surface-2"
+                className="lift-card group relative flex h-full items-center gap-4 rounded-card border border-rule bg-paper p-5 hov:bg-surface-2"
               >
                 {back ? (
                   <ArrowLeft aria-hidden="true" strokeWidth={1.5} className="size-5 shrink-0 text-ink-muted" />
@@ -471,7 +467,7 @@ export function WhereNext({ course }: { course: Course }) {
                   <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-5 shrink-0 text-ink-muted" />
                 ) : null}
               </Link>
-            </li>
+            </RevealItem>
           ))}
         </Reveal>
       ) : null}

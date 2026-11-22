@@ -16,7 +16,7 @@ import {
 import { instructors } from "@/content/instructors";
 import { cn } from "@/lib/cn";
 import { AnimatedList } from "@/components/motion/AnimatedList";
-import { Reveal } from "@/components/motion/Reveal";
+import { Reveal, RevealItem } from "@/components/motion/Reveal";
 import { SlidingFilter } from "@/components/motion/SlidingFilter";
 
 /*
@@ -114,8 +114,8 @@ export function CatalogResults({ type }: { type: CatalogType }) {
   return (
     <div>
       <TypeFilter type={type} shown={shown} />
-      {/* A filter change fades groups out and in and closes the gap (Motion); on scroll each
-          group's heading and rows reveal 60 ms apart (CSS). */}
+      {/* A filter change fades groups out and in and glides the rest into place (Motion); on
+          scroll each group rises in, its heading and rows following one another. */}
       <AnimatedList
         as="div"
         itemAs="div"
@@ -128,20 +128,17 @@ export function CatalogResults({ type }: { type: CatalogType }) {
 function Group({ group }: { group: (typeof catalogGroups)[number] }) {
   const headingId = `group-${group.id}`;
   return (
-    <Reveal stagger>
+    <Reveal>
       <section aria-labelledby={headingId} className="mt-10 grid gap-6 md:mt-12 lg:grid-cols-12 lg:gap-6">
         {/* From lg the heading stays beside its rows while they scroll. */}
-        <div
-          data-reveal-item=""
-          className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:col-span-4 lg:self-start"
-        >
+        <RevealItem className="lg:sticky lg:top-[calc(var(--header-height)+1.5rem)] lg:col-span-4 lg:self-start">
           <h2 id={headingId} className="text-heading-xl text-balance">
             {group.heading}
           </h2>
           {group.intro ? (
             <p className="mt-3 max-w-measure text-body text-pretty text-ink-body">{group.intro.text}</p>
           ) : null}
-        </div>
+        </RevealItem>
         <PriceList labelledBy={headingId} className="lg:col-span-8">
           {group.rows.map((row, i) => (
             <PriceRow
@@ -152,7 +149,6 @@ function Group({ group }: { group: (typeof catalogGroups)[number] }) {
               meta={row.meta}
               step={group.steps ? i + 1 : undefined}
               price={<Price {...row.price} />}
-              revealIndex={i + 1}
             />
           ))}
         </PriceList>

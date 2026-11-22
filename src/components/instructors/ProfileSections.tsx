@@ -1,8 +1,8 @@
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Price, PriceList, PriceRow, TextLink } from "@/components/course/PriceList";
 import { InstructorRow } from "@/components/home/InstructorRow";
 import { InstructorCard } from "@/components/instructors/InstructorCard";
-import { Reveal } from "@/components/motion/Reveal";
+import { Reveal, RevealItem } from "@/components/motion/Reveal";
 import { ArchFrame } from "@/components/ui/ArchFrame";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { ButtonLink } from "@/components/ui/Button";
@@ -187,12 +187,12 @@ export function AlsoTeaching({ person }: { person: Instructor }) {
         <TextLink label="See all teachers" href="/instructors" className="shrink-0" />
       </div>
       {/* The one reveal on a profile: the bio and qualifications never move (DESIGN.md §6). */}
-      <Reveal stagger className="mt-8">
+      <Reveal className="mt-8">
         <InstructorRow count={people.length}>
-          {people.map((p, i) => (
-            <li key={p.id} className="snap-start" data-reveal-item="" style={{ "--reveal-i": i } as CSSProperties}>
+          {people.map((p) => (
+            <RevealItem as="li" key={p.id} className="snap-start">
               <InstructorCard person={p} lazy sizes="(min-width: 64rem) 200px, (min-width: 40rem) 18vw, 40vw" />
-            </li>
+            </RevealItem>
           ))}
         </InstructorRow>
       </Reveal>

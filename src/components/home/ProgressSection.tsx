@@ -1,5 +1,6 @@
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import Link from "next/link";
+import { RevealItem } from "@/components/motion/Reveal";
 import { ButtonLink } from "@/components/ui/Button";
 import { progressSection as copy } from "@/content/home";
 import { LaptopFrame, PhoneFrame } from "./DeviceFrames";
@@ -33,7 +34,7 @@ export function ProgressSection() {
 
           <ul className="border-t border-ink lg:col-start-1 lg:row-start-2">
             {copy.rows.map((row) => (
-              <li key={row.label} className="border-b border-rule">
+              <RevealItem as="li" key={row.label} className="border-b border-rule">
                 {row.href ? (
                   <Link
                     href={row.href}
@@ -54,7 +55,7 @@ export function ProgressSection() {
                     <span className="text-body text-pretty text-ink-body">{row.text}</span>
                   </div>
                 )}
-              </li>
+              </RevealItem>
             ))}
           </ul>
 

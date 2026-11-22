@@ -2,8 +2,8 @@
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 
-/** The list glide (320 ms) plus a little slack, so nothing settles before the movers land. */
-export const HOLD_MS = 400;
+/** The list glide (a ~380 ms spring) plus a little slack, so nothing settles before the movers land. */
+export const HOLD_MS = 450;
 
 /**
  * Keeps a block at its previous height for a moment when its content shrinks

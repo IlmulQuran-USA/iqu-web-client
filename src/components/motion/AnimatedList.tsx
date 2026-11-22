@@ -4,24 +4,17 @@ import { AnimatePresence, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { HOLD_MS } from "./HoldHeight";
-import { EASE, MotionLeaf } from "./MotionLeaf";
+import { EASE, SPRING_SNAPPY } from "./tokens";
 
 export type AnimatedItem = { key: string; node: ReactNode; className?: string };
-
-/** The glide, DESIGN.md §6 panel duration. */
-const GLIDE_MS = 320;
 
 /**
  * A list that a filter changes (the /courses groups, the /instructors cards).
  * When the URL's filter changes, items that leave fade out (120 ms); items
- * that stay glide to their new places (layout, 320 ms); new ones fade in
- * (200 ms) only once the leavers are gone, so two cards never overlap.
- * Nothing animates on the first render. The items are server-rendered nodes
- * passed in; this leaf only moves them.
- *
- * `glide={false}`: no layout move; staying items take their new places at once
- * while the leavers fade out and the arrivals fade in (the /instructors grid,
- * where a glide crossed the next group's heading).
+ * that stay glide to their new places on a spring (layout animation, owner
+ * 22 Nov 2026); new ones fade and rise in once the leavers are gone, so two
+ * cards never overlap. Nothing animates on the first render. The items are
+ * server-rendered nodes passed in; this leaf only moves them.
  *
  * While a shrinking list glides, it keeps its previous height, so the content
  * after it never jumps up underneath items that are still moving; it settles
@@ -32,33 +25,11 @@ export function AnimatedList({
   items,
   as = "ul",
   itemAs = "li",
-  glide = true,
   className,
 }: {
   items: AnimatedItem[];
   as?: "ul" | "div";
   itemAs?: "li" | "div";
-  glide?: boolean;
-  className?: string;
-}) {
-  return (
-    <MotionLeaf>
-      <List items={items} as={as} itemAs={itemAs} glide={glide} className={className} />
-    </MotionLeaf>
-  );
-}
-
-function List({
-  items,
-  as,
-  itemAs,
-  glide,
-  className,
-}: {
-  items: AnimatedItem[];
-  as: "ul" | "div";
-  itemAs: "li" | "div";
-  glide: boolean;
   className?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
@@ -88,13 +59,17 @@ function List({
         {items.map((item) => (
           <Item
             key={item.key}
-            layout={glide ? "position" : false}
+            layout="position"
             className={item.className}
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0, y: 16 }}
             // Arrivals wait for the leavers' 120 ms fade, so nothing stacks.
-            animate={{ opacity: 1, transition: { duration: 0.2, delay: 0.12, ease: EASE } }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              transition: { opacity: { duration: 0.24, delay: 0.12, ease: EASE }, y: { ...SPRING_SNAPPY, delay: 0.12 } },
+            }}
             exit={{ opacity: 0, transition: { duration: 0.12, ease: EASE } }}
-            transition={{ layout: { duration: GLIDE_MS / 1000, ease: EASE } }}
+            transition={{ layout: SPRING_SNAPPY }}
           >
             {item.node}
           </Item>

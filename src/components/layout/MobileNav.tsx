@@ -2,7 +2,10 @@
 
 import { ArrowRight, ChevronDown, Menu, UserRound, X } from "lucide-react";
 import Link from "next/link";
+import { AnimatePresence, type Variants } from "motion/react";
+import * as m from "motion/react-m";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { EASE, SPRING_SNAPPY } from "@/components/motion/tokens";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   about,
@@ -27,8 +30,27 @@ import { Logo } from "./Logo";
  * - Built on a native modal <dialog>, which gives a focus trap, an inert
  *   background, a top layer and Escape to close. Focus goes back to the
  *   hamburger when the drawer closes. A click on the backdrop also closes it.
- * - Reduced motion: the drawer fades instead of sliding (globals.css .drawer).
+ * - Motion (owner, 22 Nov 2026): the panel slides in on a spring over a
+ *   fading scrim, its rows following 40 ms apart; it slides out before the
+ *   dialog closes. The sections open and close on a spring. Under reduced
+ *   motion the panel and scrim only fade.
  */
+
+/** The panel never overshoots: a bounce would open a gap at the screen edge. */
+const PANEL_SPRING = { type: "spring", visualDuration: 0.42, bounce: 0 } as const;
+
+const panel: Variants = {
+  open: { x: 0, opacity: 1, transition: { x: PANEL_SPRING, opacity: { duration: 0.2, ease: EASE }, delayChildren: 0.08, staggerChildren: 0.04 } },
+  closed: { x: "100%", opacity: 0, transition: { x: { duration: 0.26, ease: EASE }, opacity: { duration: 0.2, delay: 0.06, ease: EASE } } },
+};
+const scrim: Variants = {
+  open: { opacity: 1, transition: { duration: 0.3, ease: EASE } },
+  closed: { opacity: 0, transition: { duration: 0.26, ease: EASE } },
+};
+const row: Variants = {
+  open: { opacity: 1, x: 0, transition: { x: SPRING_SNAPPY, opacity: { duration: 0.24, ease: EASE } } },
+  closed: { opacity: 0, x: 24, transition: { duration: 0.12 } },
+};
 export function MobileNav({ pathname, className }: { pathname: string; className?: string }) {
   const [open, setOpen] = useState(false);
   // The drawer's Donate plays its 3 laps the first time the drawer opens, not on every open.
@@ -46,7 +68,8 @@ export function MobileNav({ pathname, className }: { pathname: string; className
     setOpen(true);
     setOpened(true);
   };
-  const closeDrawer = () => dialogRef.current?.close();
+  // Slide out first; the dialog itself closes when the panel's exit ends (onAnimationComplete).
+  const closeDrawer = () => setOpen(false);
 
   // The desktop nav takes over at lg; never leave a modal open behind it.
   useEffect(() => {
@@ -78,16 +101,34 @@ export function MobileNav({ pathname, className }: { pathname: string; className
         id={dialogId}
         aria-labelledby={titleId}
         className="drawer"
+        onCancel={(event) => {
+          // Escape: animate out first, then close.
+          event.preventDefault();
+          closeDrawer();
+        }}
         onClose={() => {
           setOpen(false);
           triggerRef.current?.focus();
         }}
-        onClick={(event) => {
-          // Only the backdrop targets the dialog itself; the content fills it.
-          if (event.target === event.currentTarget) closeDrawer();
-        }}
       >
-        <div className="flex h-full flex-col">
+        {/* The scrim fills the screen behind the panel; a click on it closes the drawer. */}
+        <m.div
+          aria-hidden="true"
+          className="drawer-scrim"
+          initial={false}
+          animate={open ? "open" : "closed"}
+          variants={scrim}
+          onClick={closeDrawer}
+        />
+        <m.div
+          className="drawer-panel flex flex-col"
+          initial={false}
+          animate={open ? "open" : "closed"}
+          variants={panel}
+          onAnimationComplete={(definition) => {
+            if (definition === "closed" && dialogRef.current?.open) dialogRef.current.close();
+          }}
+        >
           <div className="flex h-(--header-height) shrink-0 items-center justify-between gap-4 border-b border-rule px-4">
             <h2 id={titleId} className="sr-only">
               Menu
@@ -106,7 +147,7 @@ export function MobileNav({ pathname, className }: { pathname: string; className
 
           <nav aria-label="Main" className="flex-1 overflow-y-auto overscroll-contain px-4 py-2">
             <ul className="flex flex-col divide-y divide-rule">
-              <li>
+              <m.li variants={row}>
                 <Section
                   label="Courses"
                   current={[...coursesByLevel, ...coursesByType, { label: "", href: "/courses" }].some((l) => isCurrent(pathname, l.href))}
@@ -135,28 +176,28 @@ export function MobileNav({ pathname, className }: { pathname: string; className
                     <span className="mt-2 block text-ui font-medium text-ink">{featuredProgram.note}</span>
                   </Link>
                 </Section>
-              </li>
-              <li>
+              </m.li>
+              <m.li variants={row}>
                 <Section label="Programs" current={programs.some((l) => isCurrent(pathname, l.href))}>
                   <DrawerLinks links={programs} pathname={pathname} onNavigate={closeDrawer} />
                 </Section>
-              </li>
-              <li>
+              </m.li>
+              <m.li variants={row}>
                 <PlainLink href={primaryLinks.instructors.href} pathname={pathname} onNavigate={closeDrawer}>
                   {primaryLinks.instructors.label}
                 </PlainLink>
-              </li>
-              <li>
+              </m.li>
+              <m.li variants={row}>
                 <Section label="About" current={about.some((l) => isCurrent(pathname, l.href))}>
                   <DrawerLinks links={about} pathname={pathname} onNavigate={closeDrawer} />
                 </Section>
-              </li>
+              </m.li>
             </ul>
           </nav>
 
           {/* Pinned actions, top to bottom: Donate · Log in · Start free trial (owner
               decision, 19 Nov 2026). Donate is full width, the same size as Log in. */}
-          <div className="flex shrink-0 flex-col gap-2 border-t border-rule bg-paper px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <m.div variants={row} className="flex shrink-0 flex-col gap-2 border-t border-rule bg-paper px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             {/* The same Donate button as the header. Remounted when the drawer
                 first opens, so its 3 laps play once, when it can be seen. */}
             <DonateButton
@@ -179,8 +220,8 @@ export function MobileNav({ pathname, className }: { pathname: string; className
             <ButtonLink href={primaryLinks.enrol.href} variant="primary" fullWidth onClick={closeDrawer}>
               {primaryLinks.enrol.label}
             </ButtonLink>
-          </div>
-        </div>
+          </m.div>
+        </m.div>
       </dialog>
     </div>
   );
@@ -214,9 +255,21 @@ function Section({ label, current, children }: { label: string; current: boolean
           className={cn("size-5 transition-transform duration-(--duration-default) ease-riwaq motion-reduce:transition-none", expanded && "rotate-180")}
         />
       </button>
-      <div id={regionId} hidden={!expanded} className="pb-2">
-        {children}
-      </div>
+      {/* Opens and closes on a spring (height and fade). The 4 px inset keeps the links' focus rings inside the clip. */}
+      <AnimatePresence initial={false}>
+        {expanded ? (
+          <m.div
+            key="region"
+            id={regionId}
+            className="-mx-1 overflow-hidden px-1"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1, transition: { height: SPRING_SNAPPY, opacity: { duration: 0.2, ease: EASE } } }}
+            exit={{ height: 0, opacity: 0, transition: { height: { duration: 0.22, ease: EASE }, opacity: { duration: 0.12 } } }}
+          >
+            <div className="pt-1 pb-2">{children}</div>
+          </m.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }
