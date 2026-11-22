@@ -67,16 +67,20 @@ export const schedule = {
 
 /* ── Fees and aid (shared by Home, course pages and the scholarship copy) ── */
 
+// PRODUCT.md "Positioning".
+const STUDY_FREE = "Nearly half of our students study free.";
+// Owner, 22 Nov 2026: listed prices are the full fees; a reduced fee or a full
+// scholarship is something a family asks for, never a discount everyone gets.
+// Replaces "The rest pay subsidized fees, with tuition reduced by 50%, 45% or 30%."
+const ASK_FOR_HELP =
+  "Listed prices are the full monthly fees. Families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship.";
+
 export const aid = {
-  // PRODUCT.md "Positioning".
-  studyFree: "Nearly half of our students study free.",
-  // Owner, 22 Nov 2026: listed prices are the full fees; a reduced fee or a full
-  // scholarship is something a family asks for, never a discount everyone gets.
-  // Replaces "The rest pay subsidized fees, with tuition reduced by 50%, 45% or 30%."
-  help: {
-    status: "live",
-    text: "Listed prices are the full monthly fees. Families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship. Nearly half of our students study free.",
-  },
+  studyFree: STUDY_FREE,
+  /** Course pages and the /courses fee note: the full wording (owner, 22 Nov 2026). */
+  help: { status: "live", text: `${ASK_FOR_HELP} ${STUDY_FREE}` },
+  /** Home giving band: without the last sentence, which its headline already says (owner, 23 Nov 2026). */
+  askForHelp: { status: "live", text: ASK_FOR_HELP },
 } as const;
 
 /* ── 3 · Programs ────────────────────────────────────────────────────────── */
@@ -262,7 +266,7 @@ export const familiesSection = {
 
 export const giving = {
   heading: aid.studyFree,
-  help: aid.help.text,
+  help: aid.askForHelp.text,
   // Rendered as: <name> is the teaching name of <legal name>, <rest>. Names are marked translate="no".
   bodyJoin: "is the teaching name of",
   bodyRest: `, a ${site.taxStatus}. Donations, including Zakat, go to the scholarship fund that pays for those places.`,

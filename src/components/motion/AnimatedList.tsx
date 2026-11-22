@@ -4,6 +4,7 @@ import { AnimatePresence, useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { HOLD_MS } from "./HoldHeight";
+import { LayoutFeatures } from "./LayoutFeatures";
 import { EASE, SPRING_SNAPPY } from "./tokens";
 
 export type AnimatedItem = { key: string; node: ReactNode; className?: string };
@@ -54,27 +55,30 @@ export function AnimatedList({
   const ListTag = as === "ul" ? m.ul : m.div;
   const Item = itemAs === "li" ? m.li : m.div;
   return (
-    <ListTag ref={ref as never} className={className} style={{ position: "relative", minHeight: hold ?? undefined }}>
-      <AnimatePresence initial={false} mode="popLayout">
-        {items.map((item) => (
-          <Item
-            key={item.key}
-            layout="position"
-            className={item.className}
-            initial={{ opacity: 0, y: 16 }}
-            // Arrivals wait for the leavers' 120 ms fade, so nothing stacks.
-            animate={{
-              opacity: 1,
-              y: 0,
-              transition: { opacity: { duration: 0.24, delay: 0.12, ease: EASE }, y: { ...SPRING_SNAPPY, delay: 0.12 } },
-            }}
-            exit={{ opacity: 0, transition: { duration: 0.12, ease: EASE } }}
-            transition={{ layout: SPRING_SNAPPY }}
-          >
-            {item.node}
-          </Item>
-        ))}
-      </AnimatePresence>
-    </ListTag>
+    // The glide needs Motion's layout features, loaded here only (LayoutFeatures).
+    <LayoutFeatures>
+      <ListTag ref={ref as never} className={className} style={{ position: "relative", minHeight: hold ?? undefined }}>
+        <AnimatePresence initial={false} mode="popLayout">
+          {items.map((item) => (
+            <Item
+              key={item.key}
+              layout="position"
+              className={item.className}
+              initial={{ opacity: 0, y: 16 }}
+              // Arrivals wait for the leavers' 120 ms fade, so nothing stacks.
+              animate={{
+                opacity: 1,
+                y: 0,
+                transition: { opacity: { duration: 0.24, delay: 0.12, ease: EASE }, y: { ...SPRING_SNAPPY, delay: 0.12 } },
+              }}
+              exit={{ opacity: 0, transition: { duration: 0.12, ease: EASE } }}
+              transition={{ layout: SPRING_SNAPPY }}
+            >
+              {item.node}
+            </Item>
+          ))}
+        </AnimatePresence>
+      </ListTag>
+    </LayoutFeatures>
   );
 }

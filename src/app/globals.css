@@ -81,6 +81,15 @@
      (a damped spring sampled into linear(); about 8% overshoot). */
   --ease-spring: linear(0, 0.077, 0.254, 0.464, 0.662, 0.827, 0.948, 1.026, 1.068, 1.083, 1.08, 1.067, 1.05, 1.032, 1.018, 1.007, 0.999, 0.995, 0.993, 0.993, 1);
   --duration-spring: 550ms;
+  /* Owner, 23 Nov 2026: menus, the drawer and the FAQ moved from Motion to CSS.
+     These are Motion's own springs, sampled into linear() so the look and
+     timing stay the same: "snappy" (visualDuration 0.38 s, bounce 0.14; settles
+     in 440 ms) and the drawer panel (0.42 s, no bounce, so no gap ever opens
+     at the screen edge; settles in 760 ms). */
+  --ease-spring-snappy: linear(0, 0.011, 0.039, 0.08, 0.13, 0.186, 0.246, 0.307, 0.368, 0.428, 0.486, 0.541, 0.592, 0.64, 0.684, 0.725, 0.762, 0.795, 0.824, 0.851, 0.874, 0.895, 0.912, 0.928, 0.942, 0.953, 0.963, 0.971, 0.978, 0.984, 0.989, 0.993, 0.996, 0.999, 1.001, 1.002, 1.003, 1.004, 1.005, 1.005, 1);
+  --duration-spring-snappy: 440ms;
+  --ease-spring-panel: linear(0, 0.024, 0.082, 0.159, 0.245, 0.332, 0.415, 0.494, 0.565, 0.628, 0.685, 0.734, 0.776, 0.812, 0.843, 0.87, 0.892, 0.91, 0.926, 0.939, 0.95, 0.959, 0.966, 0.972, 0.977, 0.981, 0.985, 0.988, 0.99, 0.992, 0.993, 0.995, 0.996, 0.996, 0.997, 0.998, 0.998, 0.998, 0.999, 0.999, 1);
+  --duration-spring-panel: 760ms;
   /* The soft shadow under a lifted card or button (hover only). It fades in by opacity. */
   --elevation-lift: 0 10px 24px -6px rgb(15 23 42 / 0.18), 0 2px 6px rgb(15 23 42 / 0.06);
 
@@ -519,9 +528,12 @@
   }
 
   /* Mobile drawer: a native modal <dialog> that fills the screen, holding a
-     scrim and the panel on the right (spec §6.1). Motion slides the panel in
-     on a spring and fades the scrim (MobileNav); the dialog gives the focus
-     trap, the inert page and the top layer. */
+     scrim and the panel on the right (spec §6.1); the dialog gives the focus
+     trap, the inert page, the top layer and Escape. The motion is CSS (owner,
+     23 Nov 2026), timed as the Motion version was: the panel slides in on the
+     panel spring over a fading scrim, its rows follow 40 ms apart; closing,
+     everything slides and fades out in 260 ms while display and overlay
+     (allow-discrete) keep the dialog painted. */
   .drawer {
     position: fixed;
     inset: 0;
@@ -535,6 +547,9 @@
     overflow: hidden;
     background: transparent;
     color: var(--ink);
+    transition:
+      display 300ms allow-discrete,
+      overlay 300ms allow-discrete;
   }
   .drawer::backdrop {
     background: transparent;
@@ -543,6 +558,12 @@
     position: absolute;
     inset: 0;
     background-color: var(--scrim);
+    opacity: 0;
+    transition: opacity 260ms var(--ease-riwaq);
+  }
+  .drawer[open] .drawer-scrim {
+    opacity: 1;
+    transition-duration: 300ms;
   }
   .drawer-panel {
     position: absolute;
@@ -550,15 +571,108 @@
     width: min(100vw, var(--container-drawer));
     background-color: var(--paper);
     box-shadow: var(--elevation-overlay);
+    translate: 100% 0;
+    opacity: 0;
+    transition:
+      translate 260ms var(--ease-riwaq),
+      opacity 200ms var(--ease-riwaq) 60ms;
+  }
+  .drawer[open] .drawer-panel {
+    translate: 0 0;
+    opacity: 1;
+    transition:
+      translate var(--duration-spring-panel) var(--ease-spring-panel),
+      opacity 200ms var(--ease-riwaq);
+  }
+  .drawer-row {
+    opacity: 0;
+    translate: 24px 0;
+    transition:
+      opacity 120ms linear,
+      translate 120ms linear;
+  }
+  .drawer[open] .drawer-row {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      translate var(--duration-spring-snappy) var(--ease-spring-snappy),
+      opacity 240ms var(--ease-riwaq);
+    transition-delay: calc(80ms + var(--row, 0) * 40ms);
+  }
+  @starting-style {
+    .drawer[open] .drawer-scrim {
+      opacity: 0;
+    }
+    .drawer[open] .drawer-panel {
+      translate: 100% 0;
+      opacity: 0;
+    }
+    .drawer[open] .drawer-row {
+      opacity: 0;
+      translate: 24px 0;
+    }
+  }
+
+  /* A drawer section (Courses, Programs, About): springs open, eases closed.
+     Closed, it is hidden from focus and screen readers. Height animates where
+     interpolate-size is supported (Chromium); elsewhere it opens at once and
+     only fades. */
+  .drawer-region {
+    interpolate-size: allow-keywords;
+    height: 0;
+    overflow: clip;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      height 220ms var(--ease-riwaq),
+      opacity 120ms linear,
+      visibility 0s linear 220ms;
+  }
+  .drawer-region[data-open] {
+    height: auto;
+    opacity: 1;
+    visibility: visible;
+    transition:
+      height var(--duration-spring-snappy) var(--ease-spring-snappy),
+      opacity 200ms var(--ease-riwaq),
+      visibility 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drawer-panel,
+    .drawer[open] .drawer-panel,
+    .drawer-row,
+    .drawer[open] .drawer-row {
+      translate: none;
+      transition: opacity 200ms linear;
+    }
+    @starting-style {
+      .drawer[open] .drawer-panel,
+      .drawer[open] .drawer-row {
+        translate: none;
+      }
+    }
+    .drawer-region {
+      transition:
+        opacity 120ms linear,
+        visibility 0s linear 120ms;
+    }
+    .drawer-region[data-open] {
+      transition:
+        opacity 200ms linear,
+        visibility 0s;
+    }
   }
 }
 
 /*
- * Site motion (owner, 22 Nov 2026; DESIGN.md §6). Motion (motion/react)
- * drives the reveals, the hero entrance, menus, the drawer, the FAQ, filter
- * glides and the counters. CSS keeps what must work from the first paint:
- * hover lifts, presses and the portrait zoom. Only transform and opacity
- * move. Under prefers-reduced-motion nothing moves: opacity at most.
+ * Site motion (owner, 22–23 Nov 2026; DESIGN.md §6). Motion (motion/react)
+ * drives the scroll reveals, the filter glides and the counters. CSS does the
+ * rest: the hero entrance, hover lifts, presses, the portrait zoom, menus, the
+ * drawer and the FAQ (moved from Motion to CSS on 23 Nov 2026 to cut page
+ * weight; same springs, sampled into linear()). Only transform and opacity
+ * move, except the FAQ and drawer-section heights. Under
+ * prefers-reduced-motion nothing moves: opacity at most.
  */
 @layer components {
   /* Header edge on scroll: a shadow layer that fades in (opacity only). */
@@ -576,6 +690,89 @@
   }
   .header-shadow[data-scrolled]::after {
     opacity: 1;
+  }
+
+  /* Header menus (owner, 23 Nov 2026: CSS, the same look as the Motion
+     version): open with a fade, an 8 px drop and a grow from 98% on the
+     snappy spring; close with a quick fade and a 4 px lift. display:
+     allow-discrete keeps a closing panel painted until its fade ends; closed,
+     it is display: none, so its links are never focusable. */
+  .menu-panel {
+    display: none;
+    opacity: 0;
+    translate: 0 -4px;
+    transform-origin: top;
+    transition:
+      opacity 140ms var(--ease-riwaq),
+      translate 140ms var(--ease-riwaq),
+      display 140ms allow-discrete;
+  }
+  .menu-panel[data-open] {
+    display: block;
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    transition:
+      opacity 160ms var(--ease-riwaq),
+      translate var(--duration-spring-snappy) var(--ease-spring-snappy),
+      scale var(--duration-spring-snappy) var(--ease-spring-snappy),
+      display 0s allow-discrete;
+  }
+  @starting-style {
+    .menu-panel[data-open] {
+      opacity: 0;
+      translate: 0 -8px;
+      scale: 0.98;
+    }
+  }
+
+  /* FAQ answers (native <details>; owner, 23 Nov 2026: CSS, the same look as
+     the Motion version): the answer springs open (height on the snappy spring,
+     fade 240 ms after 40 ms) and eases closed (240 ms, fade 140 ms). Height
+     animates where ::details-content and interpolate-size are supported; it
+     opens at once elsewhere. Find-in-page and no-JavaScript work as native. */
+  .faq-item {
+    interpolate-size: allow-keywords;
+  }
+  .faq-item::details-content {
+    block-size: 0;
+    overflow: clip;
+    opacity: 0;
+    transition:
+      block-size 240ms var(--ease-riwaq),
+      opacity 140ms var(--ease-riwaq),
+      content-visibility 240ms allow-discrete;
+  }
+  .faq-item[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+    transition:
+      block-size var(--duration-spring-snappy) var(--ease-spring-snappy),
+      opacity 240ms var(--ease-riwaq) 40ms,
+      content-visibility var(--duration-spring-snappy) allow-discrete;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-panel,
+    .menu-panel[data-open] {
+      translate: none;
+      scale: none;
+      transition:
+        opacity 140ms linear,
+        display 140ms allow-discrete;
+    }
+    @starting-style {
+      .menu-panel[data-open] {
+        translate: none;
+        scale: none;
+      }
+    }
+    .faq-item::details-content,
+    .faq-item[open]::details-content {
+      transition:
+        opacity 200ms linear,
+        content-visibility 200ms allow-discrete;
+    }
   }
 
   /*

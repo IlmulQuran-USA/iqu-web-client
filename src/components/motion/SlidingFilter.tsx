@@ -4,6 +4,7 @@ import * as m from "motion/react-m";
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
+import { LayoutFeatures } from "./LayoutFeatures";
 import { SPRING_SNAPPY } from "./tokens";
 
 /**
@@ -35,37 +36,40 @@ export function SlidingFilter({
   }
   const current = optimistic ?? selected;
   return (
-    <ul className={className}>
-      {options.map((option) => {
-        const isSelected = option.id === selected;
-        const isCurrent = option.id === current;
-        return (
-          <li key={option.id} className="flex">
-            <Link
-              href={option.href}
-              scroll={false}
-              onClick={() => setOptimistic(option.id)}
-              aria-current={isSelected ? "true" : undefined}
-              className={cn(
-                "relative inline-flex min-h-11 w-full items-center justify-center rounded-button border px-3 text-center text-ui leading-tight transition-colors duration-(--duration-micro) ease-riwaq sm:px-4",
-                isCurrent
-                  ? "border-transparent font-medium text-ink"
-                  : "border-rule text-ink-body hov:bg-surface-2 hov:text-ink",
-              )}
-            >
-              {isCurrent ? (
-                <m.span
-                  layoutId={`${id}-indicator`}
-                  aria-hidden="true"
-                  className="absolute -inset-px rounded-button border border-accent-strong bg-tint"
-                  transition={SPRING_SNAPPY}
-                />
-              ) : null}
-              <span className="relative">{option.label}</span>
-            </Link>
-          </li>
-        );
-      })}
-    </ul>
+    // layoutId needs Motion's layout features, loaded here only (LayoutFeatures).
+    <LayoutFeatures>
+      <ul className={className}>
+        {options.map((option) => {
+          const isSelected = option.id === selected;
+          const isCurrent = option.id === current;
+          return (
+            <li key={option.id} className="flex">
+              <Link
+                href={option.href}
+                scroll={false}
+                onClick={() => setOptimistic(option.id)}
+                aria-current={isSelected ? "true" : undefined}
+                className={cn(
+                  "relative inline-flex min-h-11 w-full items-center justify-center rounded-button border px-3 text-center text-ui leading-tight transition-colors duration-(--duration-micro) ease-riwaq sm:px-4",
+                  isCurrent
+                    ? "border-transparent font-medium text-ink"
+                    : "border-rule text-ink-body hov:bg-surface-2 hov:text-ink",
+                )}
+              >
+                {isCurrent ? (
+                  <m.span
+                    layoutId={`${id}-indicator`}
+                    aria-hidden="true"
+                    className="absolute -inset-px rounded-button border border-accent-strong bg-tint"
+                    transition={SPRING_SNAPPY}
+                  />
+                ) : null}
+                <span className="relative">{option.label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </LayoutFeatures>
   );
 }

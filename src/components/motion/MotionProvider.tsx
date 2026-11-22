@@ -4,7 +4,7 @@ import { LazyMotion, MotionConfig } from "motion/react";
 import type { ReactNode } from "react";
 import { ScrollDirectionProvider } from "./scroll-direction";
 
-/** Loaded after hydration: the animation, layout and gesture features never block the first paint. */
+/** Loaded after hydration: the animation features (domAnimation) never block the first paint. Layout features load only where used (LayoutFeatures). */
 const loadFeatures = () => import("./features").then((mod) => mod.default);
 
 /**

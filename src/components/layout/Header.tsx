@@ -2,11 +2,8 @@
 
 import { ArrowRight, ChevronDown, UserRound } from "lucide-react";
 import Link from "next/link";
-import { AnimatePresence, type Variants } from "motion/react";
-import * as m from "motion/react-m";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { EASE, SPRING_SNAPPY } from "@/components/motion/tokens";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   about,
@@ -360,16 +357,12 @@ function LinkList({
 
 /*
  * Menus open on a spring: a fade, an 8 px drop and a slight grow from the top
- * (owner, 22 Nov 2026); they close with a quick fade and lift. Under reduced
+ * (owner, 22 Nov 2026); they close with a quick fade and lift. CSS, not Motion
+ * (globals.css .menu-panel; owner, 23 Nov 2026): the panel stays in the DOM and
+ * data-open shows it, so no animation library loads for the header. Closed
+ * panels are display: none, so their links are never focusable. Under reduced
  * motion they only fade.
  */
-const menuMotion: Variants = {
-  closed: { opacity: 0, y: -8, scale: 0.98 },
-  open: { opacity: 1, y: 0, scale: 1, transition: { y: SPRING_SNAPPY, scale: SPRING_SNAPPY, opacity: { duration: 0.16, ease: EASE } } },
-  exit: { opacity: 0, y: -4, transition: { duration: 0.14, ease: EASE } },
-};
-const menuProps = { variants: menuMotion, initial: "closed", animate: "open", exit: "exit", style: { transformOrigin: "top" } } as const;
-
 function Dropdown({
   id,
   open,
@@ -384,18 +377,13 @@ function Dropdown({
   onNavigate: () => void;
 }) {
   return (
-    <AnimatePresence>
-      {open ? (
-        <m.div
-          key={id}
-          id={id}
-          {...menuProps}
-          className="absolute top-full left-0 mt-2 w-72 rounded-card border border-rule bg-paper p-2 shadow-overlay"
-        >
-          <LinkList links={links} pathname={pathname} onNavigate={onNavigate} />
-        </m.div>
-      ) : null}
-    </AnimatePresence>
+    <div
+      id={id}
+      data-open={open ? "" : undefined}
+      className="menu-panel absolute top-full left-0 mt-2 w-72 rounded-card border border-rule bg-paper p-2 shadow-overlay"
+    >
+      <LinkList links={links} pathname={pathname} onNavigate={onNavigate} />
+    </div>
   );
 }
 
@@ -413,55 +401,50 @@ function CoursesPanel({
   const levelId = `${id}-level`;
   const typeId = `${id}-type`;
   return (
-    <AnimatePresence>
-      {open ? (
-        <m.div
-          key={id}
-          id={id}
-          {...menuProps}
-          className="absolute inset-x-0 top-full border-b border-rule bg-paper shadow-overlay"
-        >
-          <div className="container-content grid grid-cols-12 gap-6 py-8">
-            <div className="col-span-4">
-              <p id={levelId} className="eyebrow px-3 pb-2">
-                By level
-              </p>
-              <LinkList links={coursesByLevel} pathname={pathname} onNavigate={onNavigate} labelledBy={levelId} />
-              <Link
-                href="/courses"
-                onClick={onNavigate}
-                className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-              >
-                All courses
-                <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-              </Link>
-            </div>
-    
-            <div className="col-span-3 border-l border-rule pl-6">
-              <p id={typeId} className="eyebrow px-3 pb-2">
-                By type
-              </p>
-              <LinkList links={coursesByType} pathname={pathname} onNavigate={onNavigate} labelledBy={typeId} />
-            </div>
-    
-            <div className="col-span-5">
-              <Link
-                href={featuredProgram.href}
-                onClick={onNavigate}
-                className="lift-card group relative block rounded-card border border-transparent bg-tint p-6 hov:border-accent-strong"
-              >
-                <p className="font-display text-heading-lg font-semibold text-ink">{featuredProgram.label}</p>
-                <p className="mt-1 text-body font-medium text-ink">{featuredProgram.note}</p>
-                <p className="mt-3 max-w-measure text-body text-ink-body">{featuredProgram.summary}</p>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-body font-medium text-link underline decoration-1 underline-offset-2 group-hover:decoration-2">
-                  About the program
-                  <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-                </span>
-              </Link>
-            </div>
-          </div>
-        </m.div>
-      ) : null}
-    </AnimatePresence>
+    <div
+      id={id}
+      data-open={open ? "" : undefined}
+      className="menu-panel absolute inset-x-0 top-full border-b border-rule bg-paper shadow-overlay"
+    >
+      <div className="container-content grid grid-cols-12 gap-6 py-8">
+        <div className="col-span-4">
+          <p id={levelId} className="eyebrow px-3 pb-2">
+            By level
+          </p>
+          <LinkList links={coursesByLevel} pathname={pathname} onNavigate={onNavigate} labelledBy={levelId} />
+          <Link
+            href="/courses"
+            onClick={onNavigate}
+            className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+          >
+            All courses
+            <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+          </Link>
+        </div>
+
+        <div className="col-span-3 border-l border-rule pl-6">
+          <p id={typeId} className="eyebrow px-3 pb-2">
+            By type
+          </p>
+          <LinkList links={coursesByType} pathname={pathname} onNavigate={onNavigate} labelledBy={typeId} />
+        </div>
+
+        <div className="col-span-5">
+          <Link
+            href={featuredProgram.href}
+            onClick={onNavigate}
+            className="lift-card group relative block rounded-card border border-transparent bg-tint p-6 hov:border-accent-strong"
+          >
+            <p className="font-display text-heading-lg font-semibold text-ink">{featuredProgram.label}</p>
+            <p className="mt-1 text-body font-medium text-ink">{featuredProgram.note}</p>
+            <p className="mt-3 max-w-measure text-body text-ink-body">{featuredProgram.summary}</p>
+            <span className="mt-5 inline-flex items-center gap-1.5 text-body font-medium text-link underline decoration-1 underline-offset-2 group-hover:decoration-2">
+              About the program
+              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+            </span>
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
