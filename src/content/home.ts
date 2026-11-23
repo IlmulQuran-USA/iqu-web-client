@@ -79,7 +79,7 @@ export const aid = {
   studyFree: STUDY_FREE,
   /** Course pages and the /courses fee note: the full wording (owner, 22 Nov 2026). */
   help: { status: "live", text: `${ASK_FOR_HELP} ${STUDY_FREE}` },
-  /** Home giving band: without the last sentence, which its headline already says (owner, 23 Nov 2026). */
+  /** Home giving band: without the last sentence, which the hero trust strip already says (owner, 23 and 24 Nov 2026). */
   askForHelp: { status: "live", text: ASK_FOR_HELP },
 } as const;
 
@@ -96,7 +96,7 @@ export const programsSection = {
   intro: "Live classes for children, teens and adults, priced by course and by the number of days you choose.",
   monthlyLabel: "Monthly classes",
   programsLabel: "Seasonal and weekend programs",
-  // Critique, owner 20 Nov 2026: the giving band owns "Nearly half…" and the fee-help line.
+  // Critique, owner 20 Nov 2026: the giving band owns the fee-help line; "Nearly half…" is the hero trust strip's (owner, 24 Nov 2026).
   scholarshipNote: "Scholarships are available.",
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
@@ -265,7 +265,8 @@ export const familiesSection = {
 /* ── 8 · Giving (the only giving section on Home) ────────────────────────── */
 
 export const giving = {
-  heading: aid.studyFree,
+  // Owner, 24 Nov 2026: "Nearly half…" stays only in the hero trust strip, so Home says it once.
+  heading: "Your Zakat and donations fund scholarships",
   help: aid.askForHelp.text,
   // Rendered as: <name> is the teaching name of <legal name>, <rest>. Names are marked translate="no".
   bodyJoin: "is the teaching name of",
