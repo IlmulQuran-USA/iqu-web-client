@@ -2,6 +2,7 @@
 
 import { Clock } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { zoneLabel } from "@/lib/time-zone";
 
 /**
  * The visitor's own local time with its zone label, then the invitation to
@@ -27,19 +28,6 @@ const ROOT_MARGIN = "400px 0px";
 
 const INVITE = "Pick any time that suits your family.";
 
-/**
- * The year-round name of the visitor's zone: ET, CT, MT, PT, AT (and the
- * other North American generic names), never the daylight-saving forms.
- * Arizona's year-round "MST" becomes MT. Elsewhere, the UTC offset
- * ("GMT+6"), since a long name like "Bangladesh Time" would crowd the line.
- */
-function zoneLabel(now: Date): string {
-  const part = (timeZoneName: "shortGeneric" | "shortOffset") =>
-    new Intl.DateTimeFormat("en-US", { timeZoneName }).formatToParts(now).find((p) => p.type === "timeZoneName")?.value;
-  const generic = part("shortGeneric") ?? "";
-  if (/^[A-Z]{1,4}$/.test(generic)) return generic.replace(/^([ECMPA])[SD]T$/, "$1T");
-  return part("shortOffset") ?? "local time";
-}
 
 export function LocalTime() {
   const ref = useRef<HTMLParagraphElement>(null);

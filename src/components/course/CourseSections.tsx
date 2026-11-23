@@ -38,7 +38,17 @@ import { PhoneDisclosure } from "./PhoneDisclosure";
  * hairline rows, serif names, tabular figures.
  */
 
-function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+export function Section({
+  id,
+  title,
+  children,
+  className,
+}: {
+  id: string;
+  title: string;
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     // Anchor offset: html scroll-padding covers the header and the sticky sub-nav (globals.css),
     // so a section's top rule lands on the bar's own bottom rule: one line, never two. The
@@ -48,7 +58,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
       as="section"
       id={id}
       aria-labelledby={`${id}-title`}
-      className="border-t border-rule py-12 md:py-16 [[data-sticky-subnav]+&]:border-t-0"
+      className={cn("border-t border-rule py-12 md:py-16 [[data-sticky-subnav]+&]:border-t-0", className)}
     >
       <h2 id={`${id}-title`} className="text-heading-xl text-balance md:text-display-md">
         {title}
@@ -58,7 +68,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-function SubHeading({ children, className }: { children: ReactNode; className?: string }) {
+export function SubHeading({ children, className }: { children: ReactNode; className?: string }) {
   return <h3 className={cn("font-display text-heading-md font-semibold text-ink", className)}>{children}</h3>;
 }
 
@@ -194,7 +204,7 @@ function ListBlock({ title, items }: { title: string; items: string[] }) {
   );
 }
 
-function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum; nested?: boolean }) {
+export function CurriculumBody({ curriculum, nested = false }: { curriculum: Curriculum; nested?: boolean }) {
   const StepHeading = nested ? "h4" : "h3";
   switch (curriculum.kind) {
     case "classPlan":

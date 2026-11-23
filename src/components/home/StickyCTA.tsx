@@ -23,7 +23,10 @@ export function StickyCTA({
   beforeId,
   title,
   detail,
+  titleWraps = false,
 }: {
+  /** Program pages: a short title beside a long, specific button may wrap to two lines instead of truncating. */
+  titleWraps?: boolean;
   label: string;
   href: string;
   /** The course name (course pages). */
@@ -71,7 +74,9 @@ export function StickyCTA({
       {title ? (
         <div className="flex items-center gap-4">
           <p className="min-w-0 flex-1">
-            <span className="block truncate text-ui font-medium text-ink">{title}</span>
+            <span className={cn("block text-ui font-medium text-ink", titleWraps ? "text-balance" : "truncate")}>
+              {title}
+            </span>
             {detail ? <span className="block text-ui-sm text-ink-muted tabular-nums">{detail}</span> : null}
           </p>
           <ButtonLink href={href} className="shrink-0">

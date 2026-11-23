@@ -323,18 +323,23 @@ function programAges(): string {
 
 /**
  * Final band and phone bottom bar wherever the free first month does not
- * apply: /courses?type=programs now, and the Weekend and Summer program pages
- * when they are built (pass that program's href). Amounts come from
- * ./pricing. On the catalog the button goes to the flagship program the
- * owner chose for the Courses menu (featuredProgram: the Weekend Ilm Program).
+ * apply. Amounts come from ./pricing. On the catalog the button goes to the
+ * flagship program the owner chose for the Courses menu (featuredProgram:
+ * the Weekend Ilm Program) and keeps the generic "Enroll in a program",
+ * since that view covers both programs. Each program page passes its own
+ * specific label, heading and reassurance (owner, 23 Nov 2026: never a
+ * generic label that hides where the button goes); see ./program-page.
  */
-export function programsCta(href: string = featuredProgram.href) {
+export function programsCta(
+  options: { href?: string; label?: string; heading?: string; reassurance?: string } = {},
+) {
   const weekend = programs.weekend.fee === 0 ? "Weekend is free." : `Weekend is ${usd(programs.weekend.fee)}.`;
   return {
     status: "draft",
-    heading: `Weekend and summer programs for ages ${programAges()}.`,
-    button: { label: "Enroll in a program", href },
-    reassurance: `${weekend} Summer is a one-time ${usd(programs.summer.fee)} fee, with a reduced option.`,
+    heading: options.heading ?? `Weekend and summer programs for ages ${programAges()}.`,
+    button: { label: options.label ?? "Enroll in a program", href: options.href ?? featuredProgram.href },
+    reassurance:
+      options.reassurance ?? `${weekend} Summer is a one-time ${usd(programs.summer.fee)} fee, with a reduced option.`,
   } as const;
 }
 
@@ -356,6 +361,6 @@ export function catalogRowFor(id: string): CatalogRow | undefined {
  * the programs wording where the free month does not apply.
  */
 export function finalCtaFor(kind: "course" | "program", href?: string) {
-  if (kind === "program") return programsCta(href);
+  if (kind === "program") return programsCta({ href });
   return { ...finalCta, button: { ...finalCta.button, href: href ?? finalCta.button.href } };
 }

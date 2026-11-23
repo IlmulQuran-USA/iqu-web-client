@@ -64,7 +64,8 @@ export function curriculumHeading(course: Course): string {
 }
 
 /** The live list, then any teachers added from their own profiles (draft). */
-export function teachersOf(course: Course): Instructor[] {
+/** Takes a course or a program: only the id and the copy are read. */
+export function teachersOf(course: { id: string; content: Course["content"] }): Instructor[] {
   const { teachers, profileTeachers } = course.content;
   const ids = [...(teachers.status === "pending" ? [] : teachers.ids), ...(profileTeachers?.ids ?? [])];
   return [...new Set(ids)].map((id) => {
@@ -205,7 +206,7 @@ export const fromLine = (course: Course) =>
   `${isFixedSchedule(course) ? "" : "From "}${usd(fromPrice(course))}/month`;
 
 /** "Taught by A", "Taught by A and B", "Taught by A, B and 8 more". */
-export function taughtBy(course: Course): string | null {
+export function taughtBy(course: { id: string; content: Course["content"] }): string | null {
   const names = teachersOf(course).map((p) => p.name);
   if (names.length === 0) return null;
   if (names.length <= 2) return `Taught by ${names.join(" and ")}`;

@@ -474,7 +474,10 @@ const programCopy: Record<ProgramId, CourseContent> = {
     id: "summer-ilm-camp",
     // Live name: Summer Islamic Education Program.
     livePath: livePaths["summer-ilm-camp"],
-    meta: pending,
+    // The live overview's sentence runs to 167 characters (search limit 160): shortened, with the ages added (draft).
+    meta: draft(
+      "An online summer program that keeps children aged 5–15 connected to the Quran and Islamic learning during their summer break, with qualified teachers.",
+    ),
     overview: live(
       "An online summer program that keeps children connected to the Quran and Islamic learning during their summer break, with qualified teachers in a nurturing environment.",
     ),
@@ -537,10 +540,11 @@ const programCopy: Record<ProgramId, CourseContent> = {
 export const summerOpen = {
   /** The live page says both "6–7 PM CDT" and "6–10 PM CST"; the owner confirms one. Show it as CT, never CST/CDT. */
   homeworkSupportHours: pending,
-  /** Not announced yet. */
-  dates2027: pending,
+  // The 2027 dates live in ./program-timetable (seasons.next), where entering them reopens enrolment.
   /** The 2026 results page moves from /summer-program-results/ to here at launch. */
   resultsHref: "/results/summer-2026",
+  /** Linked until resultsHref exists (Home "Progress" proof uses the same page). */
+  liveResultsHref: "https://ilmulquranus.org/summer-program-results/",
 } as const;
 
 /* ── Course page FAQs and teacher matching (CONTENT-ADDENDUM.md §3.3–§3.4) ── */

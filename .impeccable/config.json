@@ -17,7 +17,8 @@
         "rule": "first-viewport-column-overflow",
         "value": "*",
         "files": [
-          "src/app/courses/[slug]/page.tsx"
+          "src/app/courses/[slug]/page.tsx",
+          "src/app/programs/[slug]/page.tsx"
         ],
         "createdAt": "2026-11-20T12:00:00.000Z",
         "reason": "Spec §7.3 section 11 mandates a desktop right-rail enrolment card; it is sticky, so the short column follows the reader (owner plan, 20 Nov 2026); CLAUDE.md §5"

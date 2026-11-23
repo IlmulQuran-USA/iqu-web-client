@@ -136,8 +136,9 @@ const HERO_TEACHERS = 3;
  * three small arch portraits (the monogram where there is no photo), then the
  * names as text ("Taught by A, B and 4 more"), so the row reads without
  * photos. One link to the Teachers section; the arches are decorative.
+ * Shared with the program pages.
  */
-function TaughtBy({ course, summary }: { course: Course; summary: string }) {
+export function TaughtBy({ course, summary }: { course: { id: string; content: Course["content"] }; summary: string }) {
   const people = teachersOf(course);
   const shownPeople = people.slice(0, HERO_TEACHERS);
   return (

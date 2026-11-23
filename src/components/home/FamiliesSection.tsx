@@ -35,7 +35,8 @@ export function FamiliesSection({ items = testimonialsById(homeTestimonialIds) }
   );
 }
 
-function Quote({ t }: { t: Testimonial }) {
+/** One testimonial. `showProgram` is off on that program's own page, where the link would point to itself. */
+export function Quote({ t, showProgram = true }: { t: Testimonial; showProgram?: boolean }) {
   const program = programOf(t);
   return (
     <figure className="flex h-full flex-col border-t border-ink pt-5">
@@ -55,12 +56,14 @@ function Quote({ t }: { t: Testimonial }) {
           </span>
           <span className="block text-ink-muted">{t.place}</span>
           {/* The program on its own line, so its 44 px target never pushes the place away from the name. */}
-          <Link
-            href={program.href}
-            className="-my-1.5 inline-flex min-h-11 items-center rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-          >
-            {program.label}
-          </Link>
+          {showProgram ? (
+            <Link
+              href={program.href}
+              className="-my-1.5 inline-flex min-h-11 items-center rounded-chip text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+            >
+              {program.label}
+            </Link>
+          ) : null}
         </span>
       </figcaption>
     </figure>

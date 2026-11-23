@@ -1,4 +1,4 @@
-import { monthlyCourses, type CourseId, type ProgramId } from "./pricing";
+import { monthlyCourses, programs, type CourseId, type ProgramId } from "./pricing";
 
 /*
  * The live WordPress paths of each course and program (COURSE-CONTENT.md
@@ -84,13 +84,32 @@ export function instructorSlugRedirects() {
 }
 
 /**
- * 301s from the live course paths to the new course pages. Programs are
- * added when their pages are built. Next.js drops the
- * trailing slash first, so the source has none.
+ * Other live paths that move to a program page (spec §7.0 route map: "/summer-program
+ * → /programs/summer-ilm-camp"; owner, 23 Nov 2026). The live Summer Program
+ * page hosts the summer form today.
+ */
+const programPagePaths: Record<string, ProgramId> = {
+  "/summer-program": "summer-ilm-camp",
+};
+
+/**
+ * 301s from the live course and program paths to the new pages. Next.js
+ * drops the trailing slash first, so the source has none.
  */
 export function legacyCourseRedirects() {
-  return monthlyCourses.flatMap((course) => {
-    const from = livePaths[course.id]?.replace(/\/$/, "");
-    return from ? [{ source: from, destination: course.href, statusCode: 301 as const }] : [];
-  });
+  const items: { id: CourseId | ProgramId; href: string }[] = [
+    ...monthlyCourses,
+    ...Object.values(programs).map((p) => ({ id: p.id, href: p.href })),
+  ];
+  return [
+    ...items.flatMap((item) => {
+      const from = livePaths[item.id]?.replace(/\/$/, "");
+      return from ? [{ source: from, destination: item.href, statusCode: 301 as const }] : [];
+    }),
+    ...Object.entries(programPagePaths).map(([from, id]) => ({
+      source: from,
+      destination: Object.values(programs).find((p) => p.id === id)!.href,
+      statusCode: 301 as const,
+    })),
+  ];
 }
