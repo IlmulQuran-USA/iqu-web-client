@@ -9,6 +9,7 @@ import { programs } from "@/content/pricing";
 import { browserConsent } from "@/lib/consent";
 import type { Confirmation, ConfirmationState } from "@/lib/enroll/confirmation";
 import { LAST_KEY, SEED_KEY } from "@/lib/enroll/keys";
+import { InlineAlert } from "./fields";
 
 /*
  * /enroll/confirmation (plan B3.6, owner decisions 12, 13, 19 and correction D).
@@ -71,9 +72,22 @@ function content(state: ConfirmationState, name: string) {
       body: "Current students do not pay for the camp.",
       steps: [`${WHATSAPP}`, "We send the Zoom link before the camp starts"],
     },
+    "card-next": {
+      title: "We saved your enrollment.",
+      body: "The next step is adding a card or US bank account on Stripe, our secure payment page. Nothing is charged during the free month. After the free first month, tuition is charged on the 1st of each month.",
+      steps: ["You add a card or bank account on Stripe", `${WHATSAPP}`, "We match a teacher to the time you chose", "The first class"],
+    },
+    "summer-next": {
+      title: "We saved your Summer Ilm Camp enrollment.",
+      body: "The next step is paying the camp fee on Stripe, our secure payment page.",
+      steps: ["You pay the fee on Stripe, and we email you a receipt", `${WHATSAPP}`, "We send the Zoom link before the camp starts"],
+    },
   };
   return s[state];
 }
+
+/** Until P2 connects Stripe, these states end here: the family is told plainly, nothing is faked. */
+const CARD_STEP_PENDING: ReadonlySet<ConfirmationState> = new Set(["card-next", "summer-next"]);
 
 export function ConfirmationView({ confirmation }: { confirmation: Confirmation }) {
   const router = useRouter();
@@ -140,6 +154,13 @@ export function ConfirmationView({ confirmation }: { confirmation: Confirmation 
     <div className="max-w-2xl">
       <h1 className="font-display text-heading-xl font-semibold text-balance text-ink">{c.title}</h1>
       <p className="mt-4 text-body-lg text-ink-body">{c.body}</p>
+
+      {CARD_STEP_PENDING.has(confirmation.state) ? (
+        <InlineAlert tone="info" className="mt-6" title="Card step is not connected yet.">
+          Your enrollment is saved as waiting for {confirmation.state === "summer-next" ? "the payment" : "a card"}. On this test site the
+          Stripe page is not open yet, so nothing is charged.
+        </InlineAlert>
+      ) : null}
 
       {confirmation.reference ? (
         <div className="mt-8 flex flex-wrap items-center gap-4 rounded-card bg-surface p-5">

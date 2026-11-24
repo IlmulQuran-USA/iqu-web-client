@@ -11,12 +11,27 @@
  *   summer          back from Stripe after paying the Summer fee
  *   summer-review   Summer: help with the fee, or the team checks the fee
  *   summer-existing Summer: an existing student's place
+ *   card-next       saved, the next step is adding a card (monthly card route)
+ *   summer-next     saved, the next step is paying the Summer fee
  *
- * The card and Summer URLs are built by the plugin as Stripe's success URL
- * (C6); the others by the server action.
+ * "card" and "summer" are Stripe's success URLs (P2); every other state comes
+ * from the server action. Until P2 connects Stripe, the card and Summer
+ * payment routes end on card-next / summer-next, which say the card step is
+ * not connected yet and never claim that anything was paid or confirmed.
  */
 
-export const STATES = ["card", "review", "aid", "details", "weekend", "summer", "summer-review", "summer-existing"] as const;
+export const STATES = [
+  "card",
+  "review",
+  "aid",
+  "details",
+  "weekend",
+  "summer",
+  "summer-review",
+  "summer-existing",
+  "card-next",
+  "summer-next",
+] as const;
 export type ConfirmationState = (typeof STATES)[number];
 
 export type Lead = { eventId: string; value: number; contentName: string };

@@ -102,7 +102,8 @@ export const LEDGER_REASONS = ["coupon", "special_plan", "agreed_fee", "admin_di
 export const LEDGER_SOURCES = ["monthly", "backfill", "wp_import"] as const;
 export const STRIPE_EVENT_RESULTS = ["processing", "processed", "ignored_other_mode", "not_iqu", "duplicate", "error"] as const;
 export const OUTBOX_KINDS = ["telegram", "email", "meta"] as const;
-export const OUTBOX_STATUSES = ["pending", "sent", "failed", "dead"] as const;
+/** skipped = refused by a staging guard (an address not on EMAIL_ALLOWLIST, a chat other than the test chat): logged, never sent. */
+export const OUTBOX_STATUSES = ["pending", "sent", "skipped", "failed", "dead"] as const;
 /** Quran levels: the four of owner decision 6, plus the plugin's old three (imported rows). */
 export const QURAN_LEVELS = ["no_letters", "qaidah", "quran", "memorizing", "beginner", "intermediate", "advanced"] as const;
 /** Class lengths: the live list, plus 45 and 'other' kept readable on imported rows (plugin 3.7.13). */

@@ -6,7 +6,7 @@ import { summerSeasonLine } from "@/components/enroll/season";
 import { programTimetables, seasonState, upcomingYear } from "@/content/program-timetable";
 import { LIVE_FORM_URL, parseEnrollParams } from "@/lib/enroll/params";
 import { pageMetadata } from "@/lib/metadata";
-import { enrollConfig } from "@/lib/server/enroll-wp";
+import { enrollConfig } from "@/lib/server/enroll/config";
 
 /*
  * /enroll (spec §7.17; plan F:/iqu-setup/reports/enroll-shape-plan.md B3,
@@ -14,7 +14,8 @@ import { enrollConfig } from "@/lib/server/enroll-wp";
  * One template: monthly courses (?course=), ?aid=request, the Weekend
  * program and the Summer camp (?program=). Unknown values are ignored.
  * The server decides only what the browser cannot: whether online enrollment
- * is connected to WordPress, and whether the Summer season is open.
+ * is connected (database, reCAPTCHA, hash secret), and whether the Summer
+ * season is open.
  */
 
 // The template depends on ?program= and ?course=: render each request with them (as /courses does).

@@ -5,7 +5,7 @@ import { confirmationHref, parseConfirmation } from "./confirmation.ts";
 import { afterHelp, allowedDays, daysError, money, payWhatYouCanError, quoteMonthly, SUMMER_STANDARD_FEE } from "./fees.ts";
 import { countries } from "./options.ts";
 import { parseEnrollParams } from "./params.ts";
-import { buildPluginFields, draftFieldOf } from "./payload.ts";
+import { phonesOf, programOf, registrationFields } from "./record.ts";
 import { ageOn, draftSchema, emptyDraft, summerLevel, toE164, validateAll, validateStep, type Draft } from "./schema.ts";
 import { clockLabel, namedZone, timeSlotText, windowErrors, zoneShort } from "./schedule.ts";
 
@@ -217,57 +217,59 @@ test("weekend consent and summer fee rules", () => {
   assert.deepEqual(validateStep({ ...help, summerHelp: "free" as const }, "summerFee", TODAY), {});
 });
 
-/* ── Payload (the plugin's field names) ──────────────────────────────── */
+/* ── Registration row (record.ts) ────────────────────────────────────── */
 
-test("monthly payload: plugin field names, structured schedule, no stale answers", () => {
-  const { form, fields } = buildPluginFields({ ...complete(), couponCode: "OLD-CODE", special: true }, TODAY);
-  assert.equal(form, "free");
-  assert.equal(fields.course_type, "qaidah");
-  assert.equal(fields.course_variant, "noorani-qaidah");
-  assert.equal(fields.whatsapp, "+12145550123");
-  assert.equal(fields.country_res, "United States");
-  assert.equal(fields.country_res_code, "US");
-  assert.equal(fields.time_zone, "America/Chicago");
-  assert.equal(fields.time_zone_label, "CT");
-  assert.equal(fields.time_slot, "4:00 PM – 6:00 PM (CT)");
-  assert.equal(fields.session_dur, "30");
-  assert.equal(fields.special_discount, 1);
-  assert.equal(fields.coupon_code, ""); // fee choice is "pay": a typed code is not sent
-  assert.equal(fields.aid_level, "");
-  assert.equal(fields.iqu_existing_q, 1);
+const NOW = new Date("2026-11-24T15:00:00Z");
+
+test("monthly row: structured schedule, course variant, no stale answers", () => {
+  const r = registrationFields({ ...complete(), couponCode: "OLD-CODE", special: true, helpNote: "ignored" }, TODAY, NOW);
+  assert.equal(r.program, "monthly");
+  assert.equal(r.courseKey, "qaidah");
+  assert.equal(r.courseVariant, "noorani-qaidah");
+  assert.equal(r.whatsappE164, "+12145550123");
+  assert.equal(r.countryResName, "United States");
+  assert.equal(r.countryResCode, "US");
+  assert.equal(r.timeZone, "America/Chicago");
+  assert.equal(r.timeZoneLabel, "CT");
+  assert.equal(r.timeSlotText, "4:00 PM – 6:00 PM (CT)");
+  assert.equal(r.timeStart, "16:00");
+  assert.equal(r.sessionMinutes, 30);
+  assert.equal(r.existingStudent, false); // N6: "No" is stored too
+  assert.equal(r.aidLevel, null); // fee choice is "pay": no help fields
+  assert.equal(r.aidNote, null);
+  assert.equal(r.ageAtSignup, 9);
+  assert.equal(r.termsAcceptedAt, NOW);
+  assert.equal("couponId" in r, false); // money and coupons are decided by the server, not the draft
 });
 
-test("help request payload", () => {
-  const { fields } = buildPluginFields({ ...complete(), feeChoice: "help", helpLevel: "45", helpNote: " Two children ", special: true }, TODAY);
-  assert.equal(fields.aid_level, "45");
-  assert.equal(fields.aid_note, "Two children");
-  assert.equal(fields.special_discount, 0);
+test("help request row", () => {
+  const r = registrationFields({ ...complete(), feeChoice: "help", helpLevel: "45", helpNote: " Two children " }, TODAY, NOW);
+  assert.equal(r.aidLevel, "45");
+  assert.equal(r.aidNote, "Two children");
 });
 
-test("summer payload: level from DOB, never the supported rate", () => {
+test("summer row: level from DOB, never the supported rate", () => {
   const base = { ...complete("summer"), dob: "2018-05-01" };
-  assert.equal(buildPluginFields(base, TODAY).fields.enrollment_level, "level1");
-  assert.equal(buildPluginFields(base, TODAY).fields.admission_fee, "standard");
-  assert.equal(buildPluginFields({ ...base, summerFee: "existing" }, TODAY).fields.admission_fee, "complimentary");
-  const free = buildPluginFields({ ...base, summerFee: "help", summerHelp: "free" }, TODAY).fields;
-  assert.equal(free.admission_fee, "flexible");
-  assert.equal(free.flexible_fee_note, "Requesting Free Enrollment");
-  const amount = buildPluginFields({ ...base, summerFee: "help", summerHelp: "amount", summerAmount: "$20" }, TODAY).fields;
-  assert.equal(amount.flexible_fee_note, "$20");
-  assert.equal(buildPluginFields(base, TODAY).fields.guardian_whatsapp, "+12145550123"); // same as contact
+  assert.equal(programOf(base, TODAY), "summer_l1");
+  assert.equal(programOf({ ...base, dob: "2013-05-01" }, TODAY), "summer_l2");
+  assert.equal(registrationFields(base, TODAY, NOW).admissionFee, "standard");
+  assert.equal(registrationFields({ ...base, summerFee: "existing" }, TODAY, NOW).admissionFee, "complimentary");
+  const free = registrationFields({ ...base, summerFee: "help", summerHelp: "free" }, TODAY, NOW);
+  assert.equal(free.admissionFee, "flexible");
+  assert.equal(free.flexibleFeeNote, "Requesting Free Enrollment");
+  const amount = registrationFields({ ...base, summerFee: "help", summerHelp: "amount", summerAmount: "$20" }, TODAY, NOW);
+  assert.equal(amount.flexibleFeeNote, "$20");
+  assert.equal(registrationFields(base, TODAY, NOW).guardianWhatsappE164, "+12145550123"); // same as contact
+  assert.deepEqual(phonesOf({ ...base, whatsappSame: false, whatsappCountry: "OTHER", whatsapp: "+44 20 7946 0958" }), ["+12145550123", "+442079460958"]);
 });
 
-test("weekend payload", () => {
-  const { form, fields } = buildPluginFields({ ...complete("weekend"), existing: "yes" }, TODAY);
-  assert.equal(form, "weekend");
-  assert.equal(fields.student_status, "existing");
-  assert.equal(fields.timing_consent, 1);
-});
-
-test("plugin error fields map back to the form", () => {
-  assert.equal(draftFieldOf("guardian_whatsapp"), "whatsapp");
-  assert.equal(draftFieldOf("coupon_code"), "couponCode");
-  assert.equal(draftFieldOf("unknown_field"), "");
+test("weekend row: program from the student question, timing consent stored with its time (N9)", () => {
+  const d = { ...complete("weekend"), existing: "yes" as const };
+  assert.equal(programOf(d, TODAY), "weekend_existing");
+  const r = registrationFields(d, TODAY, NOW);
+  assert.equal(r.timingConsentAt, NOW);
+  assert.equal(r.admissionFee, "free");
+  assert.equal(r.paymentStatus, "not_required");
 });
 
 test("countries: the United States and Canada first", () => {
