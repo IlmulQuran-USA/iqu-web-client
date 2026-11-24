@@ -15,7 +15,7 @@ import {
   teachersOf,
 } from "@/content/course-page";
 import type { Course } from "@/content/courses";
-import { fromPrice, isFixedSchedule, usd } from "@/content/pricing";
+import { fromPrice, isFixedSchedule, sessionLengths, usd } from "@/content/pricing";
 import { cn } from "@/lib/cn";
 
 /** The mobile StickyCTA appears once these buttons scroll away. */
@@ -104,7 +104,9 @@ export function CourseRail({ course, className }: { course: Course; className?: 
         </p>
         <div className="mt-4">
           <Price course={course} />
-          <p className="mt-1 text-ui text-ink-muted">{daysLabel(course)} · 30 or 45 minutes</p>
+          <p className="mt-1 text-ui text-ink-muted">
+            {daysLabel(course)} · {sessionLengths}
+          </p>
         </div>
         <div className="mt-6 flex flex-col gap-3">
           <ButtonLink href={links.enrol.href} size="lg" fullWidth>

@@ -1,7 +1,7 @@
 import { courses, courseFaq, courseRules, teacherMatching, type Course } from "./courses";
 import { aid, faq as homeFaq, howItWorks, schedule as homeSchedule } from "./home";
 import { instructors } from "./instructors";
-import { fromPrice, isFixedSchedule, monthlyFee, usd, type CourseId } from "./pricing";
+import { fromPrice, isFixedSchedule, monthlyFee, sessionLengths, usd, type CourseId } from "./pricing";
 import type { CopyList, CopyText, Instructor } from "./types";
 
 /*
@@ -106,7 +106,7 @@ export function sectionsOf(course: Course): { id: SectionId; label: string }[] {
 
 /** The hero fact row. Languages are not here: they belong to each teacher's card (owner, 20 Nov 2026). */
 export function heroFacts(course: Course): string[] {
-  const facts = [daysLabel(course), "30 or 45 minutes"];
+  const facts = [daysLabel(course), sessionLengths];
   const duration = shown(course.content.duration);
   if (duration) facts.push(duration);
   facts.push("One-on-one or small group"); // courseRules.format (live)
@@ -223,7 +223,7 @@ export const afterClick = afterClickStep.body;
 export function feeNotes(course: Course): string[] {
   return [
     "Your first month is free. After that, the fee is charged monthly on your billing date.",
-    "Session length does not change the fee.",
+    "Class length does not change the fee.",
     // Adult courses address the student as "you" (owner, 20 Nov 2026).
     `Fees are in US dollars, for each ${course.content.forAdults ? "student" : "child"}.`,
   ];

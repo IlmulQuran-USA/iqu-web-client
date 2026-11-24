@@ -191,7 +191,7 @@ export const feeNote = {
   points: [
     "Your first month is free. After that, the fee is charged monthly on your billing date.",
     // PLUGIN-INVENTORY §2.1/§2.3: the from-price is the fee at the course's fewest days a week.
-    "Monthly fees depend on the course and the number of days a week. A “from” price is the fee at the fewest days the course allows. Session length does not change the fee.",
+    "Monthly fees depend on the course and the number of days a week. A “from” price is the fee at the fewest days the course allows. Class length does not change the fee.",
     "Fees are in US dollars, for each student.",
   ],
   // The middle point is new wording (the explanation of “from”).

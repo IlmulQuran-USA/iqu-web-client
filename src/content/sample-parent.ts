@@ -1,4 +1,4 @@
-import { courseById, monthlyFee, usd, type CourseId } from "./pricing";
+import { courseById, monthlyFee, usd, type CourseId, type SessionMinutes } from "./pricing";
 import { instructors } from "./instructors";
 import type { Instructor } from "./types";
 
@@ -40,7 +40,7 @@ export type Child = {
   age: number;
   courseId: CourseId;
   daysPerWeek: number;
-  minutes: 30 | 45;
+  minutes: SessionMinutes;
   teacher: Instructor;
   nextClass: { date: string; time: string };
   week: ClassRecord[];
@@ -66,15 +66,15 @@ const children: Child[] = [
     age: 9,
     courseId: "quran-hifz",
     daysPerWeek: 5,
-    minutes: 45,
+    minutes: 40,
     teacher: teacher("mawlana-mouinul-islam"),
     nextClass: { date: "Mon 23 Nov 2026", time: `5:30 PM ${ZONE}` },
     week: [
-      { day: "Mon 16 Nov", time: `5:30 PM ${ZONE}`, status: "present", verifiedMinutes: 44, scheduledMinutes: 45 },
-      { day: "Tue 17 Nov", time: `5:30 PM ${ZONE}`, status: "present", verifiedMinutes: 45, scheduledMinutes: 45 },
-      { day: "Wed 18 Nov", time: `5:30 PM ${ZONE}`, status: "partial", verifiedMinutes: 26, scheduledMinutes: 45 },
-      { day: "Thu 19 Nov", time: `5:30 PM ${ZONE}`, status: "technical-issue", verifiedMinutes: 9, scheduledMinutes: 45 },
-      { day: "Fri 20 Nov", time: `5:30 PM ${ZONE}`, status: "present", verifiedMinutes: 43, scheduledMinutes: 45 },
+      { day: "Mon 16 Nov", time: `5:30 PM ${ZONE}`, status: "present", verifiedMinutes: 39, scheduledMinutes: 40 },
+      { day: "Tue 17 Nov", time: `5:30 PM ${ZONE}`, status: "present", verifiedMinutes: 40, scheduledMinutes: 40 },
+      { day: "Wed 18 Nov", time: `5:30 PM ${ZONE}`, status: "partial", verifiedMinutes: 23, scheduledMinutes: 40 },
+      { day: "Thu 19 Nov", time: `5:30 PM ${ZONE}`, status: "technical-issue", verifiedMinutes: 8, scheduledMinutes: 40 },
+      { day: "Fri 20 Nov", time: `5:30 PM ${ZONE}`, status: "present", verifiedMinutes: 38, scheduledMinutes: 40 },
     ],
     month: { label: "November", attended: 13, scheduled: 14, excused: 1 },
     progress: {

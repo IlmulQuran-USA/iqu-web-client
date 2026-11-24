@@ -118,6 +118,21 @@ export function fromPrice(course: MonthlyCourse): number {
   return monthlyFee(course, course.minDays);
 }
 
+/**
+ * Class lengths a family can choose, in minutes: the live plugin's list
+ * (IQU_Reg_Fields::SESSION_DURATIONS, read 24 Nov 2026 from v3.7.20). 45 is
+ * no longer offered there (removed in v3.7.13). Session length does not
+ * change the fee (§2.1).
+ */
+export const sessionMinutes = [30, 40, 50, 60] as const;
+export type SessionMinutes = (typeof sessionMinutes)[number];
+
+/** "30, 40, 50 or 60 minutes" (no-break space: "60 minutes" never splits across lines). */
+export const sessionLengths = `${sessionMinutes.slice(0, -1).join(", ")} or ${sessionMinutes.at(-1)} minutes`;
+
+/** The same list that never wraps, for " · "-joined meta lines: they break between facts, not inside the list. */
+export const sessionLengthsNoWrap = sessionLengths.replaceAll(" ", " ");
+
 export type ProgramId = "weekend-ilm-program" | "summer-ilm-camp";
 
 export const programs = {

@@ -1,4 +1,4 @@
-import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, usd, type CourseId } from "./pricing";
+import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, sessionLengths, sessionLengthsNoWrap, usd, type CourseId } from "./pricing";
 import { courseContent, courseFaq, courseRules, teacherMatching } from "./courses";
 import { instructors } from "./instructors";
 import { PENDING, site } from "./site";
@@ -54,10 +54,10 @@ export const schedule = {
       }.`,
     },
     {
-      // Lengths: spec §7.1 section 2, TO CONFIRM. Price rule: PLUGIN-INVENTORY §2.1.
-      status: "draft",
-      title: "30 or 45 minutes",
-      body: "Pick the session length that suits your child. The fee depends only on the number of days.",
+      // Lengths: the live plugin list (pricing.ts sessionMinutes, 24 Nov 2026). Price rule: PLUGIN-INVENTORY §2.1.
+      status: "live",
+      title: "Choose your class length",
+      body: `Classes can be ${sessionLengths} long. You pick the length when you enroll. Class length does not change the fee.`,
     },
   ],
   // Spec §7.1's "free make-up sessions" is replaced by the cancelled-class
@@ -101,7 +101,7 @@ export const programsSection = {
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
   daysLine: (min: number, max: number) =>
-    `${min === max ? min : `${min}–${max}`} days a week · 30 or 45 minutes`,
+    `${min === max ? min : `${min}–${max}`} days a week · ${sessionLengthsNoWrap}`,
   weekendMeta: `Ages ${programs.weekend.ages} · on weekends`,
   summerMeta: `Ages ${programs.summer.ages} · ${programs.summer.length}`,
   // Owner, 19 Nov 2026: the reduced amount appears only in the enrolment flow.
@@ -319,7 +319,7 @@ export const faq = {
       a: `Monthly classes start from ${usd(lowestFrom)}/month, and your first month is free. The fee depends on the course and the number of days a week:`,
       points: costPoints,
       after:
-        "Fees are in US dollars, and session length does not change the price. Families asking for a scholarship are contacted by our team.",
+        "Fees are in US dollars, and class length does not change the price. Families asking for a scholarship are contacted by our team.",
     },
     {
       status: "draft",
