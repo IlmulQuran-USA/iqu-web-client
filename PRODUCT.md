@@ -54,7 +54,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   - Whether the portal later replaces Telegram is still open.
 - **Donations:** Zeffy, synced into `iqu_zeffy_payments`. That table is the only record of giving.
 - **Tuition billing:** Stripe checkout during enrolment. After the free first month, tuition is charged on the 1st of each month (K1, closed 24 Nov 2026).
-- **Other tools:** Brevo (email), Meta Ads (the Meta CAPI Lead event fires on enrolment confirmation, with deduplication), WordPress. The live site and the `iqu-registration` plugin stay the source for current data.
+- **Other tools:** Brevo (newsletter only), Meta Ads (the Meta CAPI Lead event fires on enrolment confirmation, with deduplication, consent-gated), WordPress. Transactional and contact-form email goes through the Gmail API from the same account as today (owner, 24 Nov 2026). Until cutover, the live site and the `iqu-registration` plugin stay the source for current data.
 - **Existing data:** `iqu_registrations` (50 fields per enrolment), `iqu_zeffy_payments`, and `iqu_coupons`. The enrolment redesign changes how these are presented, not the data model.
 
 ## Capabilities and Constraints
@@ -122,6 +122,16 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   25. The Weekend timing consent is sent and stored with a timestamp (N9).
 
   Corrections to the plan: (A) the Summer fee step offers Standard $40, Existing student, and "I need help with the fee" (pay what you can or request a free place); $30 is never shown anywhere public. (B) K1 is closed (above). (C) The Fees reassurance is the live line "No child's place is ever affected by cost." (D) The review-route confirmation uses decision 13, never an invented "1–2 days". (E) While Summer is between seasons, `/enroll?program=summer-ilm-camp` says only "2027 dates coming soon" (no notify option until Brevo exists).
+- **Enrollment runs on Next.js only** (owner, 24 Nov 2026; replaces the WordPress-backend plan "Option A"; architecture in `F:/iqu-setup/reports/enroll-next-native-architecture.md`). The family completes `/enroll` and goes straight to the Stripe card step; WordPress is not in the enrollment path, and the `iqu-registration` plugin is retired from enrollment after cutover (it remains the specification: every behaviour in the parity table has a Next.js equivalent). Resolved the same day:
+  - The 39 "no_account" Stripe events were two manual test subscriptions on the founder's customer (not families); the owner is cancelling them. The new webhook acts only on objects IQU tagged.
+  - From 1 Dec 2026 the 63 imported current students are billed by the WordPress plugin (Zelle ends 30 Nov). Migration links those plugin-created customers and subscriptions into the new database; nothing is recreated and no family is billed twice.
+  - Bulk CSV/XLSX import of existing students is day 1.
+  - Admins: faijullah, muhammadnurulahsan, shafiq_utd. Refunds: faijullah and muhammadnurulahsan only (the plugin's refund list). Refunds happen in the Stripe Dashboard in v1.
+  - IQU-branded receipt emails on day 1; a consent banner (Complianz parity) before cutover, with Meta Pixel and CAPI consent-gated.
+  - Email goes through the same Gmail account as today (Gmail API, OAuth), not Brevo; the contact form uses the same mailer.
+  - The 9 PM daily summary stays one message (registrations, tuition, donations). From switch day the Next cron sends it and reads donation totals from a read-only signed WordPress endpoint until the giving pages move.
+  - Vercel Pro and a private repository are required before the Stripe phase. Cutover mid-January 2027, mid-month, never near the 1st; fallback mid-March 2027 (after Ramadan and Eid). 30-day rollback.
+  - Retention: students who were ever billed are archived forever; other records are kept 24 months. Admin-added existing students get no free month. Zeffy donations stay on WordPress for now.
 - **K2 · Phone number** (CONTENT-ADDENDUM.md §7), closed by the owner, 22 Nov 2026: +1 (214) 529-3544 is correct (the live Contact page and the enrollment plugin). The (214) 662-1591 on the live About page is outdated; never use it.
 
 ## Brand Commitments
