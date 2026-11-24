@@ -324,8 +324,8 @@ export const faq = {
     {
       status: "draft",
       q: "Is the first month really free?",
-      // PRODUCT.md decision 4; owner's wording for the scholarship route. Billing date: PRODUCT.md open decision K1.
-      a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your first month. After that, the fee is charged monthly on your billing date. Families asking for a scholarship are contacted by our team instead.",
+      // PRODUCT.md decision 4; owner's wording for the scholarship route. Billing: K1, closed 24 Nov 2026.
+      a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your free first month. After that, tuition is charged on the 1st of each month. Families asking for a scholarship are contacted by our team instead.",
     },
     {
       // Owner's wording, 20 Nov 2026 (times are fully flexible).

@@ -568,7 +568,7 @@ export const courseFaq = [
   {
     status: "draft",
     q: "Can we change days or the course later?",
-    a: "Yes. The new monthly amount starts from your next billing date, and we confirm it with you first.",
+    a: "Yes. The new monthly amount starts on the next 1st of the month, and we confirm it with you first.",
   },
 ] as const;
 

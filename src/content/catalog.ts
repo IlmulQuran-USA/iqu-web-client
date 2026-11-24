@@ -180,7 +180,7 @@ export const catalogGroups = [
   rows: CatalogRow[];
 }[];
 
-/** Under the list. PRODUCT.md decision 4; K1 (billing date); PLUGIN-INVENTORY §2.1. */
+/** Under the list. PRODUCT.md decision 4; K1 (closed 24 Nov 2026: charged on the 1st); PLUGIN-INVENTORY §2.1. */
 export const feeNote = {
   id: "fees",
   heading: "Fees and scholarships",
@@ -189,7 +189,7 @@ export const feeNote = {
   scholarshipRoute: scholarship.route,
   scholarshipLink: scholarship.link,
   points: [
-    "Your first month is free. After that, the fee is charged monthly on your billing date.",
+    "Your first month is free. After the free first month, tuition is charged on the 1st of each month.",
     // PLUGIN-INVENTORY §2.1/§2.3: the from-price is the fee at the course's fewest days a week.
     "Monthly fees depend on the course and the number of days a week. A “from” price is the fee at the fewest days the course allows. Class length does not change the fee.",
     "Fees are in US dollars, for each student.",

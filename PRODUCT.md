@@ -53,7 +53,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   - **WhatsApp is manual only.** The admin uses a *Copy message* button and pastes the text into WhatsApp. There is no WhatsApp API.
   - Whether the portal later replaces Telegram is still open.
 - **Donations:** Zeffy, synced into `iqu_zeffy_payments`. That table is the only record of giving.
-- **Tuition billing:** Stripe checkout during enrolment, then charged monthly on the family's billing date (see Capabilities and open decision K1).
+- **Tuition billing:** Stripe checkout during enrolment. After the free first month, tuition is charged on the 1st of each month (K1, closed 24 Nov 2026).
 - **Other tools:** Brevo (email), Meta Ads (the Meta CAPI Lead event fires on enrolment confirmation, with deduplication), WordPress. The live site and the `iqu-registration` plugin stay the source for current data.
 - **Existing data:** `iqu_registrations` (50 fields per enrolment), `iqu_zeffy_payments`, and `iqu_coupons`. The enrolment redesign changes how these are presented, not the data model.
 
@@ -61,7 +61,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 
 **Public site:** home, course catalog and course detail (6 courses), instructor directory and profiles, about, why us, transparency and finances, impact, donate, programs (Summer Ilm Camp, Weekend Islamic School), camp results, blog, FAQ, contact, teach with us.
 
-**Enrolment funnel (`/enroll`):** five steps (Student · Course · Schedule · Fees · Review), then a confirmation page. Progress autosaves. The Schedule step takes the family's preferred days, start time, end time and time zone (no slot grid; times are flexible). The Zakat scholarship has its own page (`/scholarship`).
+**Enrolment funnel (`/enroll`):** five steps (Student · Course · Schedule · Fees · Review), then a confirmation page; Weekend and Summer use the same template with fewer steps. Progress autosaves on the family's device. The Schedule step takes the family's time zone (detected, then confirmed), days, class length and an availability window (From/To; no slot grid; times are flexible). The Zakat scholarship has its own page (`/scholarship`). The enrollment decisions of 24 Nov 2026 are listed under *Closed decisions*.
 
 **Portal:** student `/s/*`, parent `/p/*`, teacher `/t/*`, admin `/a/*`, all inside one shell. Attendance uses exactly six statuses: Present · Partial · Technical issue · Student absent · Teacher no-show · Class not held. Attendance thresholds are read from settings because they will be calibrated from three weeks of live data. Teachers request corrections, and admins approve them. Parents confirm the week's classes every Friday, and any family can report a problem with a class.
 
@@ -69,7 +69,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 1. **Fees are published.** Course cards and pages show a from-price with a scholarship note. Real per-course fees already exist in the live `iqu-registration` WordPress plugin, which prices by course. Take fees from there and never invent one. Until they are connected, show `$XX`.
 2. **No sibling discount.** Every child pays the full fee. *This conflicts with* spec §7.3 section 7, §7.11, §7.17 Step 4 and §7D.4 Billing. Do not build a sibling discount line, an auto-apply, or a sibling column in the fee table.
 3. **Tuition is in USD only.** *This conflicts with* spec §9.2 ("note where CAD is accepted") for tuition. The donor FAQ question about giving in CAD (§7.10) is a Zeffy matter and is separate from this.
-4. **The trial is the first month free.** After *Enroll for Free*, the guardian adds a card at Stripe checkout. Regular monthly billing follows, charged monthly on your billing date (open decision K1). *This conflicts with* spec §7.17 ("No payment is taken in this flow") and the Step 1 reassurance line *"No payment is required to start."* Copy must not claim that no card is needed. Say that nothing is charged during the free month.
+4. **The trial is the first month free.** After *Enroll for Free*, the guardian adds a card at Stripe checkout. After the free first month, tuition is charged on the 1st of each month (K1, closed 24 Nov 2026). *This conflicts with* spec §7.17 ("No payment is taken in this flow") and the Step 1 reassurance line *"No payment is required to start."* Copy must not claim that no card is needed. Say that nothing is charged during the free month.
 5. **Home hero: Concept B is the default; A and C are selectable.** Admins edit the hero's layout, text, image and featured instructors without code, in the Next.js admin portal at /a/settings/home, built with the portal after the public site. Until then the hero is changed only in src/content/home-hero.ts.
 
 **Hard constraints carried from the spec:**
@@ -82,13 +82,8 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 
 **Never build:** Join / Not Join buttons, start and end time inputs, teacher Present / Absent selection, "Mark class as completed", class recordings, or any automated WhatsApp send.
 
-**Open items for the enrolment funnel:**
-- The time-zone picker must offer Eastern, Central, Mountain, Pacific and Atlantic as year-round zones. The live form lacks Mountain and Atlantic and splits Central into CST and CDT.
-
 **Open product decisions (do not resolve silently):**
 - Whether the portal replaces Telegram after v1.
-- How the first-month-free trial works for reduced-fee and Zakat scholarship families: is a card still required, and what do they pay after the first month?
-- **K1 · Billing date** (CONTENT-ADDENDUM.md §7). The published Tuition Policy (16 Nov 2026) charges each family on its own billing date (the day the free month ends), which can be moved on request; this file and the site's FAQ used to say "charged on the 1st of each month". Until the owner decides, all copy says "charged monthly on your billing date". This also settles or replaces the old question of how the first month lines up with a 1st-of-month cycle (proration).
 - Whether Bengali launches as a second locale in v1 or v2 (§10.3 Q6).
 - Whether parents see exact minutes or only a status (§10.3 Q7).
 - Who may approve a correction (§10.3 Q8).
@@ -97,6 +92,36 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 - The attendance thresholds (§10.3 Q4, set from Phase 0 data).
 
 **Closed decisions:**
+- **K1 · Billing date**, closed by the owner, 24 Nov 2026: "After the free first month, tuition is charged on the 1st of each month." This is the live plugin's rule (billing day 1). All copy uses this sentence; "charged monthly on your billing date" is retired.
+- **Help families and the card** (owner, 24 Nov 2026): a family that asks for help with the fee adds a card only after the admin agrees the fee, as today. The form never sends them to Stripe.
+- **Enrollment funnel `/enroll`** (owner, 24 Nov 2026; plan `F:/iqu-setup/reports/enroll-shape-plan.md`, architecture `enroll-architecture.md` Option A). Every feature of the live WordPress forms is kept unless listed here.
+  1. Raw IP: stop storing it on the new and the old form, and clear the 83 stored IPs (plugin task). The IP goes to Meta only with marketing consent and is never stored.
+  2. Families can ask for help in the form: 30%, 45%, 50% or full, plus an optional private note.
+  3. Card for help families: only after the admin agrees the fee (as above).
+  4. Time zones: Eastern, Central, Mountain, Pacific, Atlantic, Alaska, Hawaii, plus Other (the IANA list). The IANA zone is stored.
+  5. From/To on the Schedule step is an availability window, not the exact class time.
+  6. Quran level: the spec's four levels (cannot read Arabic letters yet · reading Qaidah · reading the Quran · memorising), added to the plugin; the old three stay readable.
+  7. The course the family picked is stored (`course_variant`), e.g. Noorani Qaidah vs Quran Nazirah.
+  8. Quranic Arabic Mastery — Level 1 is fixed at 4 days a week on the website; admins and imports can override.
+  9. Submit labels follow the route: "Continue to card setup" (card), "Send my enrollment" (review, help request), "Enroll in the Weekend program" (Weekend), "Continue to payment" (Summer). Never "free trial".
+  10. v1 saves progress on the family's device only (localStorage). An emailed resume link comes later.
+  11. The card and Summer payment resume pages stay on WordPress (proxied) for v1.
+  12. A details-only update (an active student enrolling again) sends no "New Registration" and no Lead: a "Details updated" Telegram and one family email instead.
+  13. Next-step timing: "We will contact you on WhatsApp within 24–48 hours" (the live wording).
+  14. Countries are picked from a list, with the United States and Canada first.
+  15. Languages have an "Other" choice with a text field.
+  16. "Memorized so far" is required for Hifz and optional for every other course, the same rule in the browser and on the server.
+  17. Summer: the level comes from the date of birth. Summer wording never says "free" (the fee is $40); only the Weekend program is free.
+  18. Summer in `/enroll` is Stripe-only; the plugin's Zelle/Zeffy mode is not supported there (owner sign-off).
+  19. Hadith for the confirmation (owner-approved): خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ, "The best of you are those who learn the Quran and teach it." (Sahih al-Bukhari 5027).
+  20. Bot protection: reCAPTCHA v3 on the Next hosts.
+  21. Body copy spells "enrollment" (US).
+  22. A light phone field, US and Canada first, E.164 output.
+  23. Review reasons keep their detail and can be resolved (N7); notifications go out after routing and carry the route (N8).
+  24. The "New Registration" Telegram keeps its fields and adds route, status, review reasons, course variant and time zone label.
+  25. The Weekend timing consent is sent and stored with a timestamp (N9).
+
+  Corrections to the plan: (A) the Summer fee step offers Standard $40, Existing student, and "I need help with the fee" (pay what you can or request a free place); $30 is never shown anywhere public. (B) K1 is closed (above). (C) The Fees reassurance is the live line "No child's place is ever affected by cost." (D) The review-route confirmation uses decision 13, never an invented "1–2 days". (E) While Summer is between seasons, `/enroll?program=summer-ilm-camp` says only "2027 dates coming soon" (no notify option until Brevo exists).
 - **K2 · Phone number** (CONTENT-ADDENDUM.md §7), closed by the owner, 22 Nov 2026: +1 (214) 529-3544 is correct (the live Contact page and the enrollment plugin). The (214) 662-1591 on the live About page is outdated; never use it.
 
 ## Brand Commitments

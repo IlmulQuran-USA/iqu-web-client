@@ -219,10 +219,10 @@ const afterClickStep = howItWorks.steps.find((s) => s.title === "Your first mont
 if (!afterClickStep) throw new Error("Home How it works no longer has the first-month step");
 export const afterClick = afterClickStep.body;
 
-/** Under the fee table. PRODUCT.md decision 4; K1 (billing date); PLUGIN-INVENTORY §2.1 and §2.5. */
+/** Under the fee table. PRODUCT.md decision 4; K1 (closed 24 Nov 2026: charged on the 1st); PLUGIN-INVENTORY §2.1 and §2.5. */
 export function feeNotes(course: Course): string[] {
   return [
-    "Your first month is free. After that, the fee is charged monthly on your billing date.",
+    "Your first month is free. After the free first month, tuition is charged on the 1st of each month.",
     "Class length does not change the fee.",
     // Adult courses address the student as "you" (owner, 20 Nov 2026).
     `Fees are in US dollars, for each ${course.content.forAdults ? "student" : "child"}.`,
