@@ -113,6 +113,22 @@ export function monthlyFee(course: MonthlyCourse, daysPerWeek: number): number {
   return daysPerWeek * 4 * rates[course.priceKey](daysPerWeek);
 }
 
+/**
+ * The Special discount plan (§2.2): a lower monthly fee a family can opt into,
+ * Qa'idah / Nazirah only, 3–7 days a week. The plugin recalculates it on the
+ * server (IQU_Pricing::SPECIAL_DISCOUNT); the difference counts under the
+ * Special fund. Shown only inside the enrollment flow, never on course pages.
+ */
+export const specialPlanFees: Partial<Record<PriceKey, Readonly<Record<number, number>>>> = {
+  qaidah: { 3: 40, 4: 45, 5: 50, 6: 70, 7: 85 },
+};
+
+/** The Special plan fee for this course and day count, or null when there is none. */
+export function specialPlanFee(course: MonthlyCourse, daysPerWeek: number): number | null {
+  const fee = specialPlanFees[course.priceKey]?.[daysPerWeek];
+  return fee !== undefined && fee < monthlyFee(course, daysPerWeek) ? fee : null;
+}
+
 /** The "from" price on course cards: the fee at the course's minimum days (§2.3). */
 export function fromPrice(course: MonthlyCourse): number {
   return monthlyFee(course, course.minDays);
@@ -155,8 +171,9 @@ export const programs = {
     fee: 40,
     /**
      * Reduced ("supported") fee: admin setting `summer_fee_supported` (§2.4).
-     * Owner decision, 19 Nov 2026: shown only inside the enrolment flow; Home
-     * says only that a reduced option exists.
+     * NEVER shown anywhere public (owner, 24 Nov 2026, correction A): families
+     * who need help choose "I need help with the fee" instead. Kept only so
+     * this file mirrors the plugin settings.
      */
     supportedFee: 30,
   },
