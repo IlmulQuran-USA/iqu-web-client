@@ -53,7 +53,12 @@ jobs:
           npx tsc --noEmit
 
       - name: Unit tests
+        # Includes src/db/schema.test.ts: the migrations in ./drizzle applied to an in-process Postgres (PGlite).
         run: npm run test:unit
+
+      - name: Migrations match the schema
+        # drizzle-kit check needs no database: it compares ./drizzle with src/db/schema.ts.
+        run: npm run db:check
 
       - name: Build
         # NEXT_PUBLIC_SITE_ENV is unset here, so this is a staging build.
