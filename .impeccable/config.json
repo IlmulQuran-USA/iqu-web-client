@@ -22,6 +22,15 @@
         ],
         "createdAt": "2026-11-20T12:00:00.000Z",
         "reason": "Spec §7.3 section 11 mandates a desktop right-rail enrolment card; it is sticky, so the short column follows the reader (owner plan, 20 Nov 2026); CLAUDE.md §5"
+      },
+      {
+        "rule": "overused-font",
+        "value": "arial",
+        "files": [
+          "src/lib/server/enroll/messages.ts"
+        ],
+        "createdAt": "2026-11-24T20:18:17.315Z",
+        "reason": "Agent decision: HTML email body (Gmail API mailer). Email clients cannot load the site's self-hosted fonts, so an email-safe system stack (Arial, Helvetica) is required; not used in site UI."
       }
     ]
   }
