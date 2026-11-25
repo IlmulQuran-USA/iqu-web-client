@@ -50,7 +50,9 @@ There is no Playwright in CI for now, to keep it fast. Run `npm run test:e2e` lo
 | `BREVO_REDIRECT_URL` | set | leave unset* | Full `https://` URL shown after the person confirms. |
 | `BREVO_API_URL` | — | — | Tests only. Never set it on Vercel. |
 
-\* With any Brevo variable missing, the footer shows "Sign-up opens soon." instead of the form. Leaving them unset on previews means a test sign-up on a PR can't add contacts to the real list. If you want to test the form on previews, use a separate Brevo test list.
+\* With any Brevo variable missing, the footer shows "Sign-up opens soon." instead of the form. Leaving them unset on previews means a test sign-up on a PR can't add contacts to the real list. If you want to test the form on previews, use a separate Brevo test list. The Brevo variables belong to the newsletter only.
+
+The /contact message form sends through the Gmail API mailer (the four `GMAIL_*` variables), not Brevo, and also needs `DATABASE_URL` and `IQU_HASH_SECRET`. With any of them missing, /contact shows "Message form opens soon." and only the channel list. The page is built static, so after setting them, redeploy. Outside production, the message reaches `GMAIL_SENDER` only if that address is on `EMAIL_ALLOWLIST`.
 
 `.env.example` lists the same names. Variables prefixed `NEXT_PUBLIC_` are read **at build time**, so after changing one, redeploy (Deployments › … › Redeploy).
 

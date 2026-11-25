@@ -20,6 +20,9 @@ export const LIMITS = {
   couponIp: 20,
   couponFailuresSiteWide: 100,
   waitlistIp: 5,
+  // /contact (no plugin equivalent; the live page had no working form): 5 per IP and 3 per email an hour, counted on success.
+  contactIp: 5,
+  contactEmail: 3,
 } as const;
 
 export function windowStart(now: Date): Date {

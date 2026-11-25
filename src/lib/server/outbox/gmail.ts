@@ -69,12 +69,14 @@ function wrap(base64: string): string {
   return base64.replace(/.{1,76}/g, "$&\r\n").trimEnd();
 }
 
-export function buildMime(m: { from: string; fromName: string; to: string; subject: string; html: string; text: string }): string {
-  if (/[\r\n]/.test(m.to + m.subject + m.from + m.fromName)) throw new Error("Header injection refused");
+export function buildMime(m: { from: string; fromName: string; to: string; subject: string; html: string; text: string; replyTo?: string }): string {
+  if (/[\r\n]/.test(m.to + m.subject + m.from + m.fromName + (m.replyTo ?? ""))) throw new Error("Header injection refused");
+  if (m.replyTo !== undefined && !/^[^\s@<>,;"]+@[^\s@<>,;"]+\.[^\s@<>,;"]+$/.test(m.replyTo)) throw new Error("Reply-To is not one plain address");
   const boundary = `iqu-${randomBytes(12).toString("hex")}`;
   return [
     `From: ${encodeHeader(m.fromName)} <${m.from}>`,
     `To: ${m.to}`,
+    ...(m.replyTo ? [`Reply-To: ${m.replyTo}`] : []),
     `Subject: ${encodeHeader(m.subject)}`,
     "MIME-Version: 1.0",
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
@@ -126,7 +128,7 @@ export function resetGmailTokenCache(): void {
 
 export async function sendGmail(
   config: GmailConfig | null,
-  mail: { to: string; subject: string; html: string; text: string; fromName: string },
+  mail: { to: string; subject: string; html: string; text: string; fromName: string; replyTo?: string },
   fetchImpl: typeof fetch = fetch,
   now = Date.now(),
 ): Promise<SendResult> {
@@ -135,7 +137,7 @@ export async function sendGmail(
   if (refusal) return { kind: "refused", reason: refusal };
   let raw: string;
   try {
-    raw = buildMime({ from: config.sender, fromName: mail.fromName, to: mail.to, subject: mail.subject, html: mail.html, text: mail.text });
+    raw = buildMime({ from: config.sender, fromName: mail.fromName, to: mail.to, subject: mail.subject, html: mail.html, text: mail.text, replyTo: mail.replyTo });
   } catch (error) {
     return { kind: "failed", reason: (error as Error).message, retry: false };
   }

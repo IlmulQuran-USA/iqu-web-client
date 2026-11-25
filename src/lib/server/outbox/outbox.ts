@@ -27,7 +27,8 @@ import { sendTelegram, type SendResult, type TelegramConfig } from "./telegram.t
  */
 
 export type TelegramPayload = { template: string; html: string; chatId?: string };
-export type EmailPayload = { template: string; to: string; subject: string; html: string; text: string };
+/** `replyTo`: the contact form's visitor, so the team answers them directly (one plain address, checked in buildMime). */
+export type EmailPayload = { template: string; to: string; subject: string; html: string; text: string; replyTo?: string };
 export type MetaPayload = { template: "meta_lead"; event: "Lead"; eventId: string; registrationId: number; contentName: string; valueCents: number };
 
 export type OutboxRow =
@@ -70,7 +71,7 @@ async function sendOne(row: typeof outbox.$inferSelect, a: Adapters): Promise<Se
     return sendTelegram(a.telegram, { chatId: p.chatId, html: p.html }, a.fetchImpl);
   }
   const p = row.payload as EmailPayload;
-  return sendGmail(a.gmail, { to: p.to, subject: p.subject, html: p.html, text: p.text, fromName: a.fromName }, a.fetchImpl);
+  return sendGmail(a.gmail, { to: p.to, subject: p.subject, html: p.html, text: p.text, fromName: a.fromName, replyTo: p.replyTo }, a.fetchImpl);
 }
 
 const redacted = (payload: unknown) => ({ template: (payload as { template?: string })?.template ?? "unknown", redacted: true });

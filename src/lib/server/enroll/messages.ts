@@ -502,6 +502,33 @@ export function adminEmail(to: string, c: NewRegistrationContext): Email {
 }
 
 /**
+ * A message from the /contact form to the team inbox. Reply-To is the visitor
+ * (set by the caller), so "Reply" answers them. Their text is escaped and
+ * kept as typed, one paragraph per line break.
+ */
+export function contactEmail(
+  to: string,
+  m: { name: string; email: string; phone: string; topic: string; message: string },
+  now: Date,
+): Email {
+  const { html, text } = render({
+    title: `Contact form: ${m.topic}`,
+    greeting: "Assalamu alaikum,",
+    intro: [`${m.name} wrote through the website’s contact form:`, ...m.message.split(/\r?\n+/).filter((p) => p.trim())],
+    details: [
+      ["Name", m.name],
+      ["Email", m.email],
+      ["Phone", m.phone],
+      ["About", m.topic],
+      ["Received", dhakaTime(now)],
+    ],
+    next: [],
+    good: ["Reply to this email to answer them directly."],
+  });
+  return { to, subject: `[${site.name}] Contact form: ${m.topic} — ${m.name}`, html, text };
+}
+
+/**
  * The card reminders at 24 h and 72 h (IQU_Enrollment::reminder_email,
  * class-iqu-enrollment.php:410-435): the same subjects, steps and notes, with
  * the "Finish enrollment" button on the family's own Stripe link. Never sent
