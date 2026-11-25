@@ -74,13 +74,14 @@ function content(state: ConfirmationState, name: string) {
     },
     "card-next": {
       title: "We saved your enrollment.",
-      body: "The next step is adding a card or US bank account on Stripe, our secure payment page. Nothing is charged during the free month. After the free first month, tuition is charged on the 1st of each month.",
-      steps: ["You add a card or bank account on Stripe", `${WHATSAPP}`, "We match a teacher to the time you chose", "The first class"],
+      // Same words as the family email without a checkout link (messages.ts familyEmail "card").
+      body: "One step is left: adding a card or US bank account on Stripe, our secure payment page. We will send you the secure link. Nothing is charged during the free month. After the free first month, tuition is charged on the 1st of each month.",
+      steps: ["We send you a secure Stripe link, and you add a card or bank account", `${WHATSAPP}`, "We match a teacher to the time you chose", "The first class"],
     },
     "summer-next": {
       title: "We saved your Summer Ilm Camp enrollment.",
-      body: "The next step is paying the camp fee on Stripe, our secure payment page.",
-      steps: ["You pay the fee on Stripe, and we email you a receipt", `${WHATSAPP}`, "We send the Zoom link before the camp starts"],
+      body: "One step is left: paying the camp fee on Stripe, our secure payment page. We will send you the secure link.",
+      steps: ["We send you a secure Stripe link; you pay the fee, and we email you a receipt", `${WHATSAPP}`, "We send the Zoom link before the camp starts"],
     },
   };
   return s[state];
@@ -151,14 +152,15 @@ export function ConfirmationView({ confirmation }: { confirmation: Confirmation 
   }
 
   return (
-    <div className="max-w-2xl">
+    // max-w-measure: the Tailwind width scale is reset in globals.css, so max-w-2xl did nothing.
+    <div className="max-w-measure">
       <h1 className="font-display text-heading-xl font-semibold text-balance text-ink">{c.title}</h1>
       <p className="mt-4 text-body-lg text-ink-body">{c.body}</p>
 
       {CARD_STEP_PENDING.has(confirmation.state) ? (
         <InlineAlert tone="info" className="mt-6" title="Card step is not connected yet.">
-          Your enrollment is saved as waiting for {confirmation.state === "summer-next" ? "the payment" : "a card"}. On this test site the
-          Stripe page is not open yet, so nothing is charged.
+          Your enrollment is saved and waits for {confirmation.state === "summer-next" ? "the payment" : "a card"}. This test site cannot take
+          payments yet, so nothing is charged.
         </InlineAlert>
       ) : null}
 

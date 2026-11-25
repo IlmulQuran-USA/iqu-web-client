@@ -372,7 +372,9 @@ export function familyEmail(kind: FamilyEmailKind, s: Snapshot, opts: { checkout
           ...(opts.checkoutUrl ? [`Add your card: ${opts.checkoutUrl}`] : []),
         ],
         details: [...monthly, ["Monthly fee after the free month", formatUsd(s.paymentCents ?? 0)]],
-        next: ["You add a card or bank account on Stripe", WHATSAPP_NEXT, "We match a teacher to the time you chose", "The first class"],
+        next: [
+          opts.checkoutUrl ? "You add a card or bank account on Stripe" : "We send you a secure Stripe link, and you add a card or bank account",
+          WHATSAPP_NEXT, "We match a teacher to the time you chose", "The first class"],
         good: ["Stripe keeps your card or bank details. We never see them."],
       },
     },
@@ -437,7 +439,9 @@ export function familyEmail(kind: FamilyEmailKind, s: Snapshot, opts: { checkout
           ...(opts.checkoutUrl ? [`Pay now: ${opts.checkoutUrl}`] : []),
         ],
         details: [...summer, ["Amount due", formatUsd(s.paymentCents ?? 0)]],
-        next: ["You pay the fee on Stripe, and we email you a receipt", WHATSAPP_NEXT, "We send the Zoom link before the camp starts"],
+        next: [
+          opts.checkoutUrl ? "You pay the fee on Stripe, and we email you a receipt" : "We send you a secure Stripe link; you pay the fee, and we email you a receipt",
+          WHATSAPP_NEXT, "We send the Zoom link before the camp starts"],
       },
     },
     summer_existing: {
