@@ -67,3 +67,9 @@ next-env.d.ts
 # Playwright test runner output
 /test-results/
 /playwright-report/
+
+# WordPress migration snapshots hold family data: never commit them (tooling/README.md)
+*snapshot*.json
+!src/**/fixtures/**
+/migration/
+!drizzle/meta/*_snapshot.json

@@ -59,13 +59,14 @@ async function family(cols: Record<string, unknown> = {}): Promise<number> {
 
 /* ── Shape ───────────────────────────────────────────────────────────── */
 
-test("all 17 tables exist", async () => {
+test("all 18 tables exist", async () => {
   const res = await ok(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY 1`);
   assert.deepEqual(
     (res.rows as { table_name: string }[]).map((r) => r.table_name),
     [
       "arrears", "audit_log", "coupon_redemptions", "coupons", "discount_ledger", "eligibility_blocks", "families", "family_members",
       "idempotency", "outbox", "payments", "rate_limits", "registrations", "review_reasons", "settings", "stripe_events", "waitlist",
+      "wp_import_rows",
     ],
   );
 });

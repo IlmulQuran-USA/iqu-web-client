@@ -481,7 +481,9 @@ export const arrears = pgTable(
   },
   (t) => [
     check("arrears_mode", oneOf("mode", MODES)),
-    check("arrears_status", oneOf("status", ["open", "scheduled", "charged", "waived", "escalated"])),
+    // The plugin's statuses (billing-arrears.php:27, 189, 205, 408, 426, 527): due → open,
+    // team → escalated, and "stopped" (billing stopped before the month was charged; migration 0003).
+    check("arrears_status", oneOf("status", ["open", "scheduled", "charged", "waived", "escalated", "stopped"])),
     check("arrears_amount", sql`${t.amountCents} > 0`),
     check("arrears_month_first", sql`extract(day from ${t.month}) = 1`),
     // Waiving needs a reason (plugin rule: named refund admins, reason required).
@@ -637,6 +639,32 @@ export const rateLimits = pgTable(
     check("rate_limits_key_hashed", sql`${t.key} ~ '^[a-z]+:[a-f0-9]{32,64}$'`),
     check("rate_limits_count", sql`${t.count} >= 0`),
   ],
+);
+
+/* ── wp_import_rows (where each imported row came from) ──────────────── */
+
+/**
+ * Provenance of the WordPress migration (P5): one row per source row the
+ * importer wrote. A re-run updates only rows listed here, so it can never
+ * overwrite a row the new system created; a source row whose target is
+ * missing, or a target id already taken by a non-imported row, is a mismatch.
+ */
+export const wpImportRows = pgTable(
+  "wp_import_rows",
+  {
+    /** The plugin table (iqu_registrations …), or a derived source such as "iqu_registrations.review_reason". */
+    sourceTable: text("source_table").notNull(),
+    /** The source row's id (or id:part for a derived row). */
+    sourceKey: text("source_key").notNull(),
+    targetTable: text("target_table").notNull(),
+    /** The target row's key (its id, or the Stripe event id). */
+    targetKey: text("target_key").notNull(),
+    /** SHA-256 of the source row as imported: an unchanged row is not rewritten. */
+    sourceHash: char("source_hash", { length: 64 }).notNull(),
+    importedAt: ts("imported_at").notNull().defaultNow(),
+    updatedAt: ts("updated_at").notNull().defaultNow(),
+  },
+  (t) => [primaryKey({ columns: [t.sourceTable, t.sourceKey] }), uniqueIndex("wp_import_rows_target_uq").on(t.targetTable, t.targetKey)],
 );
 
 /* ── eligibility_blocks (hourly counts per country; no IP, no person) ─── */
