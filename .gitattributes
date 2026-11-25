@@ -1,0 +1,3 @@
+# Byte-for-byte fixtures (the plugin writes "
+"): never converted to CRLF
+*.csv text eol=lf
