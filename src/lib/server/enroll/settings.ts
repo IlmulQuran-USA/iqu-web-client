@@ -24,15 +24,22 @@ export type EnrollSettings = {
    * if it is not set, staging sends no Telegram at all (fail closed).
    */
   telegramLiveChatPattern: string | null;
+  /**
+   * The billing day, 1–28 (plugin option iqu_billing_day, IQU_Billing_Service::billing_day,
+   * billing-service.php:177-184; unset on the live site, so 1). The discount ledger counts
+   * a new student from the first billing day after the free month.
+   */
+  billingDay: number;
 };
 
-export const SETTING_KEYS = ["country_check", "free_payment_step", "summer_fee_cents", "telegram_live_chat_pattern"] as const;
+export const SETTING_KEYS = ["country_check", "free_payment_step", "summer_fee_cents", "telegram_live_chat_pattern", "billing_day"] as const;
 
 export const DEFAULT_SETTINGS: EnrollSettings = {
   countryCheck: "monitor",
   freePaymentStep: true,
   summerFeeCents: 4000,
   telegramLiveChatPattern: null,
+  billingDay: 1,
 };
 
 export function parseSettings(rows: { key: string; value: unknown }[]): EnrollSettings {
@@ -41,7 +48,9 @@ export function parseSettings(rows: { key: string; value: unknown }[]): EnrollSe
   const free = get("free_payment_step");
   const fee = get("summer_fee_cents");
   const pattern = get("telegram_live_chat_pattern");
+  const day = get("billing_day");
   return {
+    billingDay: typeof day === "number" && Number.isInteger(day) && day >= 1 && day <= 28 ? day : DEFAULT_SETTINGS.billingDay,
     countryCheck: country === "off" || country === "monitor" || country === "enforce" ? country : DEFAULT_SETTINGS.countryCheck,
     freePaymentStep: free === "on" || free === true ? true : free === "off" || free === false ? false : DEFAULT_SETTINGS.freePaymentStep,
     summerFeeCents:

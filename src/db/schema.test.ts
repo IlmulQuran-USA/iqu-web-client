@@ -59,13 +59,13 @@ async function family(cols: Record<string, unknown> = {}): Promise<number> {
 
 /* ── Shape ───────────────────────────────────────────────────────────── */
 
-test("all 16 tables exist", async () => {
+test("all 17 tables exist", async () => {
   const res = await ok(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY 1`);
   assert.deepEqual(
     (res.rows as { table_name: string }[]).map((r) => r.table_name),
     [
-      "arrears", "audit_log", "coupon_redemptions", "coupons", "discount_ledger", "families", "family_members", "idempotency",
-      "outbox", "payments", "rate_limits", "registrations", "review_reasons", "settings", "stripe_events", "waitlist",
+      "arrears", "audit_log", "coupon_redemptions", "coupons", "discount_ledger", "eligibility_blocks", "families", "family_members",
+      "idempotency", "outbox", "payments", "rate_limits", "registrations", "review_reasons", "settings", "stripe_events", "waitlist",
     ],
   );
 });
@@ -142,14 +142,16 @@ test("phones are E.164 and countries are two letters", async () => {
   await assert.rejects(registration({ country_res_code: "us" }), /registrations_country_codes/);
 });
 
-test("coupon rules: declared, never with the Special plan; a fund needs an agreed fee", async () => {
+test("coupon rules: declared, never with the Special plan; a fund without an agreed fee is an admin discount", async () => {
   const c = await ok(`INSERT INTO coupons (code, course_key, discount_type, value_percent) VALUES ('QAD-260826-M4P9-100', 'qaidah', 'percent', 100) RETURNING id`);
   const couponId = Number((c.rows[0] as { id: number }).id);
   await assert.rejects(registration({ coupon_id: couponId }), /registrations_coupon_declared/);
   await registration({ coupon_id: couponId, zakat_declaration: true });
   await assert.rejects(registration({ coupon_id: couponId, zakat_declaration: true, special_plan: true }), /registrations_special_xor_coupon/);
-  await assert.rejects(registration({ agreed_fee_fund: "zakat" }), /registrations_fund_needs_fee/);
+  // Migration 0002: the fund also places an admin discount (discount-ledger.php:143-144), so it may stand alone.
+  await registration({ agreed_fee_fund: "zakat", discount_cents: 2000 });
   await registration({ agreed_fee_fund: "special", agreed_fee_cents: 2000 });
+  await assert.rejects(registration({ agreed_fee_fund: "both" }), /registrations_agreed_fund/);
 });
 
 test("a submit id is used once (idempotent submit)", async () => {

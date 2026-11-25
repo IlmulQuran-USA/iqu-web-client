@@ -15,6 +15,13 @@
       "when": 1795550297184,
       "tag": "0001_outbox_skipped",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795614897445,
+      "tag": "0002_p4_cron",
+      "breakpoints": true
     }
   ]
 }

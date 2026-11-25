@@ -25,7 +25,8 @@ import { firstChargeDate, submitEnrollmentCore, type EnrollDeps, type RequestInf
  * No network: reCAPTCHA, Telegram and Gmail are fakes.
  */
 
-const { registrations, families, familyMembers, reviewReasons, coupons, couponRedemptions, outbox, idempotency, rateLimits, settings, auditLog, waitlist } = schema;
+const { registrations, families, familyMembers, reviewReasons, coupons, couponRedemptions, outbox, idempotency, rateLimits, settings, auditLog, waitlist, eligibilityBlocks } =
+  schema;
 
 let client: PGlite;
 let db: AnyDb;
@@ -471,6 +472,9 @@ test("monitor (the live setting): an outside number and residence are saved with
   const [reg] = await db.select().from(registrations);
   assert.equal(reg.countryIp, "GB");
   assert.deepEqual(await reasonsOf(reg.id), ["location:phone", "location:residence"]);
+  // EL:242-243: a would-be block is counted for the 9 PM summary — the country and the hour only.
+  const blocks = await db.select().from(eligibilityBlocks);
+  assert.deepEqual(blocks.map((b) => [b.mode, b.country, b.count, b.hour.toISOString()]), [["monitor", "GB", 1, "2026-11-24T15:00:00.000Z"]]);
 });
 
 test("monitor: a US number abroad is flagged by IP only", async () => {
@@ -487,6 +491,9 @@ test("enforce: a +1 Caribbean area code is blocked and nothing is saved; an IP f
   assert.equal((await db.select().from(idempotency)).length, 0);
   const travelling = okResult(await submit(draft(), { req: { ipCountry: "SA" } }));
   assert.deepEqual(await reasonsOf(idOf(travelling.href)), ["location:ip"]);
+  // Only the block is counted (as enforce); an IP-only flag is not a block (EL:242).
+  const blocks = await db.select().from(eligibilityBlocks);
+  assert.deepEqual(blocks.map((b) => [b.mode, b.country, b.count]), [["enforce", "JM", 1]]);
 });
 
 test("off: no eligibility check at all", async () => {

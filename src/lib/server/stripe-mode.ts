@@ -20,6 +20,11 @@ export function keyMode(key: string | undefined): StripeMode | null {
   return m ? (m[2] as StripeMode) : null;
 }
 
+/** IQU_Stripe::expected_mode(): live on the production site only, test everywhere else. */
+export function expectedMode(siteEnv: string | undefined = process.env.NEXT_PUBLIC_SITE_ENV): StripeMode {
+  return siteEnv === "production" ? "live" : "test";
+}
+
 export type StripeEnv = { siteEnv?: string; secretKey?: string; publishableKey?: string; webhookSecret?: string };
 
 export type StripeCheck = { ok: true; mode: StripeMode } | { ok: false; reason: string };

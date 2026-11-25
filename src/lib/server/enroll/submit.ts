@@ -10,6 +10,7 @@ import { enqueue, type OutboxRow } from "../outbox/outbox.ts";
 import { bump, LIMITS, under } from "../rate.ts";
 import { checkCouponCode, type CouponQuote } from "./coupon.ts";
 import { countCouponFailure, countCouponTry, couponGuard, couponIpKey } from "./coupon-guard.ts";
+import { recordBlock } from "./blocks.ts";
 import { applyEligibility, BLOCK_MESSAGE, checkEligibility } from "./eligibility.ts";
 import { adminEmail, detailsUpdatedTelegram, familyEmail, newRegistrationTelegram, type FamilyEmailKind, type Snapshot } from "./messages.ts";
 import { isPriceError, priceMonthly } from "./price.ts";
@@ -188,10 +189,10 @@ export async function submitEnrollmentCore(
     if (!captcha.ok) return { status: "error", code: "recaptcha_failed", message: MESSAGES.verify };
 
     const settings = await readSettings(db);
-    const eligibility = applyEligibility(
-      settings.countryCheck,
-      checkEligibility({ phones: phonesOf(draft), residence: draft.residence, ipCountry: input.request.ipCountry }),
-    );
+    const check = checkEligibility({ phones: phonesOf(draft), residence: draft.residence, ipCountry: input.request.ipCountry });
+    // EL:242-243: a block (or, in monitor mode, a would-be block) is counted for the 9 PM summary.
+    if (settings.countryCheck !== "off" && check.decision === "block") await recordBlock(db, check.country, settings.countryCheck, now);
+    const eligibility = applyEligibility(settings.countryCheck, check);
     if (eligibility.blocked) return { status: "blocked", message: BLOCK_MESSAGE, country: eligibility.country };
 
     // Price (monthly): the browser's amounts are never used.

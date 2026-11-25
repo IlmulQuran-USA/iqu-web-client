@@ -95,7 +95,7 @@ function summerFeeLabel(s: Snapshot): string {
   return s.admissionFee ?? "";
 }
 
-type Row = [label: string, value: string];
+export type Row = [label: string, value: string];
 
 /** The rows the team sees, per program (admin_rows, RF:99-303, plus N1–N4 fields). */
 export function adminRows(s: Snapshot): Row[] {
@@ -273,11 +273,26 @@ function help(): string {
   return `Need help? ${sentence[0].toUpperCase()}${sentence.slice(1)}.`;
 }
 
-type Layout = { title: string; greeting: string; intro: string[]; details: Row[]; next: string[]; good?: string[] };
+type Layout = {
+  title: string;
+  greeting: string;
+  intro: string[];
+  details: Row[];
+  next: string[];
+  /** Heading over `next` (default "What happens next"). */
+  nextTitle?: string;
+  /** One button after the steps; only an https link is ever rendered. */
+  action?: { label: string; href: string };
+  good?: string[];
+};
+
+const safeHref = (href: string) => (/^https:\/\/[^\s"<>]+$/.test(href) ? href : null);
 
 /** One formal layout (inventory §9.2): 600 px table, a plain-text twin, the hadith block. */
 function render(l: Layout): { html: string; text: string } {
   const details = l.details.filter(([, v]) => v.trim());
+  const href = l.action ? safeHref(l.action.href) : null;
+  const action = l.action && href ? { label: l.action.label, href } : null;
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${esc(l.title)}</title></head>
 <body style="margin:0;padding:0;background:#f4f5f7;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f5f7;"><tr><td align="center" style="padding:24px 12px;">
@@ -297,7 +312,12 @@ ${details.map(([k, v]) => `<tr><td style="padding:8px 12px 8px 0;color:#5b6675;v
 }
 ${
   l.next.length
-    ? `<tr><td style="padding:16px 32px 0;"><h2 style="margin:0 0 8px;font-size:17px;">What happens next</h2><ol style="margin:0;padding-left:20px;font-size:15px;line-height:1.6;">${l.next.map((n) => `<li style="margin:0 0 6px;">${esc(n)}</li>`).join("")}</ol></td></tr>`
+    ? `<tr><td style="padding:16px 32px 0;"><h2 style="margin:0 0 8px;font-size:17px;">${esc(l.nextTitle ?? "What happens next")}</h2><ol style="margin:0;padding-left:20px;font-size:15px;line-height:1.6;">${l.next.map((n) => `<li style="margin:0 0 6px;">${esc(n)}</li>`).join("")}</ol></td></tr>`
+    : ""
+}
+${
+  action
+    ? `<tr><td style="padding:20px 32px 0;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="background:#1f2933;border-radius:8px;"><a href="${esc(action.href)}" style="display:inline-block;padding:14px 24px;font-size:16px;font-weight:bold;color:#ffffff;text-decoration:none;">${esc(action.label)}</a></td></tr></table></td></tr>`
     : ""
 }
 ${
@@ -323,7 +343,8 @@ ${
     "",
     ...l.intro.flatMap((p) => [p, ""]),
     ...(details.length ? [...details.map(([k, v]) => `${k}: ${v}`), ""] : []),
-    ...(l.next.length ? ["What happens next", ...l.next.map((n, i) => `${i + 1}. ${n}`), ""] : []),
+    ...(l.next.length ? [l.nextTitle ?? "What happens next", ...l.next.map((n, i) => `${i + 1}. ${n}`), ""] : []),
+    ...(action ? [`${action.label}: ${action.href}`, ""] : []),
     ...(l.good?.length ? ["Good to know", ...l.good, ""] : []),
     help(),
     "",
@@ -478,5 +499,34 @@ export function adminEmail(to: string, c: NewRegistrationContext): Email {
     next: [],
   });
   return { to, subject: `[${site.name}] New ${programLabel(s.program as Program)} Registration #${s.id} — ${s.firstName} ${s.lastName}`, html, text };
+}
+
+/**
+ * The card reminders at 24 h and 72 h (IQU_Enrollment::reminder_email,
+ * class-iqu-enrollment.php:410-435): the same subjects, steps and notes, with
+ * the "Finish enrollment" button on the family's own Stripe link. Never sent
+ * without a link (the reminder job checks first).
+ */
+export function cardReminderEmail(to: string, firstName: string, link: string, last: boolean): Email {
+  const kid = firstName.trim();
+  const { html, text } = render({
+    title: last ? "Last reminder: one step left" : "One step left",
+    greeting: "Assalamu alaikum,",
+    intro: [`You started enrolling ${kid} at ${site.name}. There is one step left.`],
+    details: [],
+    nextTitle: "What you need to do",
+    next: [
+      "Press “Finish enrollment” below.",
+      "Add a card or US bank account on Stripe’s secure page (about 2 minutes).",
+      "That’s all — we will confirm by email.",
+    ],
+    action: { label: "Finish enrollment", href: link },
+    good: [
+      "Nothing is charged today — the first month is free.",
+      ...(last ? ["If we do not hear from you, this enrollment will close in a few days. You can enroll again at any time."] : []),
+      "If you have a question, or the fee is a burden for your family, please talk to us — no child’s place is ever affected by cost.",
+    ],
+  });
+  return { to, subject: last ? `Last reminder: finish ${kid}’s enrollment` : `One step left to enroll ${kid}`, html, text };
 }
 

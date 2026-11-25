@@ -331,8 +331,10 @@ export const registrations = pgTable(
        AND (${t.paymentCents} IS NULL OR ${t.paymentCents} >= 0)
        AND (${t.agreedFeeCents} IS NULL OR ${t.agreedFeeCents} >= 0)`,
     ),
-    // "Agreed fee" ticked with no amount is an error, never $0 (PLUGIN-INVENTORY §2.5): the fund needs a fee.
-    check("registrations_fund_needs_fee", sql`${t.agreedFeeFund} IS NULL OR ${t.agreedFeeCents} IS NOT NULL`),
+    // No check ties agreed_fee_fund to agreed_fee_cents: the fund also says where an ADMIN DISCOUNT
+    // counts (a reduction with no coupon, no special plan and no agreed fee; discount-ledger.php:42-43,
+    // 143-144). Migration 0002 drops the P0 check that refused it. "Agreed fee ticked with no amount"
+    // is refused by the admin form (P3), not here.
     // A coupon is always backed by a Zakat declaration (plugin rule).
     check("registrations_coupon_declared", sql`${t.couponId} IS NULL OR ${t.zakatDeclaration}`),
     // Special plan and coupon never combine (plugin rule).
@@ -634,6 +636,31 @@ export const rateLimits = pgTable(
     primaryKey({ columns: [t.key, t.windowStart] }),
     check("rate_limits_key_hashed", sql`${t.key} ~ '^[a-z]+:[a-f0-9]{32,64}$'`),
     check("rate_limits_count", sql`${t.count} >= 0`),
+  ],
+);
+
+/* ── eligibility_blocks (hourly counts per country; no IP, no person) ─── */
+
+/**
+ * The plugin's iqu_enroll_blocks option (EL:262-279): how many submissions
+ * the US/Canada check would block (monitor) or did block (enforce), per hour
+ * and country, kept 8 days for the 9 PM summary. Only a country code and a count.
+ */
+export const eligibilityBlocks = pgTable(
+  "eligibility_blocks",
+  {
+    hour: ts("hour").notNull(),
+    mode: text("mode").notNull(),
+    /** Two letters, or '??' when no country is known (EL:267). */
+    country: char("country", { length: 2 }).notNull(),
+    count: integer("count").notNull().default(0),
+  },
+  (t) => [
+    primaryKey({ columns: [t.hour, t.mode, t.country] }),
+    check("eligibility_blocks_mode", oneOf("mode", ["monitor", "enforce"])),
+    check("eligibility_blocks_country", sql`${t.country} ~ '^([A-Z]{2}|\\?\\?)$'`),
+    check("eligibility_blocks_hour", sql`date_trunc('hour', ${t.hour}) = ${t.hour}`),
+    check("eligibility_blocks_count", sql`${t.count} > 0`),
   ],
 );
 

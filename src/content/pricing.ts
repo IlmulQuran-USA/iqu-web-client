@@ -33,6 +33,25 @@ const rates: Record<PriceKey, (daysPerWeek: number) => number> = {
   islamic_studies: tiered,
 };
 
+/** The plugin's fewest days a week per key (IQU_Pricing::calculate, P:238); every key allows at most 7. */
+const pluginMinDays: Record<PriceKey, number> = { qaidah: 1, hifz: 3, arabic: 1, tarjumatul_quran: 1, islamic_studies: 1 };
+
+export function isPriceKey(key: string): key is PriceKey {
+  return Object.hasOwn(rates, key);
+}
+
+/**
+ * IQU_Pricing::calculate($key, $days)['monthly_amount'] in USD, or null where
+ * the plugin refuses it (P:220-264). Billing and the discount ledger price a
+ * stored registration by its key, as the plugin does (imported and admin rows
+ * included), so this follows the plugin's day limits, not the website's
+ * course pages (Arabic is offered at 4 days on the site but priced 1–7 here).
+ */
+export function monthlyFeeForKey(key: string, days: number): number | null {
+  if (!isPriceKey(key) || !Number.isInteger(days) || days < pluginMinDays[key] || days > 7) return null;
+  return days * 4 * rates[key](days);
+}
+
 export type CourseId =
   | "noorani-qaidah"
   | "quran-nazirah"

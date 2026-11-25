@@ -85,6 +85,36 @@ curl -sI https://dev.ilmulquranus.org/ | grep -i x-robots # noindex, nofollow
 3. If the DNS is behind Cloudflare, set the `dev` record to **DNS only** (grey cloud) so Vercel can issue the TLS certificate.
 4. Vercel issues the HTTPS certificate on its own once the record resolves. This usually takes a few minutes.
 
+## 5a. Cron jobs
+
+Scheduled jobs are Vercel Cron entries in `vercel.json`. Vercel calls each path with `GET` and `Authorization: Bearer $CRON_SECRET`. Every route refuses other callers (401), does nothing without `DATABASE_URL` (503), and is safe to run twice.
+
+**Hobby plan (now): once a day only.** A schedule that runs more often makes the deploy fail, so `vercel.json` holds daily schedules only. Hobby may also start a job at any minute within its hour, so the 9 PM summary can arrive up to an hour late.
+
+| Path | Schedule (UTC) | Dhaka time | What it does |
+| --- | --- | --- | --- |
+| `/api/cron/reminders` | `0 14 * * *` | 20:00 | Card reminders at 24 h and 72 h; `card_pending` → `expired` after 7 days (audit log). Plugin: hourly. |
+| `/api/cron/daily-summary` | `0 15 * * *` | 21:00 | The one 9 PM Telegram summary (registrations, tuition, donations). |
+| `/api/cron/ledger` | `30 18 * * *` | 00:30 | Zakat and Special ledger rows for the current Dhaka month, so the 1st is written on the 1st. |
+| `/api/cron/outbox` | `0 3 * * *` | 09:00 | A daily safety net for Telegram and email sends that failed. |
+
+Outside production, Telegram goes only to the test chat (`TELEGRAM_CHAT_ID`, never the live chat pattern in `settings`), and email only to `EMAIL_ALLOWLIST`.
+
+Run a job by hand:
+
+```sh
+curl -H "Authorization: Bearer $CRON_SECRET" https://dev.ilmulquranus.org/api/cron/daily-summary
+```
+
+**Enable after Vercel Pro.** Do not add these to `vercel.json` before the project is on Pro. On Pro, replace the `reminders` and `outbox` entries with the lines below, and add the Stripe sync when P2 ships:
+
+```jsonc
+// vercel.json › crons — Vercel Pro only (sub-daily schedules)
+// { "path": "/api/cron/outbox",      "schedule": "*/5 * * * *" },  // outbox retries: 1, 5, 30 min
+// { "path": "/api/cron/reminders",   "schedule": "5 * * * *" },    // hourly, as the plugin (iqu_enroll_reminders)
+// { "path": "/api/cron/stripe-sync", "schedule": "15 * * * *" },   // P2: hourly missed-webhook safety net
+```
+
 ## 6. Git submodule (docs/spec)
 
 `docs/spec` is a submodule of the public repo `IlmulQuran-USA/iqu-web-platform`, with an `https://` URL in `.gitmodules`. Vercel and GitHub Actions both clone it without credentials. The build doesn't read it (only `npm run content:check` does), so a submodule problem can't break a deployment. If the spec repo ever becomes private, Vercel can no longer clone it. Either keep the spec public, or check that the build still passes without it.

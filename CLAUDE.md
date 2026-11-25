@@ -88,6 +88,8 @@ Riwāq deliberately uses some patterns generic detectors flag (uppercase eyebrow
 | `first-viewport-column-overflow` | Course detail grid (`src/app/courses/[slug]/page.tsx`; ignore in `.impeccable/config.json`) | Spec §7.3 section 11: the desktop right-rail enrolment card. It is sticky, so the short column stays beside the reader all the way down (owner plan, 20 Nov 2026). Kept as a safeguard: since the card moved after the hero in the DOM (it spans both grid rows), `detect <url>` no longer reports it. |
 | `first-viewport-column-overflow` | Program pages grid (`src/app/programs/[slug]/page.tsx`; same ignore entry in `.impeccable/config.json`) | Spec §7.11 on the course-page layout (§7.3 section 11): the same sticky right-rail enrolment card (owner plan, 23 Nov 2026). The browser overlay reported it once at 1440 on Weekend and not on a second run; the CLI found nothing at 375 or 1440 (23 Nov 2026). Kept as a safeguard. |
 
+Copy and text changes use the Edit tool, never sed/awk/shell replacement (sed eats \u escapes).
+
 ---
 
 ## 6. Open decisions (do not resolve silently)
