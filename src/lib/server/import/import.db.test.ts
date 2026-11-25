@@ -202,6 +202,21 @@ test("headers: export names, any case or punctuation, a BOM, and Guardian WhatsA
   assert.deepEqual([s.preview[0].level, s.preview[0].in.course, s.preview[0].in.whatsapp], ["ok", "hifz", "+1 214 555 0100"]);
 });
 
+test("an Age column still works (older files): under 4 is a warning, not an error; a date of birth wins over it (AS:199-207)", async () => {
+  const s = await preview(
+    file(
+      [
+        ["Zq", "Small", "zqs@example.com", "+1 214 555 0100", "qaidah", "2", "3", ""],
+        ["Zq", "Both", "zqb@example.com", "+1 214 555 0100", "qaidah", "2", "40", "2016-03-04"],
+      ],
+      ["First Name", "Last Name", "Email", "WhatsApp", "Course", "Days/Week", "Age", "Date of Birth"],
+    ),
+  );
+  assert.deepEqual([s.preview[0].level, s.preview[0].warnings], ["warning", ["Age under 4 — please confirm."]]);
+  const both = await prepare(s.preview[1].in, ctx());
+  assert.deepEqual([both.row?.ageAtSignup, both.row?.dateOfBirth], [10, "2016-03-04"]);
+});
+
 test("cells: formula characters are removed on read and neutralised in the results file", async () => {
   const input = toInput({ first_name: "=HYPERLINK(1)", last_name: "'-Zq", email: " zq@example.com ", whatsapp: "+1 (214) 555-0100 ext", course: "QAD", days: "3 days" });
   assert.deepEqual([input.first_name, input.last_name, input.email, input.whatsapp, input.course, input.days], ["HYPERLINK(1)", "-Zq", "zq@example.com", "+1 (214) 555-0100", "qaidah", 3]);
