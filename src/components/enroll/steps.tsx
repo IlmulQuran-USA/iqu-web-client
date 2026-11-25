@@ -617,7 +617,7 @@ export function FeesStep({ draft: d, set, errors: e, blur, connected, siteKey }:
           {
             value: "help",
             label: "I need help with the fee",
-            hint: "Ask for a reduced fee or a full scholarship. Nearly half of our students study free.",
+            hint: "Ask for a reduced fee or a full scholarship. About half of our students receive help with fees.",
           },
           { value: "code", label: "I have a scholarship code", hint: "Use the code our team sent you." },
         ]}

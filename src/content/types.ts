@@ -241,7 +241,8 @@ export const HOME_HERO_LIMITS = {
   subhead: 180,
   ctaLabel: 24,
   trustItems: 4,
-  trustItem: 40,
+  /** Was 40; 52 fits the owner's exact claim "About half of our students receive help with fees" (50, 26 Nov 2026). */
+  trustItem: 52,
   featuredInstructors: 5,
 } as const;
 

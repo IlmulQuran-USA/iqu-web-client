@@ -23,7 +23,7 @@ const DEFAULTS: HomeHeroContent = {
     "Classes are live, one-on-one or in a small group, with female teachers for sisters and boys up to 10, and your first month is free.",
   primaryCta: { label: "Start free trial", href: "/enroll" },
   secondaryCta: { label: "Browse courses", href: "/courses" },
-  trust: ["250+ students taught", "25+ qualified instructors", "501(c)(3) nonprofit", "Nearly half of our students study free"],
+  trust: ["250+ students taught", "25+ qualified instructors", "501(c)(3) nonprofit", "About half of our students receive help with fees"],
   image: {
     src: "/dev/arch-sample.svg",
     alt: "Placeholder for a photograph of a live class",

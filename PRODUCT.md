@@ -38,7 +38,8 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 ## Positioning
 
 - **Qualified scholars teach every class.** Classes are live and led by Huffaz, Ulama and Mufti. Our teaching is hard to match on credentials, while commercial academies win on price and convenience.
-- **A real 501(c)(3) that gives about half its seats away.** Listed prices are the full monthly fees; families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship, and nearly half of students study free (owner, 22 Nov 2026). No discount applies to everyone. Donations go to the scholarship fund.
+- **A real 501(c)(3) that gives about half its seats away.** Listed prices are the full monthly fees; families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship, and about half of our students receive help with fees. No discount applies to everyone. Donations go to the scholarship fund.
+  - **Claim corrected (owner, 26 Nov 2026):** "Nearly half of our students study free" (owner, 22 Nov 2026) is replaced everywhere by "About half of our students receive help with fees." **Source:** the live `iqu-registration` data, read-only on 25 Nov 2026: of **91** active monthly students, **48** get help with fees (a reduced fee or a full scholarship) and **10** pay $0; the November 2026 discount ledger counts 46 of them. "Study free" described only the 10. Recheck the share against the live data before repeating it on a new page.
 - **Attendance is measured, not reported.** Zoom join and leave events give the *overlap*, meaning the minutes teacher and student were in the class at the same time. Nobody marks attendance. A teacher cannot claim a class that did not happen, and a teacher no-show is shown as clearly as a student absence. Teacher pay is calculated from verified minutes.
 - **Hifz is taught properly.** Sabaq / Sabqi / Manzil tracking matches how the classes are actually taught. We keep those terms and explain them once.
 
@@ -150,7 +151,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 **Real and usable now:**
 - Six courses with consistent meta fields: Noorani Qaidah, Quran Nazirah, Hifz, Quranic Arabic Mastery L1, Weekend Islamic Education, Summer Islamic Education.
 - Twenty instructor entries, with name and job title only.
-- Approximate scale figures: about 250 students, 25+ instructors, nearly half studying free.
+- Approximate scale figures: about 250 students, 25+ instructors, about half receiving help with fees (48 of 91 active monthly students, live data, 25 Nov 2026).
 - Data tables: `iqu_registrations` (81 rows), `iqu_zeffy_payments` (63 rows, live sync), `iqu_coupons` (3 rows).
 - Per-course fees in the live `iqu-registration` plugin.
 - The Summer Ilm Camp 2026 results.

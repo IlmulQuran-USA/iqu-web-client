@@ -1,3 +1,4 @@
+import { aid } from "./aid";
 import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, sessionLengths, sessionLengthsNoWrap, usd, type CourseId } from "./pricing";
 import { courseContent, courseFaq, courseRules, teacherMatching } from "./courses";
 import { instructors } from "./instructors";
@@ -65,23 +66,9 @@ export const schedule = {
   // only in the FAQ.
 } as const;
 
-/* ── Fees and aid (shared by Home, course pages and the scholarship copy) ── */
+/* ── Fees and aid: src/content/aid.ts (shared by Home, course pages and /scholarship) ── */
 
-// PRODUCT.md "Positioning".
-const STUDY_FREE = "Nearly half of our students study free.";
-// Owner, 22 Nov 2026: listed prices are the full fees; a reduced fee or a full
-// scholarship is something a family asks for, never a discount everyone gets.
-// Replaces "The rest pay subsidized fees, with tuition reduced by 50%, 45% or 30%."
-const ASK_FOR_HELP =
-  "Listed prices are the full monthly fees. Families who need help can ask for a reduced fee (30%, 45% or 50% off) or a full scholarship.";
-
-export const aid = {
-  studyFree: STUDY_FREE,
-  /** Course pages and the /courses fee note: the full wording (owner, 22 Nov 2026). */
-  help: { status: "live", text: `${ASK_FOR_HELP} ${STUDY_FREE}` },
-  /** Home giving band: without the last sentence, which the hero trust strip already says (owner, 23 and 24 Nov 2026). */
-  askForHelp: { status: "live", text: ASK_FOR_HELP },
-} as const;
+export { aid };
 
 /* ── 3 · Programs ────────────────────────────────────────────────────────── */
 
@@ -96,7 +83,7 @@ export const programsSection = {
   intro: "Live classes for children, teens and adults, priced by course and by the number of days you choose.",
   monthlyLabel: "Monthly classes",
   programsLabel: "Seasonal and weekend programs",
-  // Critique, owner 20 Nov 2026: the giving band owns the fee-help line; "Nearly half…" is the hero trust strip's (owner, 24 Nov 2026).
+  // Critique, owner 20 Nov 2026: the giving band owns the fee-help line; "About half…" is the hero trust strip's (owner, 24 Nov 2026).
   scholarshipNote: "Scholarships are available.",
   scholarshipLink: { label: "Ask about a scholarship", href: "/scholarship" },
   allCourses: { label: "See all courses", href: "/courses" },
@@ -265,7 +252,7 @@ export const familiesSection = {
 /* ── 8 · Giving (the only giving section on Home) ────────────────────────── */
 
 export const giving = {
-  // Owner, 24 Nov 2026: "Nearly half…" stays only in the hero trust strip, so Home says it once.
+  // Owner, 24 Nov 2026: "About half…" stays only in the hero trust strip, so Home says it once.
   heading: "Your Zakat and donations fund scholarships",
   help: aid.askForHelp.text,
   // Rendered as: <name> is the teaching name of <legal name>, <rest>. Names are marked translate="no".

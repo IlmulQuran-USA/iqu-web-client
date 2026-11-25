@@ -8,7 +8,7 @@ import type { HomeHeroContent } from "./types";
  * src/content/types.ts and falls back to known-good defaults if it fails.
  *
  * Limits (enforced): headline ≤ 70 characters, subhead ≤ 180, CTA labels
- * ≤ 24, at most 4 trust items of ≤ 40 each, at most 5 featured instructors,
+ * ≤ 24, at most 4 trust items of ≤ 52 each, at most 5 featured instructors,
  * chosen by id from src/content/instructors.ts.
  */
 export const homeHero: HomeHeroContent = {
@@ -26,7 +26,7 @@ export const homeHero: HomeHeroContent = {
   primaryCta: { label: "Start free trial", href: "/enroll" },
   secondaryCta: { label: "Browse courses", href: "/courses" },
   // PRODUCT.md "Evidence on Hand": approximate figures confirmed by the owner.
-  trust: ["250+ students taught", "25+ qualified instructors", "501(c)(3) nonprofit", "Nearly half of our students study free"],
+  trust: ["250+ students taught", "25+ qualified instructors", "501(c)(3) nonprofit", "About half of our students receive help with fees"],
   // Used by the "editorial" and "spacious" layouts only. There is no real
   // class photograph yet (spec §8), so this is the dev placeholder: replace it
   // before switching the live hero to either of those layouts.

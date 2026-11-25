@@ -190,8 +190,8 @@ export default function ComponentsPage() {
             <li className="grid gap-2 py-5 lg:grid-cols-12 lg:gap-6">
               <span className="text-ui text-ink-muted lg:col-span-3">Highlight · --mark behind a key phrase</span>
               <span className="font-display text-display-md font-semibold text-ink lg:col-span-9">
-                Nearly half our students study{" "}
-                <mark className="rounded-chip bg-mark px-1 text-ink [box-decoration-break:clone]">at no cost</mark>
+                About half of our students receive{" "}
+                <mark className="rounded-chip bg-mark px-1 text-ink [box-decoration-break:clone]">help with fees</mark>
               </span>
             </li>
             <li className="grid gap-2 py-5 lg:grid-cols-12 lg:gap-6">
