@@ -210,7 +210,9 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 96rem;
 
-  /* Widths */
+  /* Widths. The reset is deliberate: only the named widths below exist, so
+     Tailwind's default scale (max-w-sm … max-w-7xl, w-md, @lg: and so on)
+     generates nothing. src/app/theme-widths.test.ts fails on any such class. */
   --container-*: initial;
   --container-content: 75rem; /* 1200 px max content width */
   --container-page: 90rem; /* 1440 px max container */
@@ -219,6 +221,8 @@
      about 92 characters; 52ch measures about 68. */
   --container-measure: 52ch;
   --container-drawer: 25rem;
+  /* Enrollment form column (672 px): the width the /enroll steps were built for. */
+  --container-form: 42rem;
 
   /* Motion */
   --ease-*: initial;

@@ -124,6 +124,7 @@ Tokens: `--success` / `--success-tint`, `--warning` / `--warning-tint`, `--dange
 
 - Base unit **4 px**. Scale: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128.
 - Public grid: 12 columns, 1200 px max content width, 24 px gutter, 1440 px max container.
+- Named widths only (`--container-*` in `globals.css`; Tailwind's default `max-w-sm … 7xl` scale is reset and generates nothing): `content` 1200 px, `page` 1440 px, `measure` (68-character body prose), `drawer` 400 px, `form` 672 px (the /enroll step column). `src/app/theme-widths.test.ts` fails on a default-scale width class.
 - Portal grid: 12 columns, fluid, 264 px fixed sidebar (collapses to 72 px icons).
 - Section vertical rhythm: 96 px desktop / 64 px tablet / 48 px mobile.
 - Radius: 4 px inputs & chips · 8 px buttons · 12 px cards · 999 px avatars & pills. Arch-framed portraits are the only exception.

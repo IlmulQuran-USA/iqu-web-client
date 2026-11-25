@@ -679,7 +679,7 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
           </nav>
 
           <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
-            <div className="min-w-0 max-w-2xl">
+            <div className="min-w-0 max-w-form">
               <h1 ref={headingRef} tabIndex={-1} className="font-display text-heading-xl font-semibold text-balance text-ink">
                 {HEADINGS[stepId](draft)}
               </h1>

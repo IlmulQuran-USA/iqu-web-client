@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/Button";
 import { programs } from "@/content/pricing";
+import { site } from "@/content/site";
 import { browserConsent } from "@/lib/consent";
 import type { Confirmation, ConfirmationState } from "@/lib/enroll/confirmation";
 import { LAST_KEY, SEED_KEY } from "@/lib/enroll/keys";
@@ -152,13 +153,17 @@ export function ConfirmationView({ confirmation }: { confirmation: Confirmation 
   }
 
   return (
-    // max-w-measure: the Tailwind width scale is reset in globals.css, so max-w-2xl did nothing.
+    // Prose page: the body measure (DESIGN.md §3). Only named widths exist (globals.css).
     <div className="max-w-measure">
       <h1 className="font-display text-heading-xl font-semibold text-balance text-ink">{c.title}</h1>
       <p className="mt-4 text-body-lg text-ink-body">{c.body}</p>
 
       {CARD_STEP_PENDING.has(confirmation.state) ? (
-        <InlineAlert tone="info" className="mt-6" title="Card step is not connected yet.">
+        <InlineAlert
+          tone="info"
+          className="mt-6"
+          title={confirmation.state === "summer-next" ? "Payment step is not connected yet." : "Card step is not connected yet."}
+        >
           Your enrollment is saved and waits for {confirmation.state === "summer-next" ? "the payment" : "a card"}. This test site cannot take
           payments yet, so nothing is charged.
         </InlineAlert>
@@ -203,13 +208,25 @@ export function ConfirmationView({ confirmation }: { confirmation: Confirmation 
         </section>
       ) : null}
 
+      {site.whatsapp ? (
+        <p className="mt-8 text-body text-ink-body">
+          Questions?{" "}
+          <a href={site.whatsapp.href} className="inline-flex min-h-11 items-center text-link underline decoration-1 underline-offset-2 hov:decoration-2">
+            {/* One child, so the flex link (44 px target) wraps as text; the number never splits. */}
+            <span>
+              Message us on WhatsApp at <span className="whitespace-nowrap">{site.whatsapp.display}</span>
+            </span>
+          </a>
+        </p>
+      ) : null}
+
       <div className="mt-10 flex flex-wrap gap-3">
         {confirmation.state !== "details" ? (
           <Button variant="secondary" onClick={enrollAnother}>
             Enroll another child
           </Button>
         ) : null}
-        <Link href="/courses" className="inline-flex min-h-11 items-center px-1 text-body text-link underline underline-offset-2">
+        <Link href="/courses" className="inline-flex min-h-11 items-center px-1 text-body text-link underline decoration-1 underline-offset-2 hov:decoration-2">
           Explore our courses
         </Link>
       </div>

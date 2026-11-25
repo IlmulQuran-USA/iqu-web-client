@@ -32,6 +32,9 @@ export const site = {
   // (214) 662-1591 on the live About page is outdated: never use it.
   phone: { display: "+1 (214) 529-3544", href: "tel:+12145293544" } as { display: string; href: string } | null,
   email: "info@ilmulquranus.org" as string | null,
+  // The live plugin's family contact number: wp-config IQU_CONTACT_WHATSAPP, shown and linked as in
+  // iqu-registration includes/class-iqu-contact.php:21-43 (read-only, 25 Nov 2026). A public business number.
+  whatsapp: { display: "+1 (469) 275-6450", href: "https://wa.me/14692756450" } as { display: string; href: string } | null,
 } as const;
 
 export const PENDING = "[pending]";
