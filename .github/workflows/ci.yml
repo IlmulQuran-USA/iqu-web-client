@@ -64,6 +64,13 @@ jobs:
         # NEXT_PUBLIC_SITE_ENV is unset here, so this is a staging build.
         run: npm run build
 
+      - name: First-load JS budget
+        # Starts `next start` on the build above, fetches every public page and
+        # fails when any one loads more than 180 KB gz of JavaScript (modern
+        # browsers, the noModule polyfill excluded). Prints the per-route table.
+        # CLAUDE.md §4 Performance; F:/iqu-setup/reports/js-budget.md.
+        run: npm run budget:js
+
       - name: Content check (non-blocking)
         # Lists draft, pending and sample content. Informational until launch.
         continue-on-error: true

@@ -1,91 +1,24 @@
 /*
- * The /enroll draft: its shape (zod, so the server action can parse an
- * untrusted copy) and the rules for each step (one set of messages for the
- * browser and the server). The plugin validates again on its side; these
- * rules mirror it and add the owner's decisions of 24 Nov 2026.
+ * The /enroll draft's rules for each step (one set of messages for the
+ * browser and the server); its shape is draft-schema.ts. The plugin
+ * validates again on its side; these rules mirror it and add the owner's
+ * decisions of 24 Nov 2026.
  */
 
-import { z } from "zod";
-import { courseById, monthlyCourses, type CourseId } from "../../content/pricing.ts";
+// No zod here: this module runs in the browser on every /enroll visit, so the
+// draft shape (zod) lives in draft-schema.ts and loads only when needed
+// (js-budget, 26 Nov 2026). Only its types are imported.
+import type { AppliedCoupon, Draft } from "./draft-schema.ts";
+import { courseById } from "../../content/pricing.ts";
 import { daysError, payWhatYouCanError } from "./fees.ts";
-import { countries, HELP_LEVELS, LANGUAGES, QURAN_LEVELS, REFERRALS, TEACHER_PREFS, WEEKDAYS } from "./options.ts";
+import { countries } from "./options.ts";
 import type { Variant } from "./params.ts";
 import { isValidZone, windowErrors } from "./schedule.ts";
 
-const text = (max: number) => z.string().max(max);
-const oneOf = <T extends readonly { value: string }[]>(list: T) =>
-  z.enum(list.map((o) => o.value) as [T[number]["value"], ...T[number]["value"][]]);
-const orEmpty = <T extends z.ZodTypeAny>(schema: T) => z.union([schema, z.literal("")]);
+export type { AppliedCoupon, Draft };
 
 export const PHONE_COUNTRIES = ["US", "CA", "OTHER"] as const;
 export type PhoneCountry = (typeof PHONE_COUNTRIES)[number];
-
-export const couponSchema = z.object({
-  code: text(40),
-  discount: z.number().nonnegative(),
-  final: z.number().nonnegative(),
-  percent: z.number().min(0).max(100),
-  declaration: text(1000),
-});
-export type AppliedCoupon = z.infer<typeof couponSchema>;
-
-export const draftSchema = z.object({
-  v: z.literal(1),
-  variant: z.enum(["monthly", "weekend", "summer"]),
-  submitId: z.string().regex(/^[A-Za-z0-9-]{16,64}$/),
-  // Student
-  who: z.enum(["child", "self", ""]),
-  firstName: text(100),
-  lastName: text(100),
-  dob: text(10),
-  guardianName: text(150),
-  email: text(191),
-  phoneCountry: z.enum(PHONE_COUNTRIES),
-  phone: text(30),
-  whatsappSame: z.boolean(),
-  whatsappCountry: z.enum(PHONE_COUNTRIES),
-  whatsapp: text(30),
-  residence: text(2),
-  origin: text(2),
-  languages: z.array(oneOf(LANGUAGES)).max(LANGUAGES.length),
-  languagesOther: text(100),
-  existing: z.enum(["yes", "no", ""]),
-  // Course
-  courseId: orEmpty(z.enum(monthlyCourses.map((c) => c.id) as [CourseId, ...CourseId[]])),
-  quranLevel: orEmpty(oneOf(QURAN_LEVELS)),
-  memorized: text(500),
-  teacherPref: orEmpty(oneOf(TEACHER_PREFS)),
-  // Schedule
-  timeZone: text(64),
-  daysPerWeek: z.number().int().min(0).max(7),
-  days: z.array(z.enum(WEEKDAYS.map((d) => d.value) as [string, ...string[]])).max(7),
-  classLength: z.number().int().min(0).max(60),
-  from: text(5),
-  to: text(5),
-  // Fees (monthly)
-  feeChoice: z.enum(["pay", "help", "code", ""]),
-  special: z.boolean(),
-  helpLevel: orEmpty(oneOf(HELP_LEVELS)),
-  helpNote: text(500),
-  couponCode: text(40),
-  couponApplied: couponSchema.nullable(),
-  zakatDeclaration: z.boolean(),
-  // Summer fee
-  summerFee: z.enum(["standard", "existing", "help", ""]),
-  summerHelp: z.enum(["amount", "free", ""]),
-  summerAmount: text(10),
-  // Weekend
-  timingConsent: z.boolean(),
-  // Review
-  referral: orEmpty(oneOf(REFERRALS)),
-  referralOther: text(100),
-  waUpdates: z.boolean(),
-  futureUpdates: z.boolean(),
-  whatsappGroup: z.enum(["yes", "no", ""]),
-  terms: z.boolean(),
-});
-
-export type Draft = z.infer<typeof draftSchema>;
 
 export function emptyDraft(variant: Variant, submitId: string): Draft {
   return {

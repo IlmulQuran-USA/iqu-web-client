@@ -4,6 +4,7 @@ import { SectionNav } from "@/components/course/SectionNav";
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { Reveal } from "@/components/motion/Reveal";
 import { PROGRAM_CTAS_ID, PROGRAM_RAIL_ID, ProgramHero, ProgramRail } from "@/components/program/ProgramHero";
@@ -86,7 +87,7 @@ export default async function ProgramPage({ params }: PageProps<"/programs/[slug
   const newsletterOpen = newsletterConfig() !== null;
 
   return (
-    <>
+    <MotionProvider>
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
@@ -129,6 +130,6 @@ export default async function ProgramPage({ params }: PageProps<"/programs/[slug
         title={sticky.title}
         titleWraps
       />
-    </>
+    </MotionProvider>
   );
 }

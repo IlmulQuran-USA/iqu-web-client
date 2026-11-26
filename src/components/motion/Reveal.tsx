@@ -1,7 +1,20 @@
 "use client";
 
 import { useReducedMotion, type Transition, type Variants } from "motion/react";
-import * as m from "motion/react-m";
+// Named imports only, never `import * as m` with a computed key (m[tag]): a
+// namespace read by a computed key cannot be tree-shaken, and motion/react-m
+// also exports Reorder, which pulls drag, pan and the whole animation engine
+// (springs, JS and WAAPI animations) into the first load of every page that
+// reveals (about 26 KB gz; js-budget diagnosis, 26 Nov 2026). The engine
+// arrives later with the lazy features (MotionProvider).
+import {
+  details as MotionDetails,
+  div as MotionDiv,
+  li as MotionLi,
+  ol as MotionOl,
+  section as MotionSection,
+  ul as MotionUl,
+} from "motion/react-m";
 import { useEffect, useRef, useState, type ComponentProps, type ComponentPropsWithoutRef, type ReactNode } from "react";
 import { useScrollDirection } from "./scroll-direction";
 import { EASE, FADE, RISE, SPRING, STAGGER } from "./tokens";
@@ -37,6 +50,17 @@ import { EASE, FADE, RISE, SPRING, STAGGER } from "./tokens";
  */
 
 type Tag = "div" | "section" | "ul" | "ol" | "li" | "details";
+
+/** The motion element for each tag a Reveal can render as. */
+const elements = {
+  div: MotionDiv,
+  section: MotionSection,
+  ul: MotionUl,
+  ol: MotionOl,
+  li: MotionLi,
+  details: MotionDetails,
+} as const;
+type MotionDivProps = ComponentPropsWithoutRef<typeof MotionDiv>;
 
 type State =
   | "idle" // as server-rendered, in or above the first view
@@ -166,10 +190,10 @@ export function Reveal<T extends Tag = "div">({ as, children, ...rest }: RevealP
     };
   }, [direction]);
 
-  const Component = m[(as ?? "div") as Tag] as unknown as typeof m.div;
+  const Component = elements[as ?? "div"] as unknown as typeof MotionDiv;
   return (
     <Component
-      {...(rest as ComponentPropsWithoutRef<typeof m.div>)}
+      {...(rest as MotionDivProps)}
       ref={ref as never}
       initial={false}
       animate={state}
@@ -191,9 +215,9 @@ export function Reveal<T extends Tag = "div">({ as, children, ...rest }: RevealP
  */
 export function RevealItem<T extends Tag = "div">({ as, children, ...rest }: RevealProps<T>) {
   const reduced = useReducedMotion();
-  const Component = m[(as ?? "div") as Tag] as unknown as typeof m.div;
+  const Component = elements[as ?? "div"] as unknown as typeof MotionDiv;
   return (
-    <Component {...(rest as ComponentPropsWithoutRef<typeof m.div>)} variants={reduced ? itemStill : item} data-reveal-item="">
+    <Component {...(rest as MotionDivProps)} variants={reduced ? itemStill : item} data-reveal-item="">
       {children}
     </Component>
   );

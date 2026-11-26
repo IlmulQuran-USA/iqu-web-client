@@ -2,6 +2,7 @@ import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { DirectoryHeader, DirectoryResults, Matching, TeachWithUs } from "@/components/instructors/DirectorySections";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { finalCtaFor } from "@/content/catalog";
 import { directoryFilter, directoryHeader, directoryMeta, roleOf } from "@/content/instructors-page";
@@ -48,7 +49,7 @@ export default async function InstructorsPage({ searchParams }: PageProps<"/inst
   const filter = directoryFilter(await searchParams);
   const final = finalCtaFor("course");
   return (
-    <>
+    <MotionProvider>
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
@@ -72,6 +73,6 @@ export default async function InstructorsPage({ searchParams }: PageProps<"/inst
         afterId={directoryHeader.id}
         beforeId={FINAL_CTA_ID}
       />
-    </>
+    </MotionProvider>
   );
 }

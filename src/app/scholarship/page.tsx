@@ -2,6 +2,7 @@ import { HeartHandshake } from "lucide-react";
 import { TextLink } from "@/components/course/PriceList";
 import { FinalCta } from "@/components/home/FinalCta";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { Reveal, RevealItem } from "@/components/motion/Reveal";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
@@ -21,7 +22,7 @@ export const metadata = pageMetadata({ title: scholarshipMeta.title, description
 
 export default function ScholarshipPage() {
   return (
-    <>
+    <MotionProvider>
       <Header />
       <main id="main-content" className="flex-1">
         <div className="container-content">
@@ -107,6 +108,6 @@ export default function ScholarshipPage() {
         <FinalCta copy={scholarshipFinal} />
       </main>
       <Footer />
-    </>
+    </MotionProvider>
   );
 }

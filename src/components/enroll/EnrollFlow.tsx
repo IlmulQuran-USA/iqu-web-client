@@ -2,7 +2,7 @@
 
 import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { joinWaitlist, submitEnrollment } from "@/app/actions/enroll";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { monthlyCourses } from "@/content/pricing";
@@ -15,7 +15,6 @@ import type { EnrollParams, Variant } from "@/lib/enroll/params";
 import {
   ageOn,
   displayDate,
-  draftSchema,
   emptyDraft,
   isRealDate,
   STEPS,
@@ -33,18 +32,49 @@ import { DRAFT_KEY, LAST_KEY, SEED_KEY } from "@/lib/enroll/keys";
 import { InlineAlert, InputField } from "./fields";
 import { EnrollFooter, EnrollHeader } from "./frame";
 import { getRecaptchaToken, loadRecaptcha } from "./recaptcha";
-import {
-  CourseStep,
-  FeesStep,
-  ReviewStep,
-  ScheduleStep,
-  StudentStep,
-  studentName,
-  SummerFeeStep,
-  WeekendScheduleStep,
-  type StepProps,
-  type SummaryGroup,
-} from "./steps";
+import type { SummaryGroup } from "./later-steps";
+import { StudentStep, studentName, type StepProps } from "./steps";
+
+/*
+ * Steps 2 to 5 (later-steps.tsx) are not in /enroll's first load: the module
+ * starts loading as soon as the page hydrates (loadBrowserInitial), long
+ * before anyone finishes step 1, and a draft restored on a later step waits
+ * for it, so no step ever shows empty (js-budget, 26 Nov 2026).
+ */
+type LaterSteps = typeof import("./later-steps");
+let laterStepsModule: LaterSteps | null = null;
+const loadLaterSteps = () =>
+  import("./later-steps").then((mod) => {
+    laterStepsModule = mod;
+    return mod;
+  });
+
+/** The later steps' module once loaded; `failed` when it could not be fetched (offline). */
+function useLaterSteps(): { later: LaterSteps | null; failed: boolean; retry: () => void } {
+  const [later, setLater] = useState<LaterSteps | null>(laterStepsModule);
+  const [failed, setFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    if (later) return;
+    let live = true;
+    loadLaterSteps().then(
+      (mod) => {
+        if (live) setLater(mod);
+      },
+      () => {
+        if (live) setFailed(true);
+      },
+    );
+    return () => {
+      live = false;
+    };
+  }, [later, attempt]);
+  const retry = useCallback(() => {
+    setFailed(false);
+    setAttempt((n) => n + 1);
+  }, []);
+  return { later, failed, retry };
+}
 
 /*
  * /enroll: one template for monthly courses (5 steps), the Weekend program
@@ -289,6 +319,12 @@ type Initial = {
   zoneDetected: boolean;
   usedSeed: boolean;
   today: string;
+  /**
+   * True when this device has a saved draft that could not be checked (the
+   * schema failed to load): the form starts fresh but never autosaves, so
+   * the saved draft is still there on the next visit.
+   */
+  keepSaved?: boolean;
 };
 
 /** On the server and during hydration: an empty form for this template. */
@@ -304,15 +340,21 @@ function serverInitial(params: EnrollParams): Initial {
   };
 }
 
-/** In the browser: the saved draft, or a new one (with the sibling seed and the device's time zone). Reads only. */
-function browserInitial(params: EnrollParams): Initial {
+type DraftSchema = (typeof import("@/lib/enroll/draft-schema"))["draftSchema"];
+
+/**
+ * In the browser: the saved draft, or a new one (with the sibling seed and
+ * the device's time zone). Reads only. `schema` checks what this device
+ * saved; without it nothing saved is used.
+ */
+function browserInitial(params: EnrollParams, schema: DraftSchema | null): Initial {
   const variant = params.variant;
   const last = STEPS[variant].length - 1;
-  const saved = storageGet(DRAFT_KEY(variant));
-  if (saved) {
+  const saved = schema ? storageGet(DRAFT_KEY(variant)) : null;
+  if (saved && schema) {
     try {
       const parsed = JSON.parse(saved) as Saved;
-      const ok = draftSchema.safeParse(parsed.draft);
+      const ok = schema.safeParse(parsed.draft);
       if (ok.success && ok.data.variant === variant && ok.data.submitId) {
         const step = Math.max(0, Math.min(parsed.step | 0, last));
         return {
@@ -331,13 +373,13 @@ function browserInitial(params: EnrollParams): Initial {
   }
   let draft = withParams(emptyDraft(variant, newSubmitId()), params);
   let usedSeed = false;
-  const seed = storageGet(SEED_KEY);
-  if (seed) {
+  const seed = schema ? storageGet(SEED_KEY) : null;
+  if (seed && schema) {
     try {
       const s = JSON.parse(seed) as Partial<Draft>;
       const keep = ["guardianName", "email", "phoneCountry", "phone", "residence", "origin", "languages", "languagesOther", "timeZone"] as const;
       const pick = Object.fromEntries(keep.filter((k) => s[k] !== undefined).map((k) => [k, s[k]]));
-      const merged = draftSchema.safeParse({ ...draft, ...pick, who: "child" });
+      const merged = schema.safeParse({ ...draft, ...pick, who: "child" });
       if (merged.success) {
         draft = merged.data;
         usedSeed = true;
@@ -357,21 +399,51 @@ function browserInitial(params: EnrollParams): Initial {
   return { draft, step: 0, visited: 0, restored: false, zoneDetected, usedSeed, today: todayIso() };
 }
 
-const noSubscribe = () => () => {};
+/**
+ * The browser's starting point. The draft schema (zod) is fetched only when
+ * this device has a saved draft or a sibling seed to check, so zod stays out
+ * of /enroll's first load (about 17 KB gz; js-budget, 26 Nov 2026). If it
+ * cannot be fetched (tried twice), the form starts fresh and leaves the saved
+ * draft untouched (keepSaved).
+ */
+async function loadBrowserInitial(params: EnrollParams): Promise<Initial> {
+  // Steps 2 to 5 start loading now, with nothing waiting on them yet.
+  const laterSteps = loadLaterSteps();
+  laterSteps.catch(() => undefined);
+  const hasSaved = storageGet(DRAFT_KEY(params.variant)) !== null || storageGet(SEED_KEY) !== null;
+  let initial: Initial;
+  if (!hasSaved) initial = browserInitial(params, null);
+  else {
+    const loadSchema = () => import("@/lib/enroll/draft-schema").then((mod) => mod.draftSchema);
+    const schema = await loadSchema()
+      .catch(loadSchema)
+      .catch(() => null);
+    initial = schema ? browserInitial(params, schema) : { ...browserInitial(params, null), keepSaved: true };
+  }
+  // A draft saved on a later step opens there: wait for that step's code first.
+  if (initial.step > 0) await laterSteps.catch(() => undefined);
+  return initial;
+}
 
 /**
  * Renders the empty form on the server and during hydration, then remounts
- * once in the browser with what this device saved (useSyncExternalStore
- * flips after hydration without a setState in an effect).
+ * once in the browser with what this device saved. Until then the form is
+ * the server's (hydrated false): nothing is autosaved, so a saved draft can
+ * never be overwritten by an empty one while the schema is on its way.
  */
 export function EnrollFlow(props: FlowProps) {
-  const inBrowser = useSyncExternalStore(
-    noSubscribe,
-    () => true,
-    () => false,
-  );
-  const initial = useMemo(() => (inBrowser ? browserInitial(props.params) : serverInitial(props.params)), [inBrowser, props.params]);
-  return <Flow key={inBrowser ? "browser" : "server"} {...props} initial={initial} hydrated={inBrowser} />;
+  const [browser, setBrowser] = useState<Initial | null>(null);
+  useEffect(() => {
+    let live = true;
+    void loadBrowserInitial(props.params).then((next) => {
+      if (live) setBrowser(next);
+    });
+    return () => {
+      live = false;
+    };
+  }, [props.params]);
+  const initial = useMemo(() => browser ?? serverInitial(props.params), [browser, props.params]);
+  return <Flow key={browser ? "browser" : "server"} {...props} initial={initial} hydrated={browser !== null} />;
 }
 
 function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrated }: FlowProps & { initial: Initial; hydrated: boolean }) {
@@ -414,9 +486,9 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
 
   // Autosave on every change (decision 10).
   useEffect(() => {
-    if (!hydrated || redirecting || submitted.current) return;
+    if (!hydrated || initial.keepSaved || redirecting || submitted.current) return;
     storageSet(DRAFT_KEY(variant), JSON.stringify({ draft, step, visited } satisfies Saved));
-  }, [draft, step, visited, hydrated, variant, redirecting]);
+  }, [draft, step, visited, hydrated, initial.keepSaved, variant, redirecting]);
 
   // Warm up reCAPTCHA on Review so the submit is quick.
   useEffect(() => {
@@ -608,6 +680,7 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
 
   const errorList = Object.entries(errors).filter(([, m]) => m) as [string, string][];
   const props: StepProps = { draft, set, errors, blur, today, connected, siteKey, zoneDetected, hydrated };
+  const { later, failed: laterFailed, retry: retryLater } = useLaterSteps();
   const isReview = stepId === "review";
 
   if (redirecting) {
@@ -630,8 +703,9 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
         <span>
           <span className="hidden sm:inline">{PROGRAM_LABEL[variant]} · </span>Step {step + 1} of {steps.length}
         </span>
-        {hydrated ? <span aria-hidden="true">·</span> : null}
-        {hydrated ? (
+        {/* Not while keepSaved: this session's answers are not being saved. */}
+        {hydrated && !initial.keepSaved ? <span aria-hidden="true">·</span> : null}
+        {hydrated && !initial.keepSaved ? (
           <span>
             <span className="sm:hidden">Saved</span>
             <span className="hidden sm:inline">Saved on this device</span>
@@ -745,12 +819,29 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
               >
                 <div key={`${stepId}-${mountKey}`}>
                   {stepId === "student" ? <StudentStep {...props} /> : null}
-                  {stepId === "course" ? <CourseStep {...props} /> : null}
-                  {stepId === "schedule" ? <ScheduleStep {...props} /> : null}
-                  {stepId === "fees" ? <FeesStep {...props} /> : null}
-                  {stepId === "weekendSchedule" ? <WeekendScheduleStep {...props} timeLine={weekendTimeLine} /> : null}
-                  {stepId === "summerFee" && season ? <SummerFeeStep {...props} season={season} /> : null}
-                  {stepId === "review" ? <ReviewStep {...props} groups={reviewGroups(draft, today)} onEdit={onEdit} /> : null}
+                  {later && stepId === "course" ? <later.CourseStep {...props} /> : null}
+                  {later && stepId === "schedule" ? <later.ScheduleStep {...props} /> : null}
+                  {later && stepId === "fees" ? <later.FeesStep {...props} /> : null}
+                  {later && stepId === "weekendSchedule" ? <later.WeekendScheduleStep {...props} timeLine={weekendTimeLine} /> : null}
+                  {later && stepId === "summerFee" && season ? <later.SummerFeeStep {...props} season={season} /> : null}
+                  {later && stepId === "review" ? <later.ReviewStep {...props} groups={reviewGroups(draft, today)} onEdit={onEdit} /> : null}
+                  {/* Only if this step's code has not arrived yet (it starts loading on page load): a very slow or lost connection. */}
+                  {!later && stepId !== "student" ? (
+                    laterFailed ? (
+                      <div role="alert">
+                        <InlineAlert tone="warning" title="This step could not load">
+                          <p>Check your connection, then try again.</p>
+                          <Button variant="secondary" className="mt-3" onClick={retryLater}>
+                            Try again
+                          </Button>
+                        </InlineAlert>
+                      </div>
+                    ) : (
+                      <p role="status" className="text-ui text-ink-muted">
+                        Loading this step…
+                      </p>
+                    )
+                  ) : null}
                 </div>
 
                 {/* Honeypot: hidden from people and from assistive tech; bots fill it. */}

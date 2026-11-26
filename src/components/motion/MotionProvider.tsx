@@ -8,8 +8,14 @@ import { ScrollDirectionProvider } from "./scroll-direction";
 const loadFeatures = () => import("./features").then((mod) => mod.default);
 
 /**
- * The one Motion boundary, around the whole site (root layout; owner,
- * 22 Nov 2026).
+ * The Motion boundary (owner, 22 Nov 2026). Each page that uses Reveal,
+ * AnimatedList or SlidingFilter wraps its whole content in it (Home, /courses,
+ * /courses/[slug], /instructors, /instructors/[slug], /programs/[slug],
+ * /scholarship). It is not in the root layout: LazyMotion carries Motion's
+ * VisualElement and value engine (about 11 KB gz), which pages without
+ * motion (/contact, /enroll, the 404 page) should not load (js-budget,
+ * 26 Nov 2026). A Reveal outside it throws (useScrollDirection), so a missed
+ * page fails loudly instead of silently losing its motion.
  *   - LazyMotion strict: only the light `m` components; the features load
  *     lazily, so the server HTML paints before any of Motion's code runs.
  *   - reducedMotion "user": under prefers-reduced-motion every transform and

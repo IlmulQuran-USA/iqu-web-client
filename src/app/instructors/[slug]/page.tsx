@@ -4,6 +4,7 @@ import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { AlsoTeaching, PROFILE_CTA_ID, ProfileBody, ProfileHeader } from "@/components/instructors/ProfileSections";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { nextStepOf, offeringsOf, profileDescription, roleOf } from "@/content/instructors-page";
 import { instructorById, instructors } from "@/content/instructors";
@@ -56,7 +57,7 @@ export default async function InstructorPage({ params }: PageProps<"/instructors
   if (!person) notFound();
   const next = nextStepOf(person);
   return (
-    <>
+    <MotionProvider>
       {person.noindex ? null : (
         <script
           type="application/ld+json"
@@ -87,6 +88,6 @@ export default async function InstructorPage({ params }: PageProps<"/instructors
           title={person.name}
         />
       )}
-    </>
+    </MotionProvider>
   );
 }

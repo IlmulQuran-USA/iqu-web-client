@@ -1,7 +1,8 @@
 "use client";
 
 import { AnimatePresence, useReducedMotion } from "motion/react";
-import * as m from "motion/react-m";
+// Named imports, not `import * as m`: see Reveal.tsx (keeps Reorder out of the bundle).
+import { div as MotionDiv, li as MotionLi, ul as MotionUl } from "motion/react-m";
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { HOLD_MS } from "./HoldHeight";
 import { LayoutFeatures } from "./LayoutFeatures";
@@ -52,8 +53,8 @@ export function AnimatedList({
     return () => window.clearTimeout(timer);
   }, [signature, reduced]);
 
-  const ListTag = as === "ul" ? m.ul : m.div;
-  const Item = itemAs === "li" ? m.li : m.div;
+  const ListTag = as === "ul" ? MotionUl : MotionDiv;
+  const Item = itemAs === "li" ? MotionLi : MotionDiv;
   return (
     // The glide needs Motion's layout features, loaded here only (LayoutFeatures).
     <LayoutFeatures>

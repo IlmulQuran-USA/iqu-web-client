@@ -10,6 +10,7 @@ import {
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Reveal } from "@/components/motion/Reveal";
 import { Header } from "@/components/layout/Header";
 import {
@@ -67,7 +68,7 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
   // The free first month applies to monthly courses only: the programs view gets the programs CTA.
   const cta = type === "programs" ? catalogProgramsCta : catalogFinal;
   return (
-    <>
+    <MotionProvider>
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
@@ -98,6 +99,6 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
       </main>
       <Footer />
       <StickyCTA label={cta.button.label} href={cta.button.href} afterId={catalogHeader.id} beforeId={FINAL_CTA_ID} />
-    </>
+    </MotionProvider>
   );
 }

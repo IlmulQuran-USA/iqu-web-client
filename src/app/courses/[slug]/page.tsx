@@ -7,6 +7,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { courseBySlug, ctas, fromLine, sectionsOf, shown } from "@/content/course-page";
 import { courses, type Course } from "@/content/courses";
@@ -75,7 +76,7 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
   const enrol = ctas(course).enrol;
 
   return (
-    <>
+    <MotionProvider>
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
@@ -118,6 +119,6 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
         title={course.navLabel ?? course.label}
         detail={fromLine(course)}
       />
-    </>
+    </MotionProvider>
   );
 }

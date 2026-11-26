@@ -1,6 +1,7 @@
 "use client";
 
-import * as m from "motion/react-m";
+// A named import, not `import * as m`: see Reveal.tsx (keeps Reorder out of the bundle).
+import { span as MotionSpan } from "motion/react-m";
 import Link from "next/link";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
@@ -57,7 +58,7 @@ export function SlidingFilter({
                 )}
               >
                 {isCurrent ? (
-                  <m.span
+                  <MotionSpan
                     layoutId={`${id}-indicator`}
                     aria-hidden="true"
                     className="absolute -inset-px rounded-button border border-accent-strong bg-tint"

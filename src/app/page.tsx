@@ -10,6 +10,7 @@ import { StepList } from "@/components/home/StepList";
 import { StickyCTA } from "@/components/home/StickyCTA";
 import { TeachersSection } from "@/components/home/TeachersSection";
 import { Footer } from "@/components/layout/Footer";
+import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { finalCta } from "@/content/home";
 import { socialLinks } from "@/content/navigation";
@@ -67,7 +68,7 @@ export default async function HomePage() {
   const hero = await getHomeHero();
 
   return (
-    <>
+    <MotionProvider>
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
@@ -109,6 +110,6 @@ export default async function HomePage() {
       </main>
       <Footer />
       <StickyCTA label={finalCta.button.label} href={finalCta.button.href} afterId={HERO_CTAS_ID} beforeId={FINAL_CTA_ID} />
-    </>
+    </MotionProvider>
   );
 }

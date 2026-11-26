@@ -12,6 +12,9 @@ const productionSite = isProductionSite();
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  // `JS_BUDGET_SOURCEMAPS=1 npm run build` emits browser source maps, to see
+  // which modules fill a chunk (scripts/js-budget.mjs). Off by default.
+  productionBrowserSourceMaps: process.env.JS_BUDGET_SOURCEMAPS === "1",
   partialPrefetching: true,
   // Development only: lets the owner's phone load dev resources from this
   // machine over the LAN (http://192.168.0.94:3000). No effect in production.

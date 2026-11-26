@@ -6,7 +6,8 @@ import { afterHelp, allowedDays, daysError, money, payWhatYouCanError, quoteMont
 import { countries } from "./options.ts";
 import { parseEnrollParams } from "./params.ts";
 import { phonesOf, programOf, registrationFields } from "./record.ts";
-import { ageOn, draftSchema, emptyDraft, summerLevel, toE164, validateAll, validateStep, type Draft } from "./schema.ts";
+import { draftSchema } from "./draft-schema.ts";
+import { ageOn, emptyDraft, summerLevel, toE164, validateAll, validateStep, type Draft } from "./schema.ts";
 import { clockLabel, namedZone, timeSlotText, windowErrors, zoneShort } from "./schedule.ts";
 
 const TODAY = "2026-11-24";
@@ -158,6 +159,22 @@ test("the schema refuses unknown values and long text", () => {
   assert.equal(draftSchema.safeParse({ ...complete(), quranLevel: "beginner" }).success, false);
   assert.equal(draftSchema.safeParse({ ...complete(), firstName: "x".repeat(101) }).success, false);
   assert.equal(draftSchema.safeParse({ ...complete(), submitId: "short" }).success, false);
+});
+
+// The schema moved from classic zod to zod/mini (js-budget, 26 Nov 2026): the same rules.
+test("the schema keeps whole numbers, ranges, list lengths and the coupon shape", () => {
+  const coupon = { code: "ZAKAT-2026", discount: 20, final: 30, percent: 40, declaration: "I confirm." };
+  assert.equal(draftSchema.safeParse({ ...complete(), daysPerWeek: 2.5 }).success, false);
+  assert.equal(draftSchema.safeParse({ ...complete(), daysPerWeek: 8 }).success, false);
+  assert.equal(draftSchema.safeParse({ ...complete(), classLength: -30 }).success, false);
+  assert.equal(draftSchema.safeParse({ ...complete(), days: Array(7).fill("monday") }).success, true);
+  assert.equal(draftSchema.safeParse({ ...complete(), days: Array(8).fill("monday") }).success, false);
+  assert.equal(draftSchema.safeParse({ ...complete(), couponApplied: null }).success, true);
+  assert.equal(draftSchema.safeParse({ ...complete(), couponApplied: coupon }).success, true);
+  assert.equal(draftSchema.safeParse({ ...complete(), couponApplied: { ...coupon, discount: -1 } }).success, false);
+  assert.equal(draftSchema.safeParse({ ...complete(), couponApplied: { ...coupon, percent: 101 } }).success, false);
+  const parsed = draftSchema.safeParse({ ...complete(), extra: "dropped" });
+  assert.equal(parsed.success && "extra" in parsed.data, false);
 });
 
 test("guardian: required under 18, optional for an adult enrolling themselves", () => {
