@@ -4,6 +4,7 @@ import { ctas, teacherGroups } from "./course-page";
 import { courseFaq, courseRules, courses, programList, teacherMatching } from "./courses";
 import { faq as homeFaq, teachersSection } from "./home";
 import { instructors } from "./instructors";
+import { builtOrNull } from "./planned-pages";
 import { site } from "./site";
 import { LANGUAGES, type Instructor, type Language } from "./types";
 
@@ -133,7 +134,8 @@ export const matching = {
 /** Spec §7.4 section 5: recruitment, as a quiet text row (the page has one filled button). */
 export const teachWithUs = {
   text: draft("Are you a qualified Quran teacher? We are always glad to hear from teachers."),
-  link: { label: "Teach with us", href: "/teach" },
+  /** null until /teach exists (./planned-pages): the row is then left out. */
+  link: builtOrNull({ label: "Teach with us", href: "/teach" }),
 } as const;
 
 /* ── Profile ─────────────────────────────────────────────────────────────── */

@@ -1,4 +1,5 @@
 import { aid } from "./aid";
+import { builtOnly, builtOrNull } from "./planned-pages";
 import { courseById, fromPrice, isFixedSchedule, monthlyCourses, programs, sessionLengths, sessionLengthsNoWrap, usd, type CourseId } from "./pricing";
 import { courseContent, courseFaq, courseRules, teacherMatching } from "./courses";
 import { instructors } from "./instructors";
@@ -259,10 +260,11 @@ export const giving = {
   bodyJoin: "is the teaching name of",
   bodyRest: `, a ${site.taxStatus}. Donations, including Zakat, go to the scholarship fund that pays for those places.`,
   legal: `${site.taxStatus} · EIN ${site.ein}`,
-  links: [
+  // Links to pages not built yet are left out until they exist (./planned-pages).
+  links: builtOnly([
     { label: "How we’re funded", href: "/about/transparency" },
     { label: "Support a student", href: "/donate" },
-  ],
+  ]),
   /** PRODUCT.md "Evidence on Hand": absent, never invented. */
   whereTheMoneyGoes: PENDING,
 } as const;
@@ -297,7 +299,8 @@ const costPoints = [
  */
 export const faq = {
   heading: "Common questions",
-  all: { label: "All questions", href: "/faq" },
+  /** null until /faq exists (./planned-pages). */
+  all: builtOrNull({ label: "All questions", href: "/faq" }),
   items: [
     {
       status: "draft",

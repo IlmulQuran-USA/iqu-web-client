@@ -55,6 +55,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   - Whether the portal later replaces Telegram is still open.
 - **Donations:** Zeffy, synced into `iqu_zeffy_payments`. That table is the only record of giving.
 - **Tuition billing:** Stripe checkout during enrolment. After the free first month, tuition is charged on the 1st of each month (K1, closed 24 Nov 2026).
+- **Analytics (owner, 26 Nov 2026):** Google Analytics 4 stays, and the Privacy Policy keeps naming it. On the new site GA4 loads **only after statistics consent**, built together with the consent banner (before cutover). Live IDs, read-only from Site Kit on 26 Nov 2026 (public, they appear in every page's HTML): GA4 measurement ID **`G-7QQ7S0EX1T`** (property 536990356, web data stream 14852904439); the live site also loads Google Tag Manager container **`GTM-ND5JF9P2`**.
 - **Other tools:** Brevo (newsletter only), Meta Ads (the Meta CAPI Lead event fires on enrolment confirmation, with deduplication, consent-gated), WordPress. Transactional and contact-form email goes through the Gmail API from the same account as today (owner, 24 Nov 2026). Until cutover, the live site and the `iqu-registration` plugin stay the source for current data.
 - **Existing data:** `iqu_registrations` (50 fields per enrolment), `iqu_zeffy_payments`, and `iqu_coupons`. The enrolment redesign changes how these are presented, not the data model.
 
@@ -132,7 +133,8 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   - Email goes through the same Gmail account as today (Gmail API, OAuth), not Brevo; the contact form uses the same mailer.
   - The 9 PM daily summary stays one message (registrations, tuition, donations). From switch day the Next cron sends it and reads donation totals from a read-only signed WordPress endpoint until the giving pages move.
   - Vercel Pro and a private repository are required before the Stripe phase. Cutover mid-January 2027, mid-month, never near the 1st; fallback mid-March 2027 (after Ramadan and Eid). 30-day rollback.
-  - Retention: students who were ever billed are archived forever; other records are kept 24 months. Admin-added existing students get no free month. Zeffy donations stay on WordPress for now.
+  - Retention (owner, 26 Nov 2026; replaces "students who were ever billed are archived forever"): billing and payment records are kept **7 years after the family's last payment**; all other records are kept **24 months**. This keeps the live Privacy Policy's promise ("for up to 7 years afterwards"). Admin-added existing students get no free month.
+  - Pre-charge reminder (owner, 26 Nov 2026): the Tuition Policy promises "you receive an email reminder before that date", but the live plugin never sends one. Next.js sends an IQU-branded email **7 days before a family's first charge** (P2 plan; P4 cron + Gmail mailer). The promise stays on /legal/refund. Zeffy donations stay on WordPress for now.
 - **K2 · Phone number** (CONTENT-ADDENDUM.md §7), closed by the owner, 22 Nov 2026: +1 (214) 529-3544 is correct (the live Contact page and the enrollment plugin). The (214) 662-1591 on the live About page is outdated; never use it.
 
 ## Brand Commitments

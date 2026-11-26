@@ -48,7 +48,10 @@ export type LegalDoc = {
   lead: string;
   /** Meta description. */
   description: string;
-  /** "Last updated", as 30 Aug 2026; [pending] until the owner sets the publication date. */
+  /**
+   * "Last updated", as 30 Aug 2026. Privacy, Refund and Accessibility show the
+   * cutover date (owner, 26 Nov 2026): [pending] until that day.
+   */
   updated: string;
   /** "draft" for a page with no live equivalent that the owner has not approved. */
   status: "live" | "draft";
@@ -69,7 +72,7 @@ export const privacyPolicy: LegalDoc = {
   lead: "How we collect, use and protect your family’s information.",
   description:
     "How Ilm-Ul-Quran USA collects, uses and protects your family’s information: what we collect, who we share it with, cookies, children’s privacy and your rights.",
-  // The proposed changes below take effect only when published; the owner sets that date.
+  // The cutover date (owner, 26 Nov 2026), when the proposed changes below take effect.
   updated: PENDING,
   status: "live",
   source: { wpId: 3, url: "https://ilmulquranus.org/privacy-policy/", updated: "10 Nov 2026" },
@@ -120,17 +123,9 @@ export const privacyPolicy: LegalDoc = {
                   "The new /contact form sends messages to the team inbox through the Gmail mailer; the queued copy's body is dropped once sent (src/lib/server/contact.ts, outbox.ts).",
               },
             },
-            {
-              text: "**Newsletter sign-ups:** if you sign up for our newsletter, we send your email address to Brevo, which emails you to confirm the sign-up and then sends the newsletter.",
-              change: {
-                status: "draft",
-                kind: "add",
-                label: "New: newsletter sign-ups (Brevo)",
-                old: null,
-                reason:
-                  "The new footer newsletter form sends the email address to Brevo for double opt-in (src/app/actions/newsletter.ts). Applies once the newsletter is switched on.",
-              },
-            },
+            // No Brevo line (owner, 26 Nov 2026: Privacy names only tools in use). Brevo is not in use
+            // yet: the footer form shows "Sign-up opens soon." until BREVO_* is set. Add a newsletter
+            // line here, and Brevo under "Who we share it with", before switching the newsletter on.
             { text: "**Donations** made through Zeffy, which processes the payment and shares the donor's name, email and amount with us." },
             {
               text: "**Technical information** when you visit our website, such as IP address, browser and device type, and pages visited, collected through cookies and similar tools (see below).",
@@ -253,16 +248,6 @@ export const privacyPolicy: LegalDoc = {
                 label: "New: WordPress host while pages move",
                 old: null,
                 reason: "Zeffy donations and the card and Summer payment pages stay on WordPress for v1 (PRODUCT.md).",
-              },
-            },
-            {
-              text: "**Brevo** — sends our newsletter to people who sign up for it.",
-              change: {
-                status: "draft",
-                kind: "add",
-                label: "New: Brevo (newsletter)",
-                old: null,
-                reason: "Footer newsletter sign-up uses Brevo's double opt-in (src/lib/server/brevo.ts).",
               },
             },
             { text: "We may also share information when the law requires it." },
@@ -544,7 +529,7 @@ export const refundPolicy: LegalDoc = {
   lead: "How monthly tuition, payments and refunds work.",
   description:
     "How monthly tuition, payments and refunds work at Ilm-Ul-Quran USA: the free first month, billing on the 1st, failed payments, pausing or stopping, and refunds.",
-  // The billing-day corrections below are published with the new site; the owner sets that date.
+  // The cutover date (owner, 26 Nov 2026): the billing-day corrections below go live with the new site.
   updated: PENDING,
   status: "live",
   source: { wpId: 1366, url: "https://ilmulquranus.org/tuition-refund-policy/", updated: "16 Nov 2026" },

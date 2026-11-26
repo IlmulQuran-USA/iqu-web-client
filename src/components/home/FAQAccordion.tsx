@@ -51,13 +51,16 @@ export function FAQAccordion() {
                 )}
               </dd>
             </dl>
-            <Link
-              href={faq.all.href}
-              className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-            >
-              {faq.all.label}
-              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-            </Link>
+            {/* "All questions" only once /faq exists (src/content/planned-pages.ts). */}
+            {faq.all ? (
+              <Link
+                href={faq.all.href}
+                className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+              >
+                {faq.all.label}
+                <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
+              </Link>
+            ) : null}
           </div>
         </div>
       </div>

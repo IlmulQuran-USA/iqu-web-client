@@ -11,6 +11,7 @@ import {
   featuredProgram,
   primaryLinks,
   programs,
+  showLogin,
   type NavLink,
 } from "@/content/navigation";
 import { cn } from "@/lib/cn";
@@ -33,8 +34,11 @@ import { Logo } from "./Logo";
  *   overlay transition allow-discrete keep it painted meanwhile). The
  *   sections open and close on a spring. Under reduced motion the panel,
  *   scrim and rows only fade.
+ * - Log in appears once /login exists (src/content/planned-pages.ts). On a
+ *   giving page (`giving`) there is no Start free trial: enrollment and
+ *   giving stay apart (PRODUCT.md; owner, 26 Nov 2026).
  */
-export function MobileNav({ pathname, className }: { pathname: string; className?: string }) {
+export function MobileNav({ pathname, className, giving = false }: { pathname: string; className?: string; giving?: boolean }) {
   const [open, setOpen] = useState(false);
   // The drawer's Donate plays its 3 laps the first time the drawer opens, not on every open.
   const [opened, setOpened] = useState(false);
@@ -171,18 +175,22 @@ export function MobileNav({ pathname, className }: { pathname: string; className
               onNavigate={closeDrawer}
               className="w-full"
             />
-            <ButtonLink
-              href={primaryLinks.login.href}
-              variant="tonal"
-              fullWidth
-              onClick={closeDrawer}
-              iconStart={<UserRound aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />}
-            >
-              {primaryLinks.login.label}
-            </ButtonLink>
-            <ButtonLink href={primaryLinks.enrol.href} variant="primary" fullWidth onClick={closeDrawer}>
-              {primaryLinks.enrol.label}
-            </ButtonLink>
+            {showLogin ? (
+              <ButtonLink
+                href={primaryLinks.login.href}
+                variant="tonal"
+                fullWidth
+                onClick={closeDrawer}
+                iconStart={<UserRound aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />}
+              >
+                {primaryLinks.login.label}
+              </ButtonLink>
+            ) : null}
+            {giving ? null : (
+              <ButtonLink href={primaryLinks.enrol.href} variant="primary" fullWidth onClick={closeDrawer}>
+                {primaryLinks.enrol.label}
+              </ButtonLink>
+            )}
           </div>
         </div>
       </dialog>

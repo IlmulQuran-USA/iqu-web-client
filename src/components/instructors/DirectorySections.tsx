@@ -262,6 +262,8 @@ export function Matching() {
 }
 
 export function TeachWithUs() {
+  // Left out until /teach exists (src/content/planned-pages.ts).
+  if (!teachWithUs.link) return null;
   return (
     <div className="container-content">
       <div className="flex flex-col gap-1 border-t border-rule py-8 sm:flex-row sm:items-center sm:justify-between sm:gap-6">

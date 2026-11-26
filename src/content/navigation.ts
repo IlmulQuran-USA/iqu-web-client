@@ -7,6 +7,7 @@
  * Course names and routes come from src/content/pricing.ts.
  */
 
+import { builtOnly, isPlanned } from "./planned-pages.ts";
 import { courseById, monthlyCourses, programs as pricedPrograms, type CourseId } from "./pricing.ts";
 
 /** A course link for tight columns (footer): uses the short navLabel when there is one. */
@@ -59,20 +60,23 @@ export const featuredProgram = {
  * discount ("every child pays the full fee", PRODUCT.md) and no family-plan
  * route.
  */
-export const programs: NavLink[] = [
+export const programs: NavLink[] = builtOnly([
   { label: pricedPrograms.summer.label, href: pricedPrograms.summer.href },
   { label: pricedPrograms.weekend.label, href: pricedPrograms.weekend.href },
   { label: "One-on-one classes", href: "/programs/one-on-one" },
-];
+]);
 
-/** About ▾ */
-export const about: NavLink[] = [
+/**
+ * About ▾. Every list here passes through builtOnly: a link to a page that is
+ * not built yet (./planned-pages.ts) is left out until the page exists.
+ */
+export const about: NavLink[] = builtOnly([
   { label: "Our story", href: "/about" },
   { label: "Why choose us", href: "/about/why-us" },
   { label: "Transparency & finances", href: "/about/transparency" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
-];
+]);
 
 /**
  * DECIDED: on mobile the header bar carries no button (spec §6.1).
@@ -86,16 +90,20 @@ export const primaryLinks = {
   enrol: { label: "Start free trial", href: "/enroll" },
 } as const;
 
+/** Log in is shown only once /login exists (./planned-pages.ts). */
+export const showLogin = !isPlanned(primaryLinks.login.href);
+
 /** Zeffy giving page (owner, 19 Nov 2026). */
 export const ZEFFY_GIVING_URL =
   "https://www.zeffy.com/en-US/fundraising/d912691e-fbd0-4140-9453-a7b230b333eb";
 
 /**
- * Footer columns (spec §6.2; owner decision, 19 Nov 2026): exactly six rows
- * each. Support us has five links; its sixth row is the 501(c)(3) · EIN line,
+ * Footer columns (spec §6.2; owner decision, 19 Nov 2026): six rows each once
+ * every page exists; until then, links to pages not built yet are left out
+ * (./planned-pages.ts). Support us has five links; its sixth row is the 501(c)(3) · EIN line,
  * drawn by the footer, so the EIN appears only once.
  */
-export const footerColumns: { title: string; links: NavLink[]; giving?: boolean }[] = [
+const columns: { title: string; links: NavLink[]; giving?: boolean }[] = [
   {
     title: "Learn",
     links: [
@@ -134,6 +142,8 @@ export const footerColumns: { title: string; links: NavLink[]; giving?: boolean 
     ],
   },
 ];
+
+export const footerColumns = columns.map((column) => ({ ...column, links: builtOnly(column.links) }));
 
 /**
  * Social links in the legal strip (spec §6.2).

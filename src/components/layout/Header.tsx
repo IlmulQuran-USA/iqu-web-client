@@ -12,6 +12,7 @@ import {
   featuredProgram,
   primaryLinks,
   programs,
+  showLogin,
   type NavLink,
 } from "@/content/navigation";
 import { cn } from "@/lib/cn";
@@ -34,6 +35,9 @@ import { MobileNav } from "./MobileNav";
  * - Menus open on click, not hover, so keyboard and touch work the same way.
  *   Escape closes a menu and returns focus to its trigger, as do a click
  *   outside and focus leaving the nav.
+ * - Log in appears once /login exists (src/content/planned-pages.ts). On a
+ *   giving page (`giving`: /donate) there is no Start free trial, so Donate
+ *   is the page's one filled action (owner, 26 Nov 2026).
  */
 
 type MenuKey = "courses" | "programs" | "about";
@@ -43,7 +47,10 @@ const SCROLL_THRESHOLD = 40;
 export function Header({
   yieldCtaTo,
   yieldOnLoad = false,
+  giving = false,
 }: {
+  /** A giving page: no enrollment button in the header or the drawer. */
+  giving?: boolean;
   /**
    * Ids of on-page elements holding the page's own filled CTAs (the Home hero
    * buttons and the final CTA band). While any of them is on screen the
@@ -215,23 +222,29 @@ export function Header({
           </ul>
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <ButtonLink
-            href={primaryLinks.login.href}
-            variant="tonal"
-            // Icon-only below xl: exactly 44 × 44 (the important flag beats the size padding).
-            className="max-xl:w-11 max-xl:px-0!"
-            iconStart={<UserRound aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />}
-          >
-            {/* Icon-only from 1024 to 1279 so the row fits; the label stays for screen readers. */}
-            <span className="sr-only xl:not-sr-only">{primaryLinks.login.label}</span>
-          </ButtonLink>
-          <ButtonLink href={primaryLinks.enrol.href} variant={ctaYielded ? "secondary" : "primary"}>
-            {primaryLinks.enrol.label}
-          </ButtonLink>
-        </div>
+        {showLogin || !giving ? (
+          <div className="hidden items-center gap-2 lg:flex">
+            {showLogin ? (
+              <ButtonLink
+                href={primaryLinks.login.href}
+                variant="tonal"
+                // Icon-only below xl: exactly 44 × 44 (the important flag beats the size padding).
+                className="max-xl:w-11 max-xl:px-0!"
+                iconStart={<UserRound aria-hidden="true" strokeWidth={1.5} className="size-4 shrink-0" />}
+              >
+                {/* Icon-only from 1024 to 1279 so the row fits; the label stays for screen readers. */}
+                <span className="sr-only xl:not-sr-only">{primaryLinks.login.label}</span>
+              </ButtonLink>
+            ) : null}
+            {giving ? null : (
+              <ButtonLink href={primaryLinks.enrol.href} variant={ctaYielded ? "secondary" : "primary"}>
+                {primaryLinks.enrol.label}
+              </ButtonLink>
+            )}
+          </div>
+        ) : null}
 
-        <MobileNav pathname={pathname} className="lg:hidden" />
+        <MobileNav pathname={pathname} className="lg:hidden" giving={giving} />
       </div>
     </header>
   );

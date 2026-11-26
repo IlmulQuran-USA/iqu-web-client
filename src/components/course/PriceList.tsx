@@ -150,18 +150,5 @@ export function Price({
   );
 }
 
-/** An inline text link with an arrow (44 px target). */
-export function TextLink({ label, href, className }: { label: string; href: string; className?: string }) {
-  return (
-    <Link
-      href={href}
-      className={cn(
-        "inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2",
-        className,
-      )}
-    >
-      {label}
-      <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-    </Link>
-  );
-}
+/** Moved to src/components/ui/TextLink.tsx (no client imports); re-exported for existing imports. */
+export { TextLink } from "@/components/ui/TextLink";
