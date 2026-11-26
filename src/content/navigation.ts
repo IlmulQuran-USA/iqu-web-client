@@ -7,7 +7,7 @@
  * Course names and routes come from src/content/pricing.ts.
  */
 
-import { courseById, monthlyCourses, programs as pricedPrograms, type CourseId } from "./pricing";
+import { courseById, monthlyCourses, programs as pricedPrograms, type CourseId } from "./pricing.ts";
 
 /** A course link for tight columns (footer): uses the short navLabel when there is one. */
 const course = (id: CourseId): NavLink => {

@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
-// 301s from the live WordPress course URLs (COURSE-CONTENT.md §11, C6) and
-// from renamed instructor slugs. The module imports only ./pricing, so the
-// config loader can read it.
-import { instructorSlugRedirects, legacyCourseRedirects } from "./src/content/legacy-paths";
+// 301s from the live WordPress course URLs (COURSE-CONTENT.md §11, C6), from
+// renamed instructor slugs, and from the live policy pages to /legal/*. The
+// module imports only ./pricing, so the config loader can read it.
+import { instructorSlugRedirects, legacyCourseRedirects, legalRedirects } from "./src/content/legacy-paths";
 // Staging (dev.ilmulquranus.org) and previews must never be indexed. Anything
 // but NEXT_PUBLIC_SITE_ENV=production is staging (DEPLOYMENT.md).
 import { isProductionSite, NOINDEX_HEADER } from "./src/lib/site-env";
@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
   // dashboard screenshots, whose small UI text needs it (owner, 21 Nov 2026).
   images: { qualities: [75, 90] },
   async redirects() {
-    return [...legacyCourseRedirects(), ...instructorSlugRedirects()];
+    return [...legacyCourseRedirects(), ...instructorSlugRedirects(), ...legalRedirects()];
   },
   // Staging: X-Robots-Tag on every response, pages and static files alike.
   async headers() {

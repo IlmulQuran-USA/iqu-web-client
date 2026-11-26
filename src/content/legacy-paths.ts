@@ -1,4 +1,4 @@
-import { monthlyCourses, programs, type CourseId, type ProgramId } from "./pricing";
+import { monthlyCourses, programs, type CourseId, type ProgramId } from "./pricing.ts";
 
 /*
  * The live WordPress paths of each course and program (COURSE-CONTENT.md
@@ -112,4 +112,21 @@ export function legacyCourseRedirects() {
       statusCode: 301 as const,
     })),
   ];
+}
+
+/**
+ * The live WordPress policy pages (read-only via Novamira, 26 Nov 2026: pages
+ * 3, 443 and 1366; no old slugs, no Rank Math redirects), each to its
+ * /legal/* page (the footer's links, spec §6.2). Complianz has no pages of
+ * its own: its cookie statement links to /privacy-policy/. Next.js drops the
+ * trailing slash first, so the source has none.
+ */
+export const livePolicyPaths: Record<string, string> = {
+  "/privacy-policy": "/legal/privacy",
+  "/terms-and-conditions": "/legal/terms",
+  "/tuition-refund-policy": "/legal/refund",
+};
+
+export function legalRedirects() {
+  return Object.entries(livePolicyPaths).map(([source, destination]) => ({ source, destination, statusCode: 301 as const }));
 }
