@@ -80,7 +80,9 @@ export const howToAsk = {
 } as const;
 
 export const donorLine = {
-  text: "Scholarships are paid for by Zakat and donations.",
+  // Owner, 26 Nov 2026 (honest framing, as on /donate): donations support the fund; never that they pay for every scholarship.
+  // Was "Scholarships are paid for by Zakat and donations."
+  text: "Donations, including Zakat, support our scholarship fund.",
   link: { label: "Support a student", href: "/donate" },
 } as const;
 

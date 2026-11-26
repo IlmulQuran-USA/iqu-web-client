@@ -564,7 +564,8 @@ export const courseFaq = [
     // Tuition & Refund Policy, 16 Nov 2026 (CONTENT-ADDENDUM.md §2). Never promise make-ups beyond it.
     a: "If your teacher or we cancel a class and it isn’t made up, it is refunded or taken off your next month.",
   },
-  { status: "draft", q: "Is there a certificate?", a: "Yes, at the end of the course." },
+  // courseRules.certificate (live), so the course pages and /faq give one answer (owner, 26 Nov 2026).
+  { status: "draft", q: "Is there a certificate?", a: `Yes. ${courseRules.certificate.text}` },
   {
     status: "draft",
     q: "Can we change days or the course later?",

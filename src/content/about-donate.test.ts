@@ -51,7 +51,7 @@ test("the three giving pages that do not exist yet are planned (pending), not li
     support.links.map((l) => l.href),
     ["/donate", ZEFFY_GIVING_URL],
   );
-  assert.deepEqual(builtOnly([{ href: "/faq?x=1" }, { href: "/donate#zakat" }]), [{ href: "/donate#zakat" }]);
+  assert.deepEqual(builtOnly([{ href: "/blog?x=1" }, { href: "/donate#zakat" }]), [{ href: "/donate#zakat" }]);
 });
 
 test("planned pages and real routes never overlap (a built page must leave the list)", () => {

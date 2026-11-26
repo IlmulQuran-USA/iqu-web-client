@@ -755,6 +755,13 @@
       opacity 240ms var(--ease-riwaq) 40ms,
       content-visibility var(--duration-spring-snappy) allow-discrete;
   }
+  /* A deep link (/faq#<id>) targets an anchor inside a closed answer: the
+     browser opens it, then scrolls to it. Opened without the transition, the
+     answer is laid out at once, so that scroll lands (it is skipped while the
+     content is still transitioning out of content-visibility: hidden). */
+  .faq-item:has(:target)::details-content {
+    transition: none;
+  }
 
   @media (prefers-reduced-motion: reduce) {
     .menu-panel,

@@ -19,7 +19,6 @@ export const plannedPages: readonly PlannedPage[] = [
   { href: "/impact", label: "Impact", status: "pending", waitingFor: "Owner Q3: approved figures with an as-of date" },
   { href: "/teach", label: "Teach with us", status: "pending", waitingFor: "Spec §7.16; not planned yet" },
   { href: "/blog", label: "Blog", status: "pending", waitingFor: "Spec §7.13; no articles yet" },
-  { href: "/faq", label: "FAQ", status: "pending", waitingFor: "Spec §7.14; the Home answers are still drafts" },
   { href: "/programs/one-on-one", label: "One-on-one classes", status: "pending", waitingFor: "Spec §7.11; not planned yet" },
   { href: "/login", label: "Log in", status: "pending", waitingFor: "The portal (spec §7B); no sign-in yet" },
 ];
