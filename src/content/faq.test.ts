@@ -101,3 +101,8 @@ test("Home's 'All questions' link is back now that /faq exists", () => {
   assert.equal(homeFaq.all?.href, "/faq");
   assert.equal(isPlanned("/faq"), false);
 });
+
+test("/contact links to the FAQ above its form (spec §7.15 item 5)", async () => {
+  const { contactFaq } = await import("./contact.ts");
+  assert.equal(contactFaq.link.href, "/faq");
+});

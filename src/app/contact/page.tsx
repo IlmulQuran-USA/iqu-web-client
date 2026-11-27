@@ -4,7 +4,8 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { CopyButton } from "@/components/ui/CopyButton";
-import { channels, contactForm, contactHeader, contactMeta, type Channel } from "@/content/contact";
+import { TextLink } from "@/components/ui/TextLink";
+import { channels, contactFaq, contactForm, contactHeader, contactMeta, type Channel } from "@/content/contact";
 import { pageMetadata } from "@/lib/metadata";
 import { contactConfig } from "@/lib/server/contact";
 
@@ -90,13 +91,14 @@ export default function ContactPage() {
             <h2 id="message-title" className="text-heading-xl">
               {contactForm.heading}
             </h2>
+            {open ? <p className="mt-2 text-body text-ink-body">{contactForm.intro}</p> : null}
+            {/* Spec §7.15 item 5: the FAQ link sits above the form, in both form states. */}
+            <p className="mt-3 text-body text-pretty text-ink-body">{contactFaq.text}</p>
+            <TextLink label={contactFaq.link.label} href={contactFaq.link.href} />
             {open ? (
-              <>
-                <p className="mt-2 text-body text-ink-body">{contactForm.intro}</p>
-                <div className="mt-6">
-                  <ContactForm />
-                </div>
-              </>
+              <div className="mt-6">
+                <ContactForm />
+              </div>
             ) : (
               <div className="mt-6 rounded-card bg-surface p-6 sm:p-8">
                 <p className="text-body-lg font-medium text-ink">{contactForm.closed}</p>

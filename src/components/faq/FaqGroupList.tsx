@@ -20,8 +20,9 @@ export function FaqGroupList({ items, className }: { items: readonly FaqEntry[];
   return (
     <div className={cn("border-t border-ink", className)}>
       {items.map((item) => (
-        <details key={item.id} className="faq-item group border-b border-rule">
-          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink [&::-webkit-details-marker]:hidden">
+        // suppressHydrationWarning: on a deep link the browser opens the targeted answer (adds `open`) before hydration.
+        <details key={item.id} suppressHydrationWarning className="faq-item group border-b border-rule">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink decoration-accent-strong decoration-1 underline-offset-4 hov:underline [&::-webkit-details-marker]:hidden">
             {item.q}
             <ChevronDown
               aria-hidden="true"

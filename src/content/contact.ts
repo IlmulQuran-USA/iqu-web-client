@@ -63,3 +63,9 @@ export const contactForm = {
   sent: "Thank you. We received your message and will reply by email.",
   button: "Send message",
 } as const;
+
+/** Spec §7.15 item 5: a link to the FAQ above the form, to answer common questions first. */
+export const contactFaq = {
+  text: "Many questions about classes, fees and billing already have an answer.",
+  link: { label: "Read the FAQ", href: "/faq" },
+} as const;

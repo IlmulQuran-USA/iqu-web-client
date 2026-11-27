@@ -88,7 +88,7 @@ export function FAQList({ items, className }: { items: readonly FAQItem[]; class
         // faq-item: the answer springs open and eases closed in CSS (globals.css). RevealItem: the
         // question follows its section in when a Reveal wraps the list.
         <RevealItem as="details" key={item.q} className="faq-item group border-b border-rule">
-          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 rounded-chip py-4 text-body-lg font-medium text-ink decoration-accent-strong decoration-1 underline-offset-4 hov:underline [&::-webkit-details-marker]:hidden">
             {item.q}
             <ChevronDown
               aria-hidden="true"
