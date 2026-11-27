@@ -2,8 +2,11 @@ import { NextResponse, type NextRequest } from "next/server";
 import { instructorIds } from "@/content/instructors";
 import { monthlyCourses } from "@/content/pricing";
 import { COOKIES, locationCode } from "@/lib/consent";
+import { decideAccess, isPortalPath } from "@/lib/auth/access";
+import { CLERK_SESSION_COOKIE, clerkEnv, rolesFromClaims, verifyClerkToken } from "@/lib/auth/clerk";
+import { SESSION_COOKIE, verifySession, type Role } from "@/lib/auth/session";
 import { legacyHop } from "@/lib/legacy-redirect";
-import { wpOrigin } from "@/lib/site-env";
+import { portalAuth, portalEnabled, previewPassword, wpOrigin } from "@/lib/site-env";
 
 /**
  * Three jobs, on page requests only (/_next, /api and files never come here;
@@ -27,22 +30,56 @@ import { wpOrigin } from "@/lib/site-env";
  *    static and the banner reads it in the browser. No header (local
  *    development) means no cookie, and the banner uses the strictest model.
  *    Only the country code (or "CA-QC") is kept, never the IP.
+ * 4. The portal guard (portal Batch 1, owner 27 Nov 2026): /login,
+ *    /forgot-password, /a, /p, /s, /t and the old parent-dashboard preview
+ *    answer 404 wherever the portal is closed (always on the public site until
+ *    PORTAL_DATA=live); a stranger goes to /login, and a signed-in person who
+ *    opens another role's area goes to their own home. Each page checks again
+ *    (src/lib/auth/viewer.ts requireArea).
  */
 const known: Record<string, Set<string>> = {
   courses: new Set<string>(monthlyCourses.map((c) => c.id)),
   instructors: new Set<string>(instructorIds),
 };
 
-function route(request: NextRequest): NextResponse {
+/** The signed-in roles from the portal's session cookie (preview or Clerk), or null. */
+async function sessionRoles(request: NextRequest): Promise<{ roles: Role[] } | null> {
+  const provider = portalAuth();
+  if (provider === "preview") {
+    const session = await verifySession(request.cookies.get(SESSION_COOKIE)?.value, previewPassword() as string);
+    return session ? { roles: session.roles } : null;
+  }
+  if (provider === "clerk") {
+    const { pem, authorizedParties } = clerkEnv();
+    const claims = pem ? await verifyClerkToken(request.cookies.get(CLERK_SESSION_COOKIE)?.value, pem, { authorizedParties }) : null;
+    const roles = claims ? rolesFromClaims(claims) : [];
+    return roles.length ? { roles } : null;
+  }
+  return null;
+}
+
+async function route(request: NextRequest): Promise<NextResponse> {
   const hop = legacyHop(request.nextUrl.pathname, request.nextUrl.search, wpOrigin());
   if (hop) return NextResponse.redirect(new URL(hop.location, request.url), hop.status);
+  // 4. The portal (src/lib/auth/access.ts): 404 where it is closed, sign-in for strangers, own home for another role's area.
+  if (isPortalPath(request.nextUrl.pathname)) {
+    const decision = decideAccess({
+      pathname: request.nextUrl.pathname,
+      search: request.nextUrl.search,
+      enabled: portalEnabled(),
+      session: portalEnabled() ? await sessionRoles(request) : null,
+    });
+    if (decision.action === "notFound") return NextResponse.rewrite(new URL("/_portal-closed", request.url));
+    if (decision.action === "redirect") return NextResponse.redirect(new URL(decision.to, request.url), 307);
+    return NextResponse.next();
+  }
   const [, section = "", slug = "", extra] = request.nextUrl.pathname.split("/");
   if (!(section in known) || !slug || extra !== undefined || known[section].has(slug)) return NextResponse.next();
   return NextResponse.rewrite(new URL("/_unknown-course", request.url));
 }
 
-export function proxy(request: NextRequest) {
-  const response = route(request);
+export async function proxy(request: NextRequest) {
+  const response = await route(request);
   const code = locationCode(request.headers.get("x-vercel-ip-country"), request.headers.get("x-vercel-ip-country-region"));
   if (code && request.cookies.get(COOKIES.country)?.value !== code) {
     response.cookies.set(COOKIES.country, code, {

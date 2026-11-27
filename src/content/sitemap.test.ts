@@ -46,9 +46,11 @@ test("staging robots.txt: Disallow everything, no sitemap; every response also s
   assert.deepEqual(NOINDEX_HEADER, { key: "X-Robots-Tag", value: "noindex, nofollow" });
 });
 
-test("production robots.txt: allow, keep the tools and the API out, point at the sitemap on the real domain", () => {
+test("production robots.txt: allow, keep the tools, the API and the portal out, point at the sitemap on the real domain", () => {
   const r = robotsRules(true, siteUrl(undefined, "production").origin);
-  assert.deepEqual(r.rules, [{ userAgent: "*", allow: "/", disallow: ["/api/", "/dev/", "/preview/"] }]);
+  assert.deepEqual(r.rules, [
+    { userAgent: "*", allow: "/", disallow: ["/api/", "/dev/", "/preview/", "/login", "/forgot-password", "/a/", "/p/", "/s/", "/t/"] },
+  ]);
   assert.equal(r.sitemap, `${PROD}/sitemap.xml`);
 });
 

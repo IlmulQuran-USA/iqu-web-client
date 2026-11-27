@@ -37,6 +37,52 @@ export function wpOrigin(value: string | undefined = process.env.WP_ORIGIN, env:
   }
 }
 
+/*
+ * The portal and admin (owner, 27 Nov 2026; plan
+ * F:/iqu-setup/reports/frontend-portal-admin-plan.md §3). One data flag,
+ * PORTAL_DATA = mock | live | off, read on the server:
+ *   mock  the invented data set (src/data/mock), with the four preview
+ *         accounts. Never on the public site, whatever the flag says.
+ *   live  the real adapters (src/data/live), behind Clerk.
+ *   off   no portal: /login, /a, /p, /s, /t answer 404.
+ * Unset means mock on staging (dev.ilmulquranus.org) and off on the public
+ * site, so production stays closed until someone sets PORTAL_DATA=live.
+ */
+export type PortalData = "mock" | "live" | "off";
+
+export function portalData(env: Record<string, string | undefined> = process.env): PortalData {
+  const value = env.PORTAL_DATA?.trim();
+  const production = isProductionSite(env.NEXT_PUBLIC_SITE_ENV);
+  if (value === "live") return "live";
+  if (value === "off") return "off";
+  if (value === "mock" || value === undefined || value === "") return production ? "off" : "mock";
+  return "off";
+}
+
+/** Clerk is configured when both of its keys are present. */
+export function clerkConfigured(env: Record<string, string | undefined> = process.env): boolean {
+  return Boolean(env.CLERK_SECRET_KEY?.trim() && env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim());
+}
+
+/** The preview password (owner: only from this variable); at least 12 characters, or preview sign-in stays off. */
+export function previewPassword(env: Record<string, string | undefined> = process.env): string | null {
+  const value = env.PREVIEW_DEFAULT_PASSWORD ?? "";
+  return value.length >= 12 ? value : null;
+}
+
+/** Which sign-in serves the portal right now, or null when the portal is closed. */
+export function portalAuth(env: Record<string, string | undefined> = process.env): "preview" | "clerk" | null {
+  const data = portalData(env);
+  if (data === "live") return clerkConfigured(env) ? "clerk" : null;
+  if (data === "mock") return !isProductionSite(env.NEXT_PUBLIC_SITE_ENV) && previewPassword(env) ? "preview" : null;
+  return null;
+}
+
+/** True when /login and the portal areas may answer at all; otherwise they 404. */
+export function portalEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  return portalAuth(env) !== null;
+}
+
 /** Sent on every response of a non-production build (next.config.ts). */
 export const NOINDEX_HEADER = { key: "X-Robots-Tag", value: "noindex, nofollow" } as const;
 

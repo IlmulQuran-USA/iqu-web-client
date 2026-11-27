@@ -1,4 +1,5 @@
 import { site } from "../../../content/site.ts";
+import { portalData } from "../../site-env.ts";
 import type { Queryable } from "../../../db/types.ts";
 import { gmailConfig } from "../outbox/gmail.ts";
 import type { Adapters } from "../outbox/outbox.ts";
@@ -11,9 +12,10 @@ import { readSettings } from "./settings.ts";
  *   RECAPTCHA_SITE_KEY     reCAPTCHA v3 for the Next hosts
  *   RECAPTCHA_SECRET_KEY
  *   IQU_HASH_SECRET        ≥ 32 characters: the HMAC key for rate-limit keys
- * Without any of them the form still works and autosaves, but Review links to
- * the live WordPress form instead of submitting (the owner's rule: never a
- * fake submission).
+ * Without any of them the form still works and autosaves; on the dev preview
+ * it is sent through the mock adapter (enrollPreview, below), and anywhere
+ * else Review says sending is being set up. It never links to the old
+ * WordPress form (owner, 27 Nov 2026).
  *
  * Production: not connected in P1. The card step (Stripe) arrives in P2, and
  * the public site keeps the WordPress form until cutover, so nothing can be
@@ -37,6 +39,17 @@ export function enrollConfig(env: NodeJS.ProcessEnv = process.env): EnrollConfig
   if (!database || !recaptchaSiteKey || !recaptchaSecret || hashSecret.length < 32) return null;
   if (env.NEXT_PUBLIC_SITE_ENV === "production") return null;
   return { recaptchaSiteKey, recaptchaSecret, hashSecret, mode: "test", cardStepLive: false };
+}
+
+/**
+ * The dev preview's enrollment (owner, 27 Nov 2026): where the live path is not
+ * connected and the portal runs on mock data (staging only; never on the
+ * public site, src/lib/site-env.ts portalData), the form is sent through the
+ * mock adapter (src/data/mock/enrollment.ts): validated as the live path
+ * does, saved nowhere, sent nowhere, charged nothing.
+ */
+export function enrollPreview(env: NodeJS.ProcessEnv = process.env): boolean {
+  return enrollConfig(env) === null && portalData(env) === "mock";
 }
 
 /** The team inbox for admin notifications: the Gmail account itself (GMAIL_SENDER). */

@@ -65,7 +65,7 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 
 **Enrolment funnel (`/enroll`):** five steps (Student · Course · Schedule · Fees · Review), then a confirmation page; Weekend and Summer use the same template with fewer steps. Progress autosaves on the family's device. The Schedule step takes the family's time zone (detected, then confirmed), days, class length and an availability window (From/To; no slot grid; times are flexible). The Zakat scholarship has its own page (`/scholarship`). The enrollment decisions of 24 Nov 2026 are listed under *Closed decisions*.
 
-**Portal:** student `/s/*`, parent `/p/*`, teacher `/t/*`, admin `/a/*`, all inside one shell. Attendance uses exactly six statuses: Present · Partial · Technical issue · Student absent · Teacher no-show · Class not held. Attendance thresholds are read from settings because they will be calibrated from three weeks of live data. Teachers request corrections, and admins approve them. Parents confirm the week's classes every Friday, and any family can report a problem with a class.
+**Portal:** student `/s/*`, parent `/p/*`, teacher `/t/*`, admin `/a/*`, all inside one shell. Attendance uses exactly six statuses: Present · Partial · Technical issue · Student absent · Teacher no-show · Class not held. Attendance thresholds are read from settings because they will be calibrated from three weeks of live data. Teachers request corrections, and admins approve them (v1: the teacher portal has no class record, so no correction entry there; see *Portal and admin frontend*, decision 6). Parents confirm the week's classes every Friday, and any family can report a problem with a class.
 
 **Decisions that supersede the spec (owner, 19 Nov 2026):**
 1. **Fees are published.** Course cards and pages show a from-price with a scholarship note. Real per-course fees already exist in the live `iqu-registration` WordPress plugin, which prices by course. Take fees from there and never invent one. Until they are connected, show `$XX`.
@@ -87,7 +87,6 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
 **Open product decisions (do not resolve silently):**
 - Whether the portal replaces Telegram after v1.
 - Whether Bengali launches as a second locale in v1 or v2 (§10.3 Q6).
-- Whether parents see exact minutes or only a status (§10.3 Q7).
 - Who may approve a correction (§10.3 Q8).
 - Whether a donation tab stays inside the student and teacher portals (§10.3 Q9).
 - How long raw Zoom events are kept (§10.3 Q10).
@@ -135,6 +134,22 @@ Non-goals for v1: a self-serve course marketplace, native apps, in-house video, 
   - Vercel Pro and a private repository are required before the Stripe phase. Cutover mid-January 2027, mid-month, never near the 1st; fallback mid-March 2027 (after Ramadan and Eid). 30-day rollback.
   - Retention (owner, 26 Nov 2026; replaces "students who were ever billed are archived forever"): billing and payment records are kept **7 years after the family's last payment**; all other records are kept **24 months**. This keeps the live Privacy Policy's promise ("for up to 7 years afterwards"). Admin-added existing students get no free month.
   - Pre-charge reminder (owner, 26 Nov 2026): the Tuition Policy promises "you receive an email reminder before that date", but the live plugin never sends one. Next.js sends an IQU-branded email **7 days before a family's first charge** (P2 plan; P4 cron + Gmail mailer). The promise stays on /legal/refund. Zeffy donations stay on WordPress for now.
+- **Portal and admin frontend** (owner, 27 Nov 2026; plan `F:/iqu-setup/reports/frontend-portal-admin-plan.md`). Every remaining page is built now on a mock data adapter (realistic, invented, deterministic) behind one typed interface per domain, so each page later switches to the live API with no redesign (`PORTAL_DATA=mock|live`). Four preview accounts on dev only (admin@, teacher@, parent@, student@ ilmulquranus.org; the password only from `PREVIEW_DEFAULT_PASSWORD`), deleted before go-live. Portal, admin and login 404 on production until the live adapter is on.
+  1. Demo changes persist for that user's session.
+  2. The portal top bar shows "Preview · sample data" on dev.
+  3. Mock invoices may use the published per-course fees.
+  4. Summer results: Home links to `/programs/summer-ilm-camp#results`; the Summer page drops its outbound link until `/results/summer-2026` is built.
+  5. `/my-billing` and `?iqu_pay=` keep redirecting to `wp.ilmulquranus.org` at cutover: an accepted temporary exception to "no link to the old site", until `/billing/[token]` ships.
+  6. **Teachers keep Telegram and Google Sheets.** Teachers post daily class updates in the brothers' and sisters' Telegram groups with `/classformat`; the bots send cutoff reminders, daily reports, a monthly report and Best Teacher on the 1st; missing days are deducted from salary days; a per-teacher Google Sheets attendance → central report → salary system also exists; teachers have limited English. **The teacher portal has no class-record or attendance entry.** Telegram and Sheets stay the system of record for teachers. The teacher portal shows schedule, students and progress only, and sends no notification a bot already sends. (This supersedes spec §7D.5's class record and six-hour window for v1.)
+  7. No teacher messages screen: parents' messages go to admin.
+  8. **Parents see each class's status and length, not exact minutes** (closes spec §10.3 Q7).
+  9. Donations admin reads Zeffy data through a read-only signed WordPress endpoint; Zeffy settings stay in WP admin.
+  10. `/preview/parent-dashboard` is retired once `/p/overview` exists.
+  11. Every export follows the visible filters.
+  12. The billing day is shown read-only as "1st" (K1).
+  13. Changing a reduced fee's fund applies to new months only and is logged; past ledger rows are never rewritten.
+  14. In the demo family, Maryam is fully funded (full scholarship).
+  - **Live plugin facts recorded** (iqu-registration v3.7.20, read-only, 27 Nov 2026): coupon codes end in **6** random characters (`{SHORT}-{YYMMDD}-{RAND6}-{VALUE}`; PLUGIN-INVENTORY's "RAND4" is wrong); the plugin has a billing-day setting (1–28), shown read-only as the 1st (K1); the registrations and coupon exports ignore the active filters (fixed in the new admin).
 - **K2 · Phone number** (CONTENT-ADDENDUM.md §7), closed by the owner, 22 Nov 2026: +1 (214) 529-3544 is correct (the live Contact page and the enrollment plugin). The (214) 662-1591 on the live About page is outdated; never use it.
 
 ## Brand Commitments

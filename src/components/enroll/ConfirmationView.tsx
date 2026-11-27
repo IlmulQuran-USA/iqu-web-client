@@ -91,7 +91,7 @@ function content(state: ConfirmationState, name: string) {
 /** Until P2 connects Stripe, these states end here: the family is told plainly, nothing is faked. */
 const CARD_STEP_PENDING: ReadonlySet<ConfirmationState> = new Set(["card-next", "summer-next"]);
 
-export function ConfirmationView({ confirmation }: { confirmation: Confirmation }) {
+export function ConfirmationView({ confirmation, preview = false }: { confirmation: Confirmation; preview?: boolean }) {
   // No site Header on the enroll pages: the cookie banner's script loads from here, after hydration. An inline
   // import(), not the shared useConsentLoader hook, so no new module is shared with the Header (js-budget; see that hook).
   useEffect(() => {
@@ -178,14 +178,13 @@ export function ConfirmationView({ confirmation }: { confirmation: Confirmation 
       <p className="mt-4 text-body-lg text-ink-body">{c.body}</p>
 
       {CARD_STEP_PENDING.has(confirmation.state) ? (
-        <InlineAlert
-          tone="info"
-          className="mt-6"
-          title={confirmation.state === "summer-next" ? "Payment step is not connected yet." : "Card step is not connected yet."}
-        >
-          Your enrollment is saved and waits for {confirmation.state === "summer-next" ? "the payment" : "a card"}. This test site cannot take
-          payments yet, so nothing is charged.
+        <InlineAlert tone="info" className="mt-6" title="This step is being set up.">
+          {confirmation.state === "summer-next" ? "Paying the Summer fee" : "Adding a card"} on Stripe is being set up on this site, so nothing has been charged.
         </InlineAlert>
+      ) : null}
+
+      {preview ? (
+        <p className="mt-4 text-ui text-ink-muted">Preview with sample data: on this test site nothing was really saved, sent or charged.</p>
       ) : null}
 
       {confirmation.reference ? (

@@ -131,7 +131,8 @@ export function firstChargeDate(now: Date): string {
   return first.toISOString().slice(0, 10);
 }
 
-function confirmationState(draft: Draft, route: Route): ConfirmationState {
+/** The confirmation page a route ends on (also used by the mock adapter, src/data/mock/enrollment.ts). */
+export function confirmationState(draft: Draft, route: Route): ConfirmationState {
   switch (route) {
     case "card":
       return "card-next";

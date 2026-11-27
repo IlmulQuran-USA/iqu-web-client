@@ -22,6 +22,7 @@
  *   JS_BUDGET_URL=http://localhost:3000   measure a server already running `next start`
  */
 import { spawn } from "node:child_process";
+import { createHmac, randomBytes } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:net";
 import { join, relative, sep } from "node:path";
@@ -34,8 +35,44 @@ const BUDGET_KB = Number(process.env.JS_BUDGET_KB ?? 180);
 const json = process.argv.includes("--json");
 const MISSING = "/js-budget-missing-page";
 
-/** Not public: development pages, previews and the global error boundary. */
-const PRIVATE = [/^\/dev(\/|$)/, /^\/preview(\/|$)/, /^\/_global-error$/, /^\/_not-found$/];
+/** Not public: development pages, previews, the global error boundary, and the portal (measured on its own below). */
+const PRIVATE = [
+  /^\/dev(\/|$)/,
+  /^\/preview(\/|$)/,
+  /^\/_global-error$/,
+  /^\/_not-found$/,
+  /^\/[apst](\/|$)/,
+  /^\/login$/,
+  /^\/forgot-password$/,
+];
+
+/*
+ * The portal and admin (owner, 27 Nov 2026; plan frontend-portal-admin-plan.md
+ * §9): their own budgets, signed in as each role. 220 KB for the sign-in
+ * pages and the student, parent and teacher portals; 260 KB for the admin.
+ * The script signs its own preview sessions: when it starts the server, it
+ * gives it a random throwaway preview password (never the real one) and
+ * mock data; with JS_BUDGET_URL it uses PREVIEW_DEFAULT_PASSWORD from the
+ * environment if set, otherwise the portal is not measured. A build where
+ * the portal is closed (404) is reported, not failed.
+ */
+const PORTAL_KB = Number(process.env.JS_BUDGET_PORTAL_KB ?? 220);
+const ADMIN_KB = Number(process.env.JS_BUDGET_ADMIN_KB ?? 260);
+const PORTAL_PAGES = [
+  { path: "/login", account: null, budget: PORTAL_KB },
+  { path: "/forgot-password", account: null, budget: PORTAL_KB },
+  { path: "/s/overview", account: { sub: "acc-student", email: "student@ilmulquranus.org", name: "Farhana Karim", roles: ["student"] }, budget: PORTAL_KB },
+  { path: "/p/overview", account: { sub: "acc-parent", email: "parent@ilmulquranus.org", name: "Amina Siddiqui", roles: ["parent"] }, budget: PORTAL_KB },
+  { path: "/t/today", account: { sub: "acc-teacher", email: "teacher@ilmulquranus.org", name: "Hafez Imran Chowdhury", roles: ["teacher"] }, budget: PORTAL_KB },
+  { path: "/a/live", account: { sub: "acc-admin", email: "admin@ilmulquranus.org", name: "Preview Admin", roles: ["admin", "billing_admin"] }, budget: ADMIN_KB },
+];
+
+/** The same token src/lib/auth/session.ts signs: base64url(JSON).base64url(HMAC(derived key, payload)). */
+function previewToken(account, secret) {
+  const derived = createHmac("sha256", secret).update("iqu-preview-session:v1").digest();
+  const payload = Buffer.from(JSON.stringify({ ...account, exp: Math.floor(Date.now() / 1000) + 3600 })).toString("base64url");
+  return `${payload}.${createHmac("sha256", derived).update(payload).digest("base64url")}`;
+}
 
 if (!existsSync(APP)) {
   console.error("No build found: run `npm run build` first.");
@@ -97,12 +134,15 @@ function freePort() {
   });
 }
 
+/** A throwaway preview password for the server this script starts (never the real one). */
+const OWN_PREVIEW_PASSWORD = randomBytes(24).toString("base64url");
+
 async function startServer() {
   const port = await freePort();
   const bin = join(ROOT, "node_modules", "next", "dist", "bin", "next");
   const child = spawn(process.execPath, [bin, "start", "-p", String(port), "-H", "127.0.0.1"], {
     cwd: ROOT,
-    env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1" },
+    env: { ...process.env, NEXT_TELEMETRY_DISABLED: "1", PORTAL_DATA: "mock", PREVIEW_DEFAULT_PASSWORD: OWN_PREVIEW_PASSWORD },
     stdio: ["ignore", "pipe", "pipe"],
   });
   let log = "";
@@ -155,6 +195,8 @@ const server = process.env.JS_BUDGET_URL
   : await startServer();
 
 const results = [];
+const portalResults = [];
+let portalNote = "";
 try {
   for (const path of pages) {
     const res = await fetch(server.base + path, { redirect: "follow" });
@@ -164,6 +206,22 @@ try {
     const scripts = own.length ? [...own, ...afterHydration.map((a) => a.src).filter((src) => !own.includes(src))] : own;
     const bytes = scripts.reduce((sum, src) => sum + gzipSize(src), 0);
     results.push({ route: routeOf(path), page: path, status: res.status, scripts, bytes });
+  }
+
+  // The portal, signed in as each role.
+  const secret = process.env.JS_BUDGET_URL ? (process.env.PREVIEW_DEFAULT_PASSWORD ?? "") : OWN_PREVIEW_PASSWORD;
+  if (!secret) portalNote = "Portal not measured: no PREVIEW_DEFAULT_PASSWORD for the server at JS_BUDGET_URL.";
+  else {
+    for (const p of PORTAL_PAGES) {
+      const headers = p.account ? { cookie: `iqu_preview_session=${previewToken(p.account, secret)}` } : {};
+      const res = await fetch(server.base + p.path, { redirect: "manual", headers });
+      if (res.status === 404) {
+        portalNote = "Portal closed on this build (404): not measured.";
+        break;
+      }
+      const scripts = scriptsOf(await res.text());
+      portalResults.push({ route: p.path, status: res.status, scripts, bytes: scripts.reduce((sum, src) => sum + gzipSize(src), 0), budget: p.budget });
+    }
   }
 } finally {
   server.stop();
@@ -208,6 +266,17 @@ if (json) {
   }
 }
 
+const portalOver = portalResults.filter((r) => r.bytes > r.budget * 1000);
+const portalBroken = portalResults.filter((r) => r.status !== 200 || r.scripts.length === 0);
+if (!json) {
+  console.log(`\nPortal and admin (signed in as each role): budget ${PORTAL_KB} KB, admin ${ADMIN_KB} KB.`);
+  if (portalNote) console.log(portalNote);
+  for (const r of portalResults) {
+    const flag = r.status !== 200 ? `   HTTP ${r.status}` : r.bytes > r.budget * 1000 ? "   OVER" : "";
+    console.log(`${r.route.padEnd(18)}  ${kb(r.bytes).padStart(7)}  ${String(r.scripts.length).padStart(5)}  budget ${r.budget}${flag}`);
+  }
+}
+
 if (broken.length) {
   console.error(`\nNo scripts found on: ${broken.map((r) => `${r.route} (HTTP ${r.status})`).join(", ")}. The measurement is not trustworthy.`);
   process.exit(1);
@@ -216,4 +285,12 @@ if (over.length) {
   console.error(`\n${over.length} route(s) over the ${BUDGET_KB} KB budget: ${over.map((r) => r.route).join(", ")}`);
   process.exit(1);
 }
-if (!json) console.log(`\nAll ${rows.length} public routes within ${BUDGET_KB} KB.`);
+if (portalBroken.length) {
+  console.error(`\nPortal pages that did not answer 200 with scripts: ${portalBroken.map((r) => `${r.route} (HTTP ${r.status})`).join(", ")}.`);
+  process.exit(1);
+}
+if (portalOver.length) {
+  console.error(`\nPortal route(s) over budget: ${portalOver.map((r) => r.route).join(", ")}`);
+  process.exit(1);
+}
+if (!json) console.log(`\nAll ${rows.length} public routes within ${BUDGET_KB} KB${portalResults.length ? `; all ${portalResults.length} portal routes within budget` : ""}.`);

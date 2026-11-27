@@ -283,7 +283,8 @@ function teachersIds(program: Program): string[] {
 
 /**
  * The live results page (read 20 Nov 2026; Home "Progress" proof): five
- * subjects, 20 marks each. Off-site until /results/summer-2026 exists.
+ * subjects, 20 marks each. No link out until /results/summer-2026 exists
+ * (owner, 27 Nov 2026: the old site is never linked).
  */
 export function resultsOf(program: Program) {
   if (program.id !== programs.summer.id) return null;
@@ -297,7 +298,6 @@ export function resultsOf(program: Program) {
     // The subjects and marks as written in proof.text.
     subjects: ["Quran & Tajweed", "Aqeedah", "Fiqh", "Akhlaq", "Seerah"],
     marksEach: 20,
-    link: { label: proof.link.label, href: summerOpen.liveResultsHref },
   };
 }
 
@@ -334,11 +334,12 @@ const LANGUAGE_FAQ: ProgramFaq = {
 export const afterEnrolFaq = { status: "pending", q: "What happens after I enroll?", a: null } as const;
 
 export const weekendFaq: ProgramFaq[] = [
-  // Final (owner, 27 Nov 2026: the /faq answers approved). The time answer below
-  // stays draft: /faq approved only its first sentence (faq.ts weekend-times).
+  // Final (owner, 27 Nov 2026: the /faq answers approved). The time answer's second
+  // sentence is true: the Schedule section above converts the class time to the
+  // visitor's zone (ClassTime), so it is final too (owner, 27 Nov 2026).
   { status: "live", q: "Does the Weekend Ilm Program cost anything?", a: "No. It is free for every child, and no payment is taken." },
   {
-    status: "draft",
+    status: "live",
     q: "What time are the classes where we live?",
     a: "Saturday and Sunday, 10–11 AM Central Time (CT), one hour per session. The schedule above shows the same time in your own zone.",
   },

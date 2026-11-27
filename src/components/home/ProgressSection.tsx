@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import { RevealItem } from "@/components/motion/Reveal";
 import { ButtonLink } from "@/components/ui/Button";
@@ -103,19 +103,16 @@ export function ProgressSection() {
             </div>
           </figure>
 
-          {/* Proof: the published results. Off-site until /results/summer-2026 exists. */}
+          {/* Proof: the camp page's results section, until /results/summer-2026 exists (never the old site). */}
           <div className="rounded-card bg-surface-2 p-5 sm:p-6 lg:col-start-1 lg:row-start-3 lg:self-start">
             <p className="font-display text-heading-md font-semibold text-balance text-ink">{proof.title}</p>
             <p className="mt-2 max-w-measure text-body text-pretty text-ink-body">{proof.text}</p>
             <a
               href={proof.link.href}
-              target="_blank"
-              rel="noopener noreferrer"
               className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
             >
               {proof.link.label}
-              <ArrowUpRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-              <span className="sr-only"> (opens in a new tab)</span>
+              <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
             </a>
           </div>
         </div>

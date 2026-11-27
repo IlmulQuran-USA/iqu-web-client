@@ -210,14 +210,15 @@ export const progressSection = {
     { label: "Every course", href: null, text: courseRules.certificate.text },
   ],
   /*
-   * Proof (live results page, read 20 Nov 2026). Linked on the live site until
-   * /results/summer-2026 exists (summerOpen.resultsHref in ./courses).
+   * Proof (live results page, read 20 Nov 2026). Links to the camp page's
+   * results section until /results/summer-2026 exists (summerOpen.resultsHref
+   * in ./courses); never to the old site (owner, 27 Nov 2026).
    */
   proof: {
     status: "live",
     title: "Summer Ilm Camp 2026: final results",
     text: "Every student was assessed in Quran & Tajweed, Aqeedah, Fiqh, Akhlaq and Seerah, 20 marks each.",
-    link: { label: "See the 2026 results", href: "https://ilmulquranus.org/summer-program-results/" },
+    link: { label: "See the 2026 results", href: "/programs/summer-ilm-camp#results" },
   },
   /*
    * The parent dashboard (owner, 21 Nov 2026): Playwright screenshots of

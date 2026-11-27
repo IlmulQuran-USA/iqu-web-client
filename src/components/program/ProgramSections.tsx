@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import { TextLink } from "@/components/course/CourseHero";
 import { CurriculumBody, Section, SubHeading } from "@/components/course/CourseSections";
@@ -257,14 +257,7 @@ export function Results({ program }: { program: Program }) {
           </RevealItem>
         ))}
       </Reveal>
-      <a
-        href={r.link.href}
-        className="mt-4 inline-flex min-h-11 items-center gap-1.5 rounded-chip text-body font-medium text-link underline decoration-1 underline-offset-2 hov:decoration-2"
-      >
-        {r.link.label}
-        <ArrowUpRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
-        <span className="sr-only">(on the current ilmulquranus.org site)</span>
-      </a>
+      {/* No link out: the full results page (/results/summer-2026) is not built yet, and the old site is never linked (owner, 27 Nov 2026). */}
     </Section>
   );
 }

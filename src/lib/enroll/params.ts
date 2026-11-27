@@ -29,10 +29,3 @@ export function parseEnrollParams(raw: Raw): EnrollParams {
   const known = monthlyCourses.find((c) => c.id === course);
   return { variant: "monthly", courseId: known ? known.id : null, aid };
 }
-
-/** The live WordPress form for each template (the "not connected" fallback link). */
-export const LIVE_FORM_URL: Record<Variant, string> = {
-  monthly: "https://ilmulquranus.org/enroll-for-free/",
-  weekend: "https://ilmulquranus.org/weekend-program/",
-  summer: "https://ilmulquranus.org/summer-program/",
-};

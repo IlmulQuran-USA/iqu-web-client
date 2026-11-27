@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EnrollFlow } from "@/components/enroll/EnrollFlow";
 import { summerSeasonLine } from "@/components/enroll/season";
-import { LIVE_FORM_URL, parseEnrollParams } from "@/lib/enroll/params";
+import { parseEnrollParams } from "@/lib/enroll/params";
+import { enrollPreview } from "@/lib/server/enroll/config";
 import { pageMetadata } from "@/lib/metadata";
 
 /*
  * Development only: /enroll with the Summer season forced open, for QA while
  * the real route says "2027 dates coming soon" (owner correction E). It is
- * never connected to WordPress, so Review shows the not-connected state.
+ * sends through the dev preview's mock adapter when it is on (nothing saved,
+ * sent or charged); otherwise Review says sending is being set up.
  * 404 in production builds, like the other /dev pages.
  */
 
@@ -28,9 +30,8 @@ export default async function EnrollPreview({ searchParams }: PageProps<"/dev/en
   return (
     <EnrollFlow
       params={params}
-      connected={false}
+      connected={enrollPreview()}
       siteKey={null}
-      liveFormUrl={LIVE_FORM_URL[params.variant]}
       season={season ? { ...season, title: `${season.title} (preview: last season's dates)` } : undefined}
     />
   );

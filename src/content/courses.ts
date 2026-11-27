@@ -541,10 +541,8 @@ export const summerOpen = {
   /** The live page says both "6–7 PM CDT" and "6–10 PM CST"; the owner confirms one. Show it as CT, never CST/CDT. */
   homeworkSupportHours: pending,
   // The 2027 dates live in ./program-timetable (seasons.next), where entering them reopens enrolment.
-  /** The 2026 results page moves from /summer-program-results/ to here at launch. */
+  /** The 2026 results page moves from /summer-program-results/ to here at launch. Until then nothing links to the old page (owner, 27 Nov 2026). */
   resultsHref: "/results/summer-2026",
-  /** Linked until resultsHref exists (Home "Progress" proof uses the same page). */
-  liveResultsHref: "https://ilmulquranus.org/summer-program-results/",
 } as const;
 
 /* ── Course page FAQs and teacher matching (CONTENT-ADDENDUM.md §3.3–§3.4) ── */

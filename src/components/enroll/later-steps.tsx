@@ -295,7 +295,7 @@ export function FeesStep({ draft: d, set, errors: e, blur, connected, siteKey }:
     if (!connected || !siteKey) {
       setCoupon({
         busy: false,
-        message: "Codes can’t be checked on this page yet. Please keep your code and use it on our current form.",
+        message: "Checking codes is being set up. Please keep your code: our team applies it when they confirm your fee.",
         tone: "info",
       });
       return;

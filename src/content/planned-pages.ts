@@ -19,7 +19,7 @@ export const plannedPages: readonly PlannedPage[] = [
   { href: "/impact", label: "Impact", status: "pending", waitingFor: "Owner Q3: approved figures with an as-of date" },
   { href: "/blog", label: "Blog", status: "pending", waitingFor: "Spec §7.13; no articles yet" },
   { href: "/programs/one-on-one", label: "One-on-one classes", status: "pending", waitingFor: "Spec §7.11; not planned yet" },
-  { href: "/login", label: "Log in", status: "pending", waitingFor: "The portal (spec §7B); no sign-in yet" },
+  // /login is built (portal Batch 1, 27 Nov 2026). It opens only where the portal does (src/lib/site-env.ts portalEnabled).
 ];
 
 const pending = new Set(plannedPages.map((p) => p.href));

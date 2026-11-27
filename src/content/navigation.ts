@@ -7,7 +7,7 @@
  * Course names and routes come from src/content/pricing.ts.
  */
 
-import { builtOnly, isPlanned } from "./planned-pages.ts";
+import { builtOnly } from "./planned-pages.ts";
 import { courseById, monthlyCourses, programs as pricedPrograms, type CourseId } from "./pricing.ts";
 
 /** A course link for tight columns (footer): uses the short navLabel when there is one. */
@@ -92,8 +92,12 @@ export const primaryLinks = {
   enrol: { label: "Start free trial", href: "/enroll" },
 } as const;
 
-/** Log in is shown only once /login exists (./planned-pages.ts). */
-export const showLogin = !isPlanned(primaryLinks.login.href);
+/**
+ * Log in is shown only where /login opens: the portal is on for this
+ * deployment (dev with the preview accounts, or production once
+ * PORTAL_DATA=live). NEXT_PUBLIC_PORTAL_ON is set by next.config.ts at build.
+ */
+export const showLogin = process.env.NEXT_PUBLIC_PORTAL_ON === "1";
 
 /** Zeffy giving page (owner, 19 Nov 2026). */
 export const ZEFFY_GIVING_URL =

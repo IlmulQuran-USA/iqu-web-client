@@ -2,6 +2,7 @@ import { ConfirmationView } from "@/components/enroll/ConfirmationView";
 import { EnrollFooter, EnrollHeader } from "@/components/enroll/frame";
 import { parseConfirmation } from "@/lib/enroll/confirmation";
 import { pageMetadata } from "@/lib/metadata";
+import { enrollPreview } from "@/lib/server/enroll/config";
 
 /*
  * /enroll/confirmation (spec §7.17 "Confirmation"; plan B3.6). Reached from
@@ -25,7 +26,7 @@ export default async function ConfirmationPage({ searchParams }: PageProps<"/enr
     <>
       <EnrollHeader />
       <main id="main-content" className="container-content flex-1 py-12 sm:py-16">
-        <ConfirmationView confirmation={confirmation} />
+        <ConfirmationView confirmation={confirmation} preview={enrollPreview()} />
       </main>
       <EnrollFooter />
     </>

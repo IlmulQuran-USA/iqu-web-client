@@ -5,13 +5,20 @@ import type { NextConfig } from "next";
 import { fileRedirects } from "./src/content/legacy-paths";
 // Staging (dev.ilmulquranus.org) and previews must never be indexed. Anything
 // but NEXT_PUBLIC_SITE_ENV=production is staging (DEPLOYMENT.md).
-import { isProductionSite, NOINDEX_HEADER, wpOrigin } from "./src/lib/site-env";
+import { isProductionSite, NOINDEX_HEADER, portalEnabled, wpOrigin } from "./src/lib/site-env";
 
 const productionSite = isProductionSite();
+
+/** The portal's paths (src/lib/auth/access.ts): never indexed, on any site. */
+const PORTAL_SOURCES = ["/login", "/forgot-password", "/a/:path*", "/p/:path*", "/s/:path*", "/t/:path*"];
 
 const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
+  // Whether the header shows "Log in": the portal is open on this deployment
+  // (src/lib/site-env.ts portalEnabled). Inlined at build, so the client
+  // header and the server agree.
+  env: { NEXT_PUBLIC_PORTAL_ON: portalEnabled() ? "1" : "" },
   // `JS_BUDGET_SOURCEMAPS=1 npm run build` emits browser source maps, to see
   // which modules fill a chunk (scripts/js-budget.mjs). Off by default.
   productionBrowserSourceMaps: process.env.JS_BUDGET_SOURCEMAPS === "1",
@@ -39,7 +46,8 @@ const nextConfig: NextConfig = {
   },
   // Staging: X-Robots-Tag on every response, pages and static files alike.
   async headers() {
-    if (productionSite) return [];
+    // The public site: only the portal paths carry the noindex header.
+    if (productionSite) return PORTAL_SOURCES.map((source) => ({ source, headers: [NOINDEX_HEADER] }));
     return [{ source: "/:path*", headers: [NOINDEX_HEADER] }];
   },
   // Staging: no sitemap, even if one is added later. A rewrite to a path no

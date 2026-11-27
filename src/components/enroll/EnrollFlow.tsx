@@ -1,10 +1,9 @@
 "use client";
 
-import { ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { joinWaitlist, submitEnrollment } from "@/app/actions/enroll";
-import { Button, ButtonLink } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { monthlyCourses } from "@/content/pricing";
 import { programTimetables, wallTimeRange } from "@/content/program-timetable";
 import { site } from "@/content/site";
@@ -302,11 +301,15 @@ function weekendTimeLine(zone: string): { home: string; local: string | null } {
 
 /* ── The flow ────────────────────────────────────────────────────────── */
 
+/** Sending is not possible here yet (production before the cutover): shown only after the family presses send. */
+const NOT_READY =
+  "Online enrollment is being set up, so your enrollment wasn’t sent. Your answers stay saved on this device. Please call, text or WhatsApp us and we’ll enroll you.";
+
 type FlowProps = {
   params: EnrollParams;
+  /** True when the form can be sent: the live path, or the dev preview (mock adapter, no reCAPTCHA). */
   connected: boolean;
   siteKey: string | null;
-  liveFormUrl: string;
   /** Summer only: the season line for the fee step. */
   season?: { title: string; detail: string };
 };
@@ -451,7 +454,7 @@ export function EnrollFlow(props: FlowProps) {
   return <Flow key={browser ? "browser" : "server"} {...props} initial={initial} hydrated={browser !== null} />;
 }
 
-function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrated }: FlowProps & { initial: Initial; hydrated: boolean }) {
+function Flow({ params, connected, siteKey, season, initial, hydrated }: FlowProps & { initial: Initial; hydrated: boolean }) {
   const variant = params.variant;
   const steps = STEPS[variant];
   const router = useRouter();
@@ -635,15 +638,22 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
       showErrors(problems.errors, "Some answers need another look before you send.");
       return;
     }
-    if (!connected || !siteKey) return;
+    // Not connected: say so once the family has reached the send step, never before (owner, 27 Nov 2026).
+    if (!connected) {
+      setSendError(NOT_READY);
+      return;
+    }
     setSending(true);
     try {
       let token = "";
-      try {
-        token = await getRecaptchaToken(siteKey, { monthly: "iqu_free_form", weekend: "iqu_weekend_form", summer: "iqu_summer_form" }[variant]);
-      } catch {
-        setSendError("We couldn’t load the security check. Please check your connection and try again.");
-        return;
+      // The dev preview (mock adapter) has no reCAPTCHA keys; the live path always has a site key.
+      if (siteKey) {
+        try {
+          token = await getRecaptchaToken(siteKey, { monthly: "iqu_free_form", weekend: "iqu_weekend_form", summer: "iqu_summer_form" }[variant]);
+        } catch {
+          setSendError("We couldn’t load the security check. Please check your connection and try again.");
+          return;
+        }
       }
       const result = await submitEnrollment(draft, token, honeypot.current?.value ?? "");
       if (result.status === "ok") {
@@ -672,7 +682,7 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
         return;
       }
       if (result.status === "not_connected") {
-        setSendError("Online enrollment on this page opens soon. For now, please enroll on our current form.");
+        setSendError(NOT_READY);
         return;
       }
       setSendError(result.message);
@@ -857,11 +867,6 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
 
                 {isReview ? (
                   <div className="mt-8 flex flex-col gap-4">
-                    {!connected ? (
-                      <InlineAlert tone="info" title="Online enrollment on this page opens soon.">
-                        For now, please enroll on our current form. Your answers stay saved on this device.
-                      </InlineAlert>
-                    ) : null}
                     {sendError ? (
                       <div role="alert">
                         <InlineAlert tone="danger" title="Not sent yet">
@@ -886,15 +891,9 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
                       <span />
                     )}
                     {isReview ? (
-                      connected ? (
-                        <Button type="submit" loading={sending} loadingLabel="Sending your enrollment" className="flex-1 sm:flex-none">
-                          {submitLabel(draft)}
-                        </Button>
-                      ) : (
-                        <ButtonLink href={liveFormUrl} className="flex-1 sm:flex-none" iconEnd={<ExternalLink aria-hidden="true" strokeWidth={1.5} className="size-4" />}>
-                          Go to our current form
-                        </ButtonLink>
-                      )
+                      <Button type="submit" loading={sending} loadingLabel="Sending your enrollment" className="flex-1 sm:flex-none">
+                        {submitLabel(draft)}
+                      </Button>
                     ) : (
                       <Button type="submit" className="flex-1 sm:flex-none">
                         {returnToReview ? "Back to review" : "Continue"}

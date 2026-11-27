@@ -40,7 +40,8 @@ export function sitemapEntries(origin: string): SitemapEntry[] {
 export function robotsRules(production: boolean, origin: string) {
   if (!production) return { rules: [{ userAgent: "*", disallow: "/" }] };
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/api/", "/dev/", "/preview/"] }],
+    // The portal (sign-in and the four areas) is never crawled (frontend-portal-admin-plan.md §3.2).
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/api/", "/dev/", "/preview/", "/login", "/forgot-password", "/a/", "/p/", "/s/", "/t/"] }],
     sitemap: new URL("/sitemap.xml", origin).toString(),
   };
 }

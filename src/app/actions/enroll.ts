@@ -6,7 +6,9 @@ import { after } from "next/server";
 import { getDb } from "@/db";
 import { consentFrom } from "@/lib/consent";
 import type { AppliedCoupon, Errors, StepId } from "@/lib/enroll/schema";
-import { enrollConfig, adminInbox, outboxAdapters, type EnrollConfig } from "@/lib/server/enroll/config";
+import { getData } from "@/data";
+import { confirmationHref } from "@/lib/enroll/confirmation";
+import { enrollConfig, enrollPreview, adminInbox, outboxAdapters, type EnrollConfig } from "@/lib/server/enroll/config";
 import { joinWaitlistCore, quoteCouponCore } from "@/lib/server/enroll/quote";
 import { submitEnrollmentCore, type CaptchaCheck } from "@/lib/server/enroll/submit";
 import { clientIp } from "@/lib/server/keys";
@@ -19,9 +21,11 @@ import { verifyRecaptcha } from "@/lib/server/recaptcha";
  * rules, checked by reCAPTCHA v3 for this host, and saved in our database in
  * one transaction (src/lib/server/enroll/submit.ts). Telegram and emails are
  * outbox rows, delivered right after the response and retried by
- * /api/cron/outbox. Nothing is ever faked: without the database, the
- * reCAPTCHA keys or IQU_HASH_SECRET the actions answer "not_connected" and
- * Review links to the live WordPress form.
+ * /api/cron/outbox. Without the database, the reCAPTCHA keys or
+ * IQU_HASH_SECRET the actions answer "not_connected" and Review says sending
+ * is being set up; on the dev preview only (enrollPreview), the submit goes
+ * through the mock adapter instead and saves, sends and charges nothing.
+ * No answer ever points at the old WordPress form (owner, 27 Nov 2026).
  */
 
 export type SubmitResult =
@@ -64,7 +68,12 @@ function deliverAfterResponse(ids: number[]) {
 
 export async function submitEnrollment(rawDraft: unknown, recaptchaToken: string, honeypot: string): Promise<SubmitResult> {
   const config = enrollConfig();
-  if (!config) return { status: "not_connected" };
+  if (!config) {
+    if (!enrollPreview()) return { status: "not_connected" };
+    // The dev preview: the mock adapter validates and answers; nothing is saved, sent or charged.
+    if (honeypot) return { status: "ok", href: confirmationHref("review", null, null), external: false };
+    return (await getData().enrollment.submit(rawDraft, new Date())) as SubmitResult;
+  }
   const db = getDb();
   const result = await submitEnrollmentCore(
     db,

@@ -1,4 +1,5 @@
 import { liveAttachments, liveContent } from "./legacy-inventory.ts";
+import { portalEnabled } from "../lib/site-env.ts";
 import { isPlanned } from "./planned-pages.ts";
 import { monthlyCourses, programs, type CourseId, type ProgramId } from "./pricing.ts";
 
@@ -152,8 +153,8 @@ export const livePagePaths: Record<string, string> = {
   "/cart": "/courses",
   "/checkout": "/courses",
   "/instructor-registration": builtOr("/teach", "/contact"),
-  // The live LMS dashboard (noindex): the portal's sign-in once it exists, until then how to reach the team.
-  "/dashboard": builtOr("/login", "/contact"),
+  // The live LMS dashboard (noindex): the portal's sign-in where the portal is open, otherwise how to reach the team.
+  "/dashboard": portalEnabled() ? "/login" : "/contact",
   ...livePolicyPaths,
 };
 
