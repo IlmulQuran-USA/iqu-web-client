@@ -29,6 +29,13 @@
       "when": 1795616676840,
       "tag": "0003_p5_import",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1795777286060,
+      "tag": "0004_teach_applications",
+      "breakpoints": true
     }
   ]
 }

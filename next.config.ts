@@ -5,7 +5,7 @@ import type { NextConfig } from "next";
 import { fileRedirects } from "./src/content/legacy-paths";
 // Staging (dev.ilmulquranus.org) and previews must never be indexed. Anything
 // but NEXT_PUBLIC_SITE_ENV=production is staging (DEPLOYMENT.md).
-import { isProductionSite, NOINDEX_HEADER } from "./src/lib/site-env";
+import { isProductionSite, NOINDEX_HEADER, wpOrigin } from "./src/lib/site-env";
 
 const productionSite = isProductionSite();
 
@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
   // Next.js would give (src/lib/legacy-redirect.ts). Owner, 27 Nov 2026.
   skipTrailingSlashRedirect: true,
   async redirects() {
-    return fileRedirects(productionSite);
+    return fileRedirects(productionSite, wpOrigin());
   },
   // Staging: X-Robots-Tag on every response, pages and static files alike.
   async headers() {

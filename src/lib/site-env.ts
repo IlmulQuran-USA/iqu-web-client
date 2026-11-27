@@ -18,6 +18,25 @@ export function isProductionSite(value: string | undefined = process.env.NEXT_PU
   return siteEnv(value) === "production";
 }
 
+/**
+ * Where WordPress lives after the domain switch (owner, 27 Nov 2026:
+ * wp.ilmulquranus.org), read from WP_ORIGIN. Only on the public site, only an
+ * https origin, and never the site's own: anything else is null, and then no
+ * request is sent to WordPress. Used for the uploads, /my-billing, the Summer
+ * ?iqu_pay= link and the WordPress admin (src/lib/legacy-redirect.ts,
+ * next.config.ts; F:/iqu-setup/reports/cutover-runbook.md).
+ */
+export function wpOrigin(value: string | undefined = process.env.WP_ORIGIN, env: string | undefined = process.env.NEXT_PUBLIC_SITE_ENV): string | null {
+  if (!isProductionSite(env)) return null;
+  try {
+    const url = new URL((value ?? "").trim());
+    if (url.protocol !== "https:" || url.origin === SITE_URLS.production || url.username || url.password) return null;
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
 /** Sent on every response of a non-production build (next.config.ts). */
 export const NOINDEX_HEADER = { key: "X-Robots-Tag", value: "noindex, nofollow" } as const;
 

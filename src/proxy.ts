@@ -3,12 +3,15 @@ import { instructorIds } from "@/content/instructors";
 import { monthlyCourses } from "@/content/pricing";
 import { COOKIES, locationCode } from "@/lib/consent";
 import { legacyHop } from "@/lib/legacy-redirect";
+import { wpOrigin } from "@/lib/site-env";
 
 /**
  * Three jobs, on page requests only (/_next, /api and files never come here;
  * a path ending in "/" always does):
  *
- * 1. Redirects (src/lib/legacy-redirect.ts): every live WordPress URL, with
+ * 1. Redirects (src/lib/legacy-redirect.ts): what stays on WordPress
+ *    (/my-billing, the Summer ?iqu_pay= link, /wp-admin, /wp-json) to
+ *    WP_ORIGIN on the public site; every live WordPress URL, with
  *    or without its trailing slash, in ONE 301 to its final new page; any
  *    other trailing slash 308s to the path without it, as Next.js does by
  *    default. next.config.ts sets skipTrailingSlashRedirect so the old
@@ -31,7 +34,7 @@ const known: Record<string, Set<string>> = {
 };
 
 function route(request: NextRequest): NextResponse {
-  const hop = legacyHop(request.nextUrl.pathname, request.nextUrl.search);
+  const hop = legacyHop(request.nextUrl.pathname, request.nextUrl.search, wpOrigin());
   if (hop) return NextResponse.redirect(new URL(hop.location, request.url), hop.status);
   const [, section = "", slug = "", extra] = request.nextUrl.pathname.split("/");
   if (!(section in known) || !slug || extra !== undefined || known[section].has(slug)) return NextResponse.next();

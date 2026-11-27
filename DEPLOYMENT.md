@@ -44,6 +44,7 @@ There is no Playwright in CI for now, to keep it fast. Run `npm run test:e2e` lo
 | --- | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_ENV` | `staging` | `staging` | Set to `production` **only** when this project serves the real public site. |
 | `NEXT_PUBLIC_SITE_URL` | `https://dev.ilmulquranus.org` | `https://dev.ilmulquranus.org` | The origin for canonical and Open Graph URLs. `https://ilmulquranus.org` at launch. If unset, it follows `NEXT_PUBLIC_SITE_ENV`. |
+| `WP_ORIGIN` | leave unset | leave unset | Production only, at the switch: `https://wp.ilmulquranus.org`. Old uploads, `/my-billing`, `?iqu_pay=`, `/wp-admin`, `/wp-json` and `/wp-login.php` links then 301 there (`src/lib/site-env.ts`; F:/iqu-setup/reports/cutover-runbook.md). Read at build time for the uploads rule: redeploy after setting it. |
 | `BREVO_API_KEY` | set | leave unset* | Server only. |
 | `BREVO_LIST_ID` | set | leave unset* | Numeric list id. |
 | `BREVO_DOI_TEMPLATE_ID` | set | leave unset* | Numeric double opt-in template id. |
@@ -53,6 +54,8 @@ There is no Playwright in CI for now, to keep it fast. Run `npm run test:e2e` lo
 \* With any Brevo variable missing, the footer shows "Sign-up opens soon." instead of the form. Leaving them unset on previews means a test sign-up on a PR can't add contacts to the real list. If you want to test the form on previews, use a separate Brevo test list. The Brevo variables belong to the newsletter only.
 
 The /contact message form sends through the Gmail API mailer (the four `GMAIL_*` variables), not Brevo, and also needs `DATABASE_URL` and `IQU_HASH_SECRET`. With any of them missing, /contact shows "Message form opens soon." and only the channel list. The page is built static, so after setting them, redeploy. Outside production, the message reaches `GMAIL_SENDER` only if that address is on `EMAIL_ALLOWLIST`.
+
+The /teach application form needs the same four (`GMAIL_*`, `DATABASE_URL`, `IQU_HASH_SECRET`); without them it shows "Applications open soon." and the email address. Applications are saved in `teach_applications` (migration `0004`) and reach the team by email and, with `TELEGRAM_*` set, Telegram; staging Telegram goes only to the test chat.
 
 `.env.example` lists the same names. Variables prefixed `NEXT_PUBLIC_` are read **at build time**, so after changing one, redeploy (Deployments › … › Redeploy).
 

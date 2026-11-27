@@ -123,6 +123,17 @@ export const privacyPolicy: LegalDoc = {
                   "The new /contact form sends messages to the team inbox through the Gmail mailer; the queued copy's body is dropped once sent (src/lib/server/contact.ts, outbox.ts).",
               },
             },
+            {
+              text: "**Teacher applications** sent through our [Teach with us](/teach) page: your name, email address, WhatsApp number, country, gender, the courses and languages you can teach, your qualifications and Ijazah, your teaching experience, when and from where you can teach, and, if you give them, a link to a recitation sample, references and a message. We keep them to review your application and send them to our team by email and Telegram.",
+              change: {
+                status: "draft",
+                kind: "add",
+                label: "New: teacher applications (/teach)",
+                old: null,
+                reason:
+                  "The new /teach form saves each application in the teach_applications table and notifies the team through the outbox (Gmail mailer and the Telegram team chat; src/lib/server/teach.ts). Gender is asked because of the settled teacher rule. How long applications are kept is for the owner to set (see “How long we keep it”).",
+              },
+            },
             // No Brevo line (owner, 26 Nov 2026: Privacy names only tools in use). Brevo is not in use
             // yet: the footer form shows "Sign-up opens soon." until BREVO_* is set. Add a newsletter
             // line here, and Brevo under "Who we share it with", before switching the newsletter on.

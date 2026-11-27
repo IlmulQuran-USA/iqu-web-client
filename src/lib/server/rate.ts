@@ -23,6 +23,9 @@ export const LIMITS = {
   // /contact (no plugin equivalent; the live page had no working form): 5 per IP and 3 per email an hour, counted on success.
   contactIp: 5,
   contactEmail: 3,
+  // /teach (no plugin equivalent; the live page had no form): 3 per IP and 2 per email an hour, counted on success.
+  teachIp: 3,
+  teachEmail: 2,
 } as const;
 
 export function windowStart(now: Date): Date {

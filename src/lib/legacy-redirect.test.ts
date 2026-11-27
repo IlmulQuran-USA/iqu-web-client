@@ -143,6 +143,55 @@ test("file-like URLs: Rank Math sitemaps on the public site only; the Apple icon
   assert.ok(prod.some((r) => r.destination === "/apple-icon.png"));
 });
 
+test("after the switch, what stays on WordPress goes to WP_ORIGIN: exact path, slash and query, one 301", async () => {
+  const { wpOrigin } = await import("./site-env.ts");
+  const WP = wpOrigin("https://wp.ilmulquranus.org", "production");
+  assert.equal(WP, "https://wp.ilmulquranus.org");
+  assert.deepEqual(legacyHop("/my-billing/", "?t=abc.def", WP), { status: 301, location: "https://wp.ilmulquranus.org/my-billing/?t=abc.def" });
+  assert.deepEqual(legacyHop("/", "?iqu_pay=summer&r=12&s=sig", WP), { status: 301, location: "https://wp.ilmulquranus.org/?iqu_pay=summer&r=12&s=sig" });
+  assert.deepEqual(legacyHop("/wp-admin/admin.php", "?page=iqu-billing", WP), { status: 301, location: "https://wp.ilmulquranus.org/wp-admin/admin.php?page=iqu-billing" });
+  assert.deepEqual(legacyHop("/wp-json/iqu/v1/geo", "", WP), { status: 301, location: "https://wp.ilmulquranus.org/wp-json/iqu/v1/geo" });
+  // Everything else is unchanged by the WordPress host.
+  assert.deepEqual(legacyHop("/about/", "", WP), { status: 301, location: "/about" });
+  assert.equal(legacyHop("/my-billing-help", "", WP), null);
+  assert.deepEqual(legacyHop("/", "?p=18", WP), { status: 301, location: "/about" });
+  // Without a WordPress host (staging, or WP_ORIGIN unset) nothing goes to WordPress.
+  assert.deepEqual(legacyHop("/my-billing/", "?t=abc", null), { status: 308, location: "/my-billing?t=abc" }, "only the site's own slash rule");
+  assert.equal(legacyHop("/", "?iqu_pay=summer", null), null);
+});
+
+test("WP_ORIGIN is used only on the public site, only as an https origin that is not the site itself", async () => {
+  const { wpOrigin } = await import("./site-env.ts");
+  assert.equal(wpOrigin("https://wp.ilmulquranus.org/some/path", "production"), "https://wp.ilmulquranus.org");
+  assert.equal(wpOrigin("https://wp.ilmulquranus.org", "staging"), null);
+  assert.equal(wpOrigin("http://wp.ilmulquranus.org", "production"), null);
+  assert.equal(wpOrigin("https://ilmulquranus.org", "production"), null);
+  assert.equal(wpOrigin("https://user:pw@wp.ilmulquranus.org", "production"), null);
+  assert.equal(wpOrigin("", "production"), null);
+  assert.equal(wpOrigin(undefined, "production"), null);
+});
+
+test("uploads and the WordPress login follow WordPress, only on the public site with a host set", async () => {
+  const { wordpressFileRedirects } = await import("../content/legacy-paths.ts");
+  const WP = "https://wp.ilmulquranus.org";
+  assert.deepEqual(fileRedirects(true, WP).slice(0, 2), [
+    { source: "/wp-content/uploads/:path*", destination: `${WP}/wp-content/uploads/:path*`, statusCode: 301 },
+    { source: "/wp-login.php", destination: `${WP}/wp-login.php`, statusCode: 301 },
+  ]);
+  assert.deepEqual(wordpressFileRedirects(null), []);
+  const toWordPress = (rules: { destination: string }[]) => rules.some((r) => r.destination.startsWith("https://"));
+  assert.equal(toWordPress(fileRedirects(false, WP)), false, "staging never sends anything to WordPress");
+  assert.equal(toWordPress(fileRedirects(true, null)), false, "no host, no rule");
+});
+
+test("the WordPress registration pages: instructor registration goes to /teach, the dashboard still to /contact", () => {
+  assert.equal(oneHop("/instructor-registration/").final, "/teach");
+  assert.equal(oneHop("/careers").final, "/teach");
+  assert.equal(oneHop("/teach-with-us").final, "/teach");
+  assert.equal(oneHop("/join-us").final, "/teach");
+  assert.equal(oneHop("/dashboard/").final, "/contact");
+});
+
 test("the map is complete: every live content ID has a target", () => {
   const { ids } = legacyRedirectMap();
   for (const [id] of liveContent) assert.ok(ids.has(id), String(id));

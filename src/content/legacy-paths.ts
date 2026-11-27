@@ -219,8 +219,23 @@ export const liveSitemapPaths = [
   "/wp-sitemap.xml",
 ] as const;
 
-export function fileRedirects(production: boolean) {
+/**
+ * With WordPress moved to its own host (owner, 27 Nov 2026; WP_ORIGIN, set on
+ * the public site only: src/lib/site-env.ts wpOrigin), its media and its
+ * login page follow it, path for path: an old image link or a shared preview
+ * keeps working. null: no WordPress host, so no rule.
+ */
+export function wordpressFileRedirects(wpOrigin: string | null) {
+  if (!wpOrigin) return [];
   return [
+    { source: "/wp-content/uploads/:path*", destination: `${wpOrigin}/wp-content/uploads/:path*`, statusCode: 301 as const },
+    { source: "/wp-login.php", destination: `${wpOrigin}/wp-login.php`, statusCode: 301 as const },
+  ];
+}
+
+export function fileRedirects(production: boolean, wpOrigin: string | null = null) {
+  return [
+    ...wordpressFileRedirects(production ? wpOrigin : null),
     ...(production ? liveSitemapPaths.map((source) => ({ source, destination: "/sitemap.xml", statusCode: 301 as const })) : []),
     {
       source: "/:icon(apple-touch-icon(?:-precomposed|-\\d+x\\d+(?:-precomposed)?)?\\.png)",

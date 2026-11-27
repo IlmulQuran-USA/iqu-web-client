@@ -17,7 +17,6 @@ export const plannedPages: readonly PlannedPage[] = [
   { href: "/donate/zakat", label: "Zakat scholarship fund", status: "pending", waitingFor: "Owner Q2 and Q3: Zakat policy and a separate Zeffy Zakat form" },
   { href: "/about/why-us", label: "Why choose us", status: "pending", waitingFor: "Spec §7.7; not planned yet" },
   { href: "/impact", label: "Impact", status: "pending", waitingFor: "Owner Q3: approved figures with an as-of date" },
-  { href: "/teach", label: "Teach with us", status: "pending", waitingFor: "Spec §7.16; not planned yet" },
   { href: "/blog", label: "Blog", status: "pending", waitingFor: "Spec §7.13; no articles yet" },
   { href: "/programs/one-on-one", label: "One-on-one classes", status: "pending", waitingFor: "Spec §7.11; not planned yet" },
   { href: "/login", label: "Log in", status: "pending", waitingFor: "The portal (spec §7B); no sign-in yet" },

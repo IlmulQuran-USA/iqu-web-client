@@ -22,6 +22,7 @@ const ROUTES = {
   "/courses": ["src/app/courses/page.tsx", "src/content/catalog.ts", "src/content/pricing.ts", "src/components/catalog"],
   "/instructors": ["src/app/instructors/page.tsx", "src/content/instructors-page.ts", "src/content/instructors.ts", "src/components/instructors/DirectorySections.tsx"],
   "/enroll": ["src/app/enroll/page.tsx", "src/components/enroll", "src/content/pricing.ts"],
+  "/teach": ["src/app/teach", "src/content/teach.ts", "src/components/teach", "src/lib/teach"],
   "/courses/*": ["src/app/courses/[slug]", "src/content/courses.ts", "src/content/course-page.ts", "src/content/pricing.ts", "src/components/course"],
   "/programs/*": ["src/app/programs", "src/content/program-page.ts", "src/content/program-timetable.ts", "src/content/pricing.ts", "src/components/program"],
   "/instructors/*": ["src/app/instructors/[slug]", "src/content/instructors.ts", "src/content/instructors-page.ts", "src/components/instructors/ProfileSections.tsx"],
@@ -31,8 +32,8 @@ const ROUTES = {
 const dates = {};
 for (const [route, files] of Object.entries(ROUTES)) {
   const out = execFileSync("git", ["log", "-1", "--format=%cs", "--", ...files], { encoding: "utf8" }).trim();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(out)) throw new Error(`No git date for ${route}`);
-  dates[route] = out;
+  // A route whose files are not committed yet (a new page): today, the day it is added.
+  dates[route] = /^\d{4}-\d{2}-\d{2}$/.test(out) ? out : new Date().toISOString().slice(0, 10);
 }
 
 const file = `/*

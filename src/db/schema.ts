@@ -607,6 +607,48 @@ export const waitlist = pgTable(
   ],
 );
 
+/* ── teach_applications (/teach; owner, 27 Nov 2026) ───────────────────
+ * One row per application. submit_id makes a double click or a resend one
+ * row. The team is told by email (Reply-To the applicant) and Telegram
+ * through the outbox; status is for the team's own follow-up later.
+ */
+
+export const teachApplications = pgTable(
+  "teach_applications",
+  {
+    id: id(),
+    submitId: text("submit_id").notNull(),
+    name: text("name").notNull(),
+    email: text("email").notNull(),
+    phone: text("phone").notNull(),
+    country: text("country").notNull(),
+    gender: text("gender").notNull(),
+    courses: text("courses").array().notNull(),
+    languages: text("languages").array().notNull(),
+    qualifications: text("qualifications").array().notNull(),
+    qualificationOther: text("qualification_other"),
+    ijazah: boolean("ijazah").notNull(),
+    ijazahDetail: text("ijazah_detail"),
+    experience: text("experience").notNull(),
+    availability: text("availability").notNull(),
+    timeZone: text("time_zone").notNull(),
+    sampleUrl: text("sample_url"),
+    referees: text("referees"),
+    message: text("message"),
+    status: text("status").notNull().default("new"),
+    createdAt: created(),
+  },
+  (t) => [
+    uniqueIndex("teach_applications_submit_uq").on(t.submitId),
+    index("teach_applications_email_idx").on(sql`lower(${t.email})`),
+    check("teach_applications_gender", oneOf("gender", ["male", "female"])),
+    check("teach_applications_status", oneOf("status", ["new", "contacted", "closed"])),
+    check("teach_applications_submit_format", sql`${t.submitId} ~ '^[A-Za-z0-9-]{16,64}$'`),
+    check("teach_applications_lists", sql`cardinality(${t.courses}) > 0 AND cardinality(${t.languages}) > 0 AND cardinality(${t.qualifications}) > 0`),
+    check("teach_applications_sample_https", sql`${t.sampleUrl} IS NULL OR ${t.sampleUrl} ~ '^https://'`),
+  ],
+);
+
 /* ── idempotency (a repeat submit gets its first answer for 30 minutes) ── */
 
 export const idempotency = pgTable(

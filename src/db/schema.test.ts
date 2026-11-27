@@ -59,16 +59,31 @@ async function family(cols: Record<string, unknown> = {}): Promise<number> {
 
 /* ── Shape ───────────────────────────────────────────────────────────── */
 
-test("all 18 tables exist", async () => {
+test("all 19 tables exist", async () => {
   const res = await ok(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY 1`);
   assert.deepEqual(
     (res.rows as { table_name: string }[]).map((r) => r.table_name),
     [
       "arrears", "audit_log", "coupon_redemptions", "coupons", "discount_ledger", "eligibility_blocks", "families", "family_members",
-      "idempotency", "outbox", "payments", "rate_limits", "registrations", "review_reasons", "settings", "stripe_events", "waitlist",
-      "wp_import_rows",
+      "idempotency", "outbox", "payments", "rate_limits", "registrations", "review_reasons", "settings", "stripe_events",
+      "teach_applications", "waitlist", "wp_import_rows",
     ],
   );
+});
+
+test("teach_applications refuses a row the form never sends", async () => {
+  const insert = (over: string) =>
+    db.query(
+      `INSERT INTO teach_applications (submit_id, name, email, phone, country, gender, courses, languages, qualifications, ijazah, experience, availability, time_zone, sample_url)
+       VALUES ${over}`,
+    );
+  const good = `('teach-000000000001', 'A', 'a@example.com', '+1 214', 'US', 'male', '{quran-hifz}', '{english}', '{hafez}', false, 'x', 'y', 'Dallas', NULL)`;
+  await insert(good);
+  await assert.rejects(insert(good), /teach_applications_submit_uq/, "one row per submit id");
+  await assert.rejects(insert(good.replace("teach-000000000001", "teach-000000000002").replace("'male'", "'other'")), /teach_applications_gender/);
+  await assert.rejects(insert(good.replace("teach-000000000001", "teach-000000000003").replace("'{quran-hifz}'", "'{}'")), /teach_applications_lists/);
+  await assert.rejects(insert(good.replace("teach-000000000001", "teach-000000000004").replace("NULL)", "'http://x.example')")), /teach_applications_sample_https/);
+  await assert.rejects(insert(good.replace("teach-000000000001", "bad id")), /teach_applications_submit_format/);
 });
 
 test("no IP address column anywhere (owner decision 1)", async () => {

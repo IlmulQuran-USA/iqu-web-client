@@ -38,7 +38,21 @@ function keep(search: string): string {
   return rest ? `?${rest}` : "";
 }
 
-export function legacyHop(pathname: string, search = ""): Hop {
+/**
+ * What still lives on WordPress after the switch (owner, 27 Nov 2026; PRODUCT.md
+ * decision 11: the card and Summer payment resume pages stay on WordPress for
+ * v1): the family billing page, the WordPress admin and REST API. With a
+ * WordPress origin set (production only, src/lib/site-env.ts wpOrigin), each
+ * goes there in one 301 with its exact path, slash and query, so a signed
+ * link (?t=…, ?iqu_pay=…&r=…&s=…) keeps working.
+ */
+const ON_WORDPRESS = /^\/(my-billing|wp-admin|wp-json)(\/|$)/;
+
+export function legacyHop(pathname: string, search = "", wpOrigin: string | null = null): Hop {
+  if (wpOrigin) {
+    if (ON_WORDPRESS.test(pathname)) return { status: 301, location: `${wpOrigin}${pathname}${search}` };
+    if (pathname === "/" && new URLSearchParams(search).has("iqu_pay")) return { status: 301, location: `${wpOrigin}/${search}` };
+  }
   const { paths, ids } = legacyRedirectMap();
   const hadSlash = pathname.length > 1 && pathname.endsWith("/");
   const path = hadSlash ? pathname.replace(/\/+$/, "") || "/" : pathname;

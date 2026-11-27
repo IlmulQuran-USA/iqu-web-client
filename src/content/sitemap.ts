@@ -18,7 +18,7 @@ import { routeDates } from "./sitemap-dates.ts";
 
 export type SitemapEntry = { url: string; lastModified: string };
 
-const STATIC_ROUTES = ["/", "/courses", "/instructors", "/about", "/donate", "/scholarship", "/faq", "/contact", "/enroll"] as const;
+const STATIC_ROUTES = ["/", "/courses", "/instructors", "/about", "/donate", "/scholarship", "/faq", "/contact", "/enroll", "/teach"] as const;
 
 export function sitemapEntries(origin: string): SitemapEntry[] {
   const at = (path: string, dateKey: string) => ({ url: new URL(path, origin).toString(), lastModified: routeDates[dateKey] });

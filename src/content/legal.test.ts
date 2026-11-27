@@ -36,7 +36,7 @@ test("every footer legal link has a page, and every page is linked from the foot
 });
 
 test("section ids are unique within each page, and internal links point at existing pages", () => {
-  const paths = new Set<string>([...legalDocs.map((d) => d.path), "/contact"]);
+  const paths = new Set<string>([...legalDocs.map((d) => d.path), "/contact", "/teach"]);
   for (const doc of legalDocs) {
     const ids = doc.sections.map((s) => s.id);
     assert.equal(new Set(ids).size, ids.length, `${doc.slug}: duplicate section id`);

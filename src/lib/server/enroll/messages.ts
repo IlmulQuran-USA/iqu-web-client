@@ -528,6 +528,66 @@ export function contactEmail(
   return { to, subject: `[${site.name}] Contact form: ${m.topic} — ${m.name}`, html, text };
 }
 
+/** A /teach application, as the team reads it (email and Telegram share these rows). */
+export type TeachSummary = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  country: string;
+  gender: string;
+  courses: string;
+  languages: string;
+  qualifications: string;
+  ijazah: string;
+  experience: string;
+  availability: string;
+  timeZone: string;
+  sampleUrl: string;
+  references: string;
+  message: string;
+};
+
+function teachRows(a: TeachSummary): Row[] {
+  return [
+    ["Name", a.name],
+    ["Email", a.email],
+    ["WhatsApp", a.phone],
+    ["Country", a.country],
+    ["Gender", a.gender],
+    ["Can teach", a.courses],
+    ["Languages", a.languages],
+    ["Qualifications", a.qualifications],
+    ["Ijazah or sanad", a.ijazah],
+    ["Teaches from", a.timeZone],
+    ["Availability", a.availability],
+    ["Recitation sample", a.sampleUrl],
+  ];
+}
+
+/** /teach → the team inbox. Reply-To is the applicant (set by the caller). Their text is escaped and kept as typed. */
+export function teachApplicationEmail(to: string, a: TeachSummary, now: Date): Email {
+  const paragraphs = (label: string, value: string) => (value.trim() ? [`${label}:`, ...value.split(/\r?\n+/).filter((p) => p.trim())] : []);
+  const { html, text } = render({
+    title: `Teacher application #${a.id}`,
+    greeting: "Assalamu alaikum,",
+    intro: [
+      `${a.name} applied to teach through the website’s Teach with us page.`,
+      ...paragraphs("Teaching experience", a.experience),
+      ...paragraphs("References", a.references),
+      ...paragraphs("Anything else", a.message),
+    ],
+    details: [...teachRows(a), ["Received", dhakaTime(now)]],
+    next: [],
+    good: ["Reply to this email to answer them directly."],
+  });
+  return { to, subject: `[${site.name}] Teacher application #${a.id} — ${a.name}`, html, text };
+}
+
+export function teachApplicationTelegram(a: TeachSummary, now: Date): string {
+  return composeTelegram("🧑‍🏫 New Teacher Application", teachRows(a), `Application #${a.id} · ${dhakaTime(now)} · the full text is in the email`);
+}
+
 /**
  * The card reminders at 24 h and 72 h (IQU_Enrollment::reminder_email,
  * class-iqu-enrollment.php:410-435): the same subjects, steps and notes, with
