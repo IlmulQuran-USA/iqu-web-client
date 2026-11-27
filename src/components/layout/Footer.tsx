@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { cacheLife } from "next/cache";
 import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
+import { consentCopy } from "@/content/consent";
 import { footerColumns, legalLinks, socialLinks, type NavLink } from "@/content/navigation";
 import { PENDING, site } from "@/content/site";
 import { cn } from "@/lib/cn";
@@ -58,6 +59,8 @@ const stripLink =
 const contactLink =
   "inline-flex min-h-11 items-center rounded-chip text-on-band underline decoration-1 underline-offset-2 " +
   "hov:decoration-2";
+
+const cookieSettings: NavLink = { label: consentCopy.footerLink, href: "/legal/privacy#cookies" };
 
 /** Internal links use next/link; external ones open a new tab and say so. */
 function FooterLink({ link, className }: { link: NavLink; className: string }) {
@@ -151,7 +154,7 @@ export async function Footer() {
               <span className="whitespace-nowrap">{site.address.line2}</span>
             </p>
             <ul aria-label="Legal and social" className="-mx-2 flex flex-wrap items-center xl:justify-end">
-              {[...legalLinks, ...socialLinks].map((link, i) => (
+              {[...legalLinks, cookieSettings, ...socialLinks].map((link, i) => (
                 <Fragment key={link.href}>
                   {i > 0 ? (
                     // Separators only where the bar is one line (xl), so a dot never dangles at a wrap.
@@ -160,7 +163,14 @@ export async function Footer() {
                     </li>
                   ) : null}
                   <li>
-                    <FooterLink link={link} className={stripLink} />
+                    {link === cookieSettings ? (
+                      // Opens the Cookie settings dialog (consent-runtime); without JavaScript, the Privacy Policy's cookie section.
+                      <a href={link.href} data-consent-open="" aria-haspopup="dialog" className={stripLink}>
+                        {link.label}
+                      </a>
+                    ) : (
+                      <FooterLink link={link} className={stripLink} />
+                    )}
                   </li>
                 </Fragment>
               ))}

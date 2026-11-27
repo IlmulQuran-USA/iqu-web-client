@@ -123,6 +123,33 @@ async function startServer() {
   throw new Error(`next start did not answer within 60 s:\n${log}`);
 }
 
+/*
+ * Code every public page loads right after hydration with import(), so it is
+ * never a <script src> in the HTML, but is still part of the first load: the
+ * cookie banner's runtime (src/components/consent/consent-runtime.ts), loaded
+ * on every page by the site Header or the enroll screens (owner, 27 Nov 2026:
+ * "banner code counted"). Found by a string only that module contains; each
+ * importing chunk group may get its own copy, so the largest is counted, on
+ * every route. A missing marker fails the run, so the count can't silently
+ * stop.
+ */
+const AFTER_HYDRATION = [{ name: "cookie banner", marker: "[data-consent-action], [data-consent-open]" }];
+const CHUNKS = join(NEXT_DIR, "static", "chunks");
+const afterHydration = AFTER_HYDRATION.map(({ name, marker }) => {
+  let best = null;
+  for (const file of readdirSync(CHUNKS)) {
+    if (!file.endsWith(".js")) continue;
+    if (!readFileSync(join(CHUNKS, file), "utf8").includes(marker)) continue;
+    const src = `/_next/static/chunks/${file}`;
+    if (!best || gzipSize(src) > gzipSize(best)) best = src;
+  }
+  if (!best) {
+    console.error(`No chunk contains the ${name} marker (${marker}): update AFTER_HYDRATION in scripts/js-budget.mjs.`);
+    process.exit(2);
+  }
+  return { name, src: best };
+});
+
 const server = process.env.JS_BUDGET_URL
   ? { base: process.env.JS_BUDGET_URL.replace(/\/$/, ""), stop: () => {} }
   : await startServer();
@@ -132,7 +159,9 @@ try {
   for (const path of pages) {
     const res = await fetch(server.base + path, { redirect: "follow" });
     const html = await res.text();
-    const scripts = scriptsOf(html);
+    const own = scriptsOf(html);
+    // A page with no scripts at all stays empty, so a broken page still shows as NO SCRIPTS.
+    const scripts = own.length ? [...own, ...afterHydration.map((a) => a.src).filter((src) => !own.includes(src))] : own;
     const bytes = scripts.reduce((sum, src) => sum + gzipSize(src), 0);
     results.push({ route: routeOf(path), page: path, status: res.status, scripts, bytes });
   }
@@ -168,7 +197,9 @@ if (json) {
   );
 } else {
   const w = Math.max(...rows.map((r) => r.route.length), 5);
-  console.log(`Modern first-load JS: gzip -9 of every <script src> in the HTML, noModule excluded. Budget ${BUDGET_KB} KB.\n`);
+  console.log(`Modern first-load JS: gzip -9 of every <script src> in the HTML, noModule excluded. Budget ${BUDGET_KB} KB.`);
+  for (const a of afterHydration) console.log(`Includes on every route, loaded after hydration: the ${a.name} (${kb(gzipSize(a.src))} KB, ${a.src}).`);
+  console.log("");
   console.log(`${"Route".padEnd(w)}  ${"KB gz".padStart(7)}  ${"files".padStart(5)}  measured on`);
   for (const r of rows) {
     const flag = r.bytes > BUDGET_KB * 1000 ? "   OVER" : r.scripts.length === 0 ? "   NO SCRIPTS" : "";

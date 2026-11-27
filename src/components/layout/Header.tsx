@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
+import { useConsentLoader } from "@/components/consent/useConsentLoader";
 import { ButtonLink } from "@/components/ui/Button";
 import {
   about,
@@ -67,6 +68,8 @@ export function Header({
   yieldOnLoad?: boolean;
 } = {}) {
   const pathname = usePathname() ?? "/";
+  // Runs the cookie banner on every page with this header (src/components/consent/useConsentLoader.ts).
+  useConsentLoader();
   const [scrolled, setScrolled] = useState(false);
   const yieldIds = (Array.isArray(yieldCtaTo) ? yieldCtaTo : yieldCtaTo ? [yieldCtaTo] : []).join(" ");
   // The first paint is final: yielded only when the page says a target starts in view.

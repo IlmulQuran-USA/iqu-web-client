@@ -275,6 +275,17 @@
     }
   }
 
+  /* Cookie banner (src/components/consent): while it is open and full width
+     (phones), --consent-offset is its height. The sticky enroll bars sit on
+     top of it instead of under it, and the page gets the same room at its
+     end, so the banner never covers an enroll button or the footer. */
+  html {
+    --consent-offset: 0px;
+  }
+  body {
+    padding-bottom: var(--consent-offset);
+  }
+
   /* Body scroll lock while a modal dialog (mobile drawer) is open. */
   html:has(dialog[open]:modal) {
     overflow: hidden;
@@ -529,6 +540,25 @@
     letter-spacing: var(--tracking-eyebrow);
     text-transform: uppercase;
     color: var(--eyebrow-color, var(--ink-muted));
+  }
+
+  /* Cookie banner: rises into place on the snappy spring when it first shows;
+     under reduced motion it simply appears. It never moves the page. */
+  .consent-banner {
+    transition:
+      translate var(--duration-spring-snappy) var(--ease-spring-snappy),
+      opacity 240ms var(--ease-riwaq);
+  }
+  @starting-style {
+    .consent-banner {
+      translate: 0 1rem;
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .consent-banner {
+      transition: none;
+    }
   }
 
   /* Mobile drawer: a native modal <dialog> that fills the screen, holding a

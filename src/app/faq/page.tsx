@@ -1,4 +1,5 @@
 import { FaqGroupList } from "@/components/faq/FaqGroupList";
+import { FaqHashOpener } from "@/components/faq/FaqHashOpener";
 import { FINAL_CTA_ID, FinalCta } from "@/components/home/FinalCta";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -13,12 +14,13 @@ import { pageMetadata } from "@/lib/metadata";
  * topic list to jump between them, each answer with its related link, then
  * "Still have questions?" → /contact and the enrollment band (the page's one
  * filled button; the header CTA yields to it). Content and the source of
- * every answer: src/content/faq.ts. Server-rendered, no client code of its
- * own and no Motion: the disclosure is native <details>.
+ * every answer: src/content/faq.ts. Server-rendered and no Motion: the
+ * disclosure is native <details>. Its only client code is FaqHashOpener,
+ * which opens a deep-linked answer in Safari (owner, 27 Nov 2026).
  *
- * Not built from spec §7.14: the search field (owner decision pending; it
- * needs client JavaScript), and the Technology/Safeguarding groups (the
- * owner's group list replaces the spec's).
+ * Not built from spec §7.14: the search field (owner, 27 Nov 2026: no
+ * search), and the Technology/Safeguarding groups (the owner's group list
+ * replaces the spec's).
  */
 
 export const metadata = pageMetadata({ title: faqMeta.title, description: faqMeta.description, path: "/faq" });
@@ -98,6 +100,8 @@ export default function FaqPage() {
         </div>
 
         <FinalCta copy={finalCta} />
+        {/* Safari: opens the answer a /faq#<id> link targets (on load and on hash change). */}
+        <FaqHashOpener />
       </main>
       <Footer />
     </>

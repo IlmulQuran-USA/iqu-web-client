@@ -261,15 +261,50 @@ export const privacyPolicy: LegalDoc = {
       blocks: [
         {
           type: "p",
-          text: "Our website uses cookies for basic functions, for statistics (Google Analytics) and for advertising measurement (Meta Pixel). When you first visit, a cookie banner lets you accept or refuse non-essential cookies, and you can change your choice at any time from the same banner. Embedded content from other websites, such as videos or donation forms, may set its own cookies. Unless you choose “Accept” for marketing cookies in the cookie banner, the Meta Pixel is blocked and our server does not send Meta any notice about your enrollment. Your choice is saved with your enrollment and also applies to the notices sent later, when payment is set up or completed. The location check described above is part of processing an enrollment and is not affected by this choice.",
+          text: "Our website uses cookies for basic functions, for statistics (Google Analytics) and for advertising measurement (Meta Pixel). When you first visit, a cookie banner lets you accept or decline non-essential cookies, and “Cookie settings” at the bottom of every page lets you choose each kind and change your choice at any time. Functional cookies are always on: they keep the site working, protect our forms from spam (Google reCAPTCHA) and remember your cookie choices. Where we can tell which country you are in, Google Analytics runs unless you decline it; where we cannot, it runs only if you accept it. If your browser sends a Global Privacy Control signal, we treat it as declining both analytics and marketing until you choose otherwise. The Meta Pixel never runs unless you accept marketing cookies (“Accept all”, or Marketing in Cookie settings), and without that choice our server does not send Meta any notice about your enrollment. Your choices are kept in cookies on your device for 365 days. Embedded content from other websites, such as videos or donation forms, may set its own cookies. Your choice is saved with your enrollment and also applies to the notices sent later, when payment is set up or completed. The location check described above is part of processing an enrollment and is not affected by this choice.",
           change: {
             status: "draft",
             kind: "edit",
-            label: "Cookies: Meta blocked unless Accept (was: if Deny)",
-            old: "… If you choose “Deny” for marketing cookies in the cookie banner, the Meta Pixel is blocked and our server does not send Meta any notice about your enrollment. …",
+            label: "Cookies: what the new banner does (analytics on unless declined where the country is known; Meta only after Accept)",
+            old: "Our website uses cookies for basic functions, for statistics (Google Analytics) and for advertising measurement (Meta Pixel). When you first visit, a cookie banner lets you accept or refuse non-essential cookies, and you can change your choice at any time from the same banner. Embedded content from other websites, such as videos or donation forms, may set its own cookies. If you choose “Deny” for marketing cookies in the cookie banner, the Meta Pixel is blocked and our server does not send Meta any notice about your enrollment. Your choice is saved with your enrollment and also applies to the notices sent later, when payment is set up or completed. The location check described above is part of processing an enrollment and is not affected by this choice.",
             reason:
-              "The new site treats no answer as no consent (src/lib/consent.ts): stricter than the live wording, so no commitment is weakened. Everything else in this paragraph is unchanged.",
+              "The new banner (src/components/consent, src/lib/consent.ts; owner, 27 Nov 2026, “hybrid”): live Complianz is opt-out for the US, Canada and every other country; the new site keeps analytics opt-out where the country is known (x-vercel-ip-country), makes marketing opt-in everywhere (no answer is no consent: stricter than the live “if Deny”), uses opt-in for both when the country is unknown, honours Global Privacy Control, and keeps the live 365-day lifetime. The footer link “Cookie settings” replaces the live “Manage consent” tab.",
           },
+        },
+        {
+          type: "list",
+          items: [
+            {
+              text: "**Functional (always on):** iqu_statistics_consent and iqu_marketing_consent (your choices, 365 days); iqu_country (the two-letter code of the country you are in, used to choose the defaults above, deleted when you close your browser; we never keep the IP address for this); Google reCAPTCHA on our forms.",
+              change: {
+                status: "draft",
+                kind: "add",
+                label: "New: the functional cookies, by name",
+                old: null,
+                reason: "Exactly what the new site sets (src/lib/consent.ts COOKIES; src/proxy.ts sets iqu_country from x-vercel-ip-country as a session cookie). The live Complianz cookies (cmplz_*) are no longer set.",
+              },
+            },
+            {
+              text: "**Analytics:** Google Analytics (_ga, _ga_*, set by Google for up to 2 years). Removed from your browser when you decline.",
+              change: {
+                status: "draft",
+                kind: "add",
+                label: "New: the analytics cookies, by name",
+                old: null,
+                reason: "GA4 G-7QQ7S0EX1T loaded directly with Consent Mode v2 (no Google Tag Manager); retention as Google sets it (live Complianz cookie list: _ga 2 years). Declining deletes _ga cookies on this site.",
+              },
+            },
+            {
+              text: "**Marketing:** Meta Pixel (_fbp for 3 months and _fbc for up to 2 years, set by Meta). Removed from your browser when you decline.",
+              change: {
+                status: "draft",
+                kind: "add",
+                label: "New: the marketing cookies, by name",
+                old: null,
+                reason: "Meta Pixel 1756660502407987 loaded directly (live Complianz cookie list: _fbp 3 months, _fbc 2 years). No Google Ads tag (owner, 27 Nov 2026). Declining deletes _fbp/_fbc and revokes the Pixel's consent.",
+              },
+            },
+          ],
         },
         {
           type: "p",

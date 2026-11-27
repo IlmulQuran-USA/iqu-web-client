@@ -432,6 +432,11 @@ async function loadBrowserInitial(params: EnrollParams): Promise<Initial> {
  * never be overwritten by an empty one while the schema is on its way.
  */
 export function EnrollFlow(props: FlowProps) {
+  // No site Header on the enroll pages: the cookie banner's script loads from here, after hydration. An inline
+  // import(), not the shared useConsentLoader hook, so no new module is shared with the Header (js-budget; see that hook).
+  useEffect(() => {
+    void import("@/components/consent/consent-runtime").then((m) => m.startConsent());
+  }, []);
   const [browser, setBrowser] = useState<Initial | null>(null);
   useEffect(() => {
     let live = true;
@@ -870,7 +875,8 @@ function Flow({ params, connected, siteKey, liveFormUrl, season, initial, hydrat
                   </div>
                 ) : null}
 
-                <div className="fixed inset-x-0 bottom-0 z-20 border-t border-rule bg-paper/95 py-3 backdrop-blur-sm lg:static lg:mt-10 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
+                {/* Phones: pinned to the bottom, above the cookie banner while it is open (--consent-offset). */}
+                <div className="fixed inset-x-0 bottom-(--consent-offset) z-20 border-t border-rule bg-paper/95 py-3 backdrop-blur-sm lg:static lg:mt-10 lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none">
                   <div className="container-content flex items-center justify-between gap-3 lg:max-w-none lg:px-0">
                     {step > 0 ? (
                       <Button variant="secondary" onClick={() => goTo(step - 1)}>

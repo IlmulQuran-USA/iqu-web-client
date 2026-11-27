@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/Button";
 import { programs } from "@/content/pricing";
 import { site } from "@/content/site";
-import { browserConsent } from "@/lib/consent";
+import { allowed, CONSENT_EVENT, parseCookies } from "@/lib/consent";
 import type { Confirmation, ConfirmationState } from "@/lib/enroll/confirmation";
 import { LAST_KEY, SEED_KEY } from "@/lib/enroll/keys";
 import { InlineAlert } from "./fields";
@@ -92,6 +92,11 @@ function content(state: ConfirmationState, name: string) {
 const CARD_STEP_PENDING: ReadonlySet<ConfirmationState> = new Set(["card-next", "summer-next"]);
 
 export function ConfirmationView({ confirmation }: { confirmation: Confirmation }) {
+  // No site Header on the enroll pages: the cookie banner's script loads from here, after hydration. An inline
+  // import(), not the shared useConsentLoader hook, so no new module is shared with the Header (js-budget; see that hook).
+  useEffect(() => {
+    void import("@/components/consent/consent-runtime").then((m) => m.startConsent());
+  }, []);
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   // This tab's last submit (first name, seed). Empty on the server; read once in the browser.
@@ -114,18 +119,32 @@ export function ConfirmationView({ confirmation }: { confirmation: Confirmation 
     }
   }, [raw]);
 
-  // Meta Lead: once per event id, only with consent, only if the pixel is on the page.
+  // Meta Lead: once per event id, only with marketing consent, only once the Pixel is on the page.
+  // The Pixel starts with the cookie banner's script just after hydration, which then sends
+  // CONSENT_EVENT (src/lib/consent.ts); the Lead waits for it.
   useEffect(() => {
     const lead = confirmation.lead;
-    if (!lead || browserConsent() !== "granted" || typeof window.fbq !== "function") return;
-    const key = `iqu-lead-${lead.eventId}`;
-    try {
-      if (window.sessionStorage.getItem(key)) return;
-      window.sessionStorage.setItem(key, "1");
-    } catch {
-      // Without storage the event may repeat; Meta deduplicates by eventID.
-    }
-    window.fbq("track", "Lead", { content_name: lead.contentName, content_category: "registration", currency: "USD", value: lead.value }, { eventID: lead.eventId });
+    if (!lead) return;
+    const send = (): boolean => {
+      // The same test that starts the Pixel (src/lib/consent.ts): marketing is opt-in, so only an explicit Accept.
+      const jar = parseCookies(document.cookie);
+      if (!allowed((name) => jar.get(name), "marketing") || typeof window.fbq !== "function") return false;
+      const key = `iqu-lead-${lead.eventId}`;
+      try {
+        if (window.sessionStorage.getItem(key)) return true;
+        window.sessionStorage.setItem(key, "1");
+      } catch {
+        // Without storage the event may repeat; Meta deduplicates by eventID.
+      }
+      window.fbq("track", "Lead", { content_name: lead.contentName, content_category: "registration", currency: "USD", value: lead.value }, { eventID: lead.eventId });
+      return true;
+    };
+    if (send()) return;
+    const onConsent = () => {
+      if (send()) window.removeEventListener(CONSENT_EVENT, onConsent);
+    };
+    window.addEventListener(CONSENT_EVENT, onConsent);
+    return () => window.removeEventListener(CONSENT_EVENT, onConsent);
   }, [confirmation.lead]);
 
   const name = last.name ?? "";

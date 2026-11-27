@@ -66,7 +66,8 @@ export function StickyCTA({
       data-sticky-cta=""
       inert={!shown}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-30 border-t border-rule bg-paper px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden",
+        // bottom: above the cookie banner while it is open (globals.css --consent-offset).
+        "fixed inset-x-0 bottom-(--consent-offset) z-30 border-t border-rule bg-paper px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden",
         "transition-transform duration-(--duration-default) ease-riwaq motion-reduce:transition-none",
         shown ? "translate-y-0" : "translate-y-full",
       )}

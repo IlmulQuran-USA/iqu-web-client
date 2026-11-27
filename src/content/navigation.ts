@@ -75,6 +75,8 @@ export const about: NavLink[] = builtOnly([
   { label: "Why choose us", href: "/about/why-us" },
   { label: "Transparency & finances", href: "/about/transparency" },
   { label: "Blog", href: "/blog" },
+  // Owner, 27 Nov 2026: the FAQ in the About menu and the footer's Organization column.
+  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ]);
 
@@ -99,8 +101,9 @@ export const ZEFFY_GIVING_URL =
 
 /**
  * Footer columns (spec §6.2; owner decision, 19 Nov 2026): six rows each once
- * every page exists; until then, links to pages not built yet are left out
- * (./planned-pages.ts). Support us has five links; its sixth row is the 501(c)(3) · EIN line,
+ * every page exists (Organization seven, with FAQ: owner, 27 Nov 2026); until
+ * then, links to pages not built yet are left out (./planned-pages.ts).
+ * Support us has five links; its sixth row is the 501(c)(3) · EIN line,
  * drawn by the footer, so the EIN appears only once.
  */
 const columns: { title: string; links: NavLink[]; giving?: boolean }[] = [
@@ -123,6 +126,7 @@ const columns: { title: string; links: NavLink[]; giving?: boolean }[] = [
       { label: "Impact", href: "/impact" },
       { label: "Teach with us", href: "/teach" },
       { label: "Blog", href: "/blog" },
+      { label: "FAQ", href: "/faq" },
       { label: "Contact", href: "/contact" },
     ],
   },

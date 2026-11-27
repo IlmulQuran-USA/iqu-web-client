@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { ConsentBanner } from "@/components/consent/ConsentBanner";
 import { site } from "@/content/site";
 import { PAPER } from "@/lib/brand-colors";
 import { robotsFor, socialDefaults, TITLE_TEMPLATE } from "@/lib/metadata";
@@ -64,7 +65,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${newsreader.variable} ${plexSans.variable}`}>
       {/* No MotionProvider here: only the pages that reveal wrap themselves in it,
           so /contact, /enroll and the 404 page load none of Motion (js-budget, 26 Nov 2026). */}
-      <body className="flex min-h-dvh flex-col">{children}</body>
+      <body className="flex min-h-dvh flex-col">
+        {children}
+        {/* Cookie banner and settings on every page: server markup only. useConsentLoader() loads their script, called
+            from the site Header and the enroll screens (src/components/consent/useConsentLoader.ts says why). */}
+        <ConsentBanner />
+      </body>
     </html>
   );
 }

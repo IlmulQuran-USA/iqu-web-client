@@ -38,6 +38,12 @@ export function EnrollFooter() {
               {site.email}
             </a>
           ) : null}
+          {/* Opens the Cookie settings dialog; without JavaScript, the Privacy Policy's cookie section.
+              The label is written out (consentCopy.footerLink, checked by src/lib/consent.test.ts): EnrollFlow
+              renders this footer in the browser, and importing the banner copy would ship all of it. */}
+          <a href="/legal/privacy#cookies" data-consent-open="" aria-haspopup="dialog" className="inline-flex min-h-11 items-center hov:text-ink">
+            Cookie settings
+          </a>
         </p>
       </div>
     </footer>
