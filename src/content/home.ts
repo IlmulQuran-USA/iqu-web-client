@@ -303,7 +303,8 @@ export const faq = {
   all: builtOrNull({ label: "All questions", href: "/faq" }),
   items: [
     {
-      status: "draft",
+      // Final (owner, 27 Nov 2026: the /faq answers approved).
+      status: "live",
       q: "How much do classes cost?",
       // PLUGIN-INVENTORY §2.1–§2.5 and COURSE-CONTENT.md via ./pricing; PRODUCT.md decision 4; owner's scholarship route.
       a: `Monthly classes start from ${usd(lowestFrom)}/month, and your first month is free. The fee depends on the course and the number of days a week:`,
@@ -312,7 +313,7 @@ export const faq = {
         "Fees are in US dollars, and class length does not change the price. Families asking for a scholarship are contacted by our team.",
     },
     {
-      status: "draft",
+      status: "live",
       q: "Is the first month really free?",
       // PRODUCT.md decision 4; owner's wording for the scholarship route. Billing: K1, closed 24 Nov 2026.
       a: "Yes. On a paid plan you add a card at checkout, and nothing is charged during your free first month. After that, tuition is charged on the 1st of each month. Families asking for a scholarship are contacted by our team instead.",
@@ -330,7 +331,7 @@ export const faq = {
       a: `Yes. ${courseRules.teacherAssignment.text} Tell us your preference when you enroll.`,
     },
     {
-      status: "draft",
+      status: "live",
       q: "What is the youngest age you teach?",
       // Owner, 19 Nov 2026. Program ages: PLUGIN-INVENTORY §1 via ./pricing.
       a: `Monthly classes usually start from age 6 or 7, depending on the child’s readiness. The ${programs.weekend.label} (ages ${programs.weekend.ages}) and the ${programs.summer.label} (ages ${programs.summer.ages}) welcome children from age 5.`,
@@ -338,7 +339,7 @@ export const faq = {
     // The cancelled-class rule (Tuition & Refund Policy), worded as on the course pages.
     courseFaq[2],
     {
-      status: "draft",
+      status: "live",
       q: "What do we need for classes?",
       // Owner, 19 Nov 2026.
       a: "Classes are live on Zoom. We recommend a laptop or tablet with a steady internet connection. A phone works, but we don’t recommend it: the screen is too small for reading the Quran comfortably.",

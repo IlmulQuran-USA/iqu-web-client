@@ -334,7 +334,9 @@ const LANGUAGE_FAQ: ProgramFaq = {
 export const afterEnrolFaq = { status: "pending", q: "What happens after I enroll?", a: null } as const;
 
 export const weekendFaq: ProgramFaq[] = [
-  { status: "draft", q: "Does the Weekend Ilm Program cost anything?", a: "No. It is free for every child, and no payment is taken." },
+  // Final (owner, 27 Nov 2026: the /faq answers approved). The time answer below
+  // stays draft: /faq approved only its first sentence (faq.ts weekend-times).
+  { status: "live", q: "Does the Weekend Ilm Program cost anything?", a: "No. It is free for every child, and no payment is taken." },
   {
     status: "draft",
     q: "What time are the classes where we live?",
@@ -344,12 +346,13 @@ export const weekendFaq: ProgramFaq[] = [
 
 export const summerFaq: ProgramFaq[] = [
   {
-    status: "draft",
+    // Final (owner, 27 Nov 2026: the /faq answers approved).
+    status: "live",
     q: "What does Summer Ilm Camp cost?",
     a: `${usd(programs.summer.fee)}, paid once, for the whole camp. A reduced option is offered when you enroll.`,
   },
-  { status: "draft", q: "Which level will my child join?", a: "Level 1 is for ages 5–10, and Level 2 is for ages 11–15." },
-  { status: "draft", q: "Is there homework?", a: "Yes. Children have daily homework, with support in the evening." },
+  { status: "live", q: "Which level will my child join?", a: "Level 1 is for ages 5–10, and Level 2 is for ages 11–15." },
+  { status: "live", q: "Is there homework?", a: "Yes. Children have daily homework, with support in the evening." },
 ];
 
 /**

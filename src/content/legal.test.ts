@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { legalRedirects, livePolicyPaths } from "./legacy-paths.ts";
-import { accessibilityStatement, privacyPolicy, refundPolicy, termsAndConditions, type LegalDoc, type LegalItem } from "./legal.ts";
+import { accessibilityStatement, hasDraftChanges, privacyPolicy, refundPolicy, termsAndConditions, type LegalDoc, type LegalItem } from "./legal.ts";
 import { legalLinks } from "./navigation.ts";
 
 /* /legal/* content (src/content/legal.ts; report F:/iqu-setup/reports/legal-pages.md). */
@@ -70,7 +70,7 @@ test("Tuition & refunds follow the settled rules: the 1st, the free month, 7 day
   assert.ok(allChanges(refundPolicy).every((c) => c.status === "live"));
 });
 
-test("Privacy keeps every live commitment; its updates are proposed (draft) changes", () => {
+test("Privacy keeps every live commitment; its updates are final (owner, 27 Nov 2026)", () => {
   const text = shownTexts(privacyPolicy).join("\n");
   for (const commitment of [
     "We do not sell personal information.",
@@ -85,16 +85,27 @@ test("Privacy keeps every live commitment; its updates are proposed (draft) chan
   }
   assert.doesNotMatch(text, /we save the IP address/);
   const changes = allChanges(privacyPolicy);
-  assert.ok(changes.length > 0 && changes.every((c) => c.status === "draft"));
+  assert.ok(changes.length > 0 && changes.every((c) => c.status === "live"));
+  assert.equal(hasDraftChanges(privacyPolicy), false);
+  // MaxMind is gone now that its removal is final.
+  assert.doesNotMatch(text, /MaxMind/);
 });
 
 test("Terms is the live text, unchanged apart from its links", () => {
   assert.equal(allChanges(termsAndConditions).length, 0);
-  assert.equal(termsAndConditions.updated, "6 Oct 2026");
+  assert.equal(termsAndConditions.source?.updated, "6 Oct 2026");
 });
 
-test("Accessibility is a draft that claims no conformance and says how to report a problem", () => {
-  assert.equal(accessibilityStatement.status, "draft");
+test("every legal page is final and dated 27 Nov 2026; no page waits for approval", () => {
+  for (const doc of legalDocs) {
+    assert.equal(doc.status, "live", doc.slug);
+    assert.equal(doc.updated, "27 Nov 2026", doc.slug);
+    assert.equal(hasDraftChanges(doc), false, doc.slug);
+  }
+});
+
+test("Accessibility is final, claims no conformance and says how to report a problem", () => {
+  assert.equal(accessibilityStatement.status, "live");
   const text = shownTexts(accessibilityStatement).join("\n");
   assert.doesNotMatch(text, /\b(compliant|conforms?|conformance|certified|fully accessible)\b/i);
   assert.match(text, /not a statement that every page meets it/);

@@ -557,29 +557,31 @@ export const courseFaq = [
     q: "Can I choose a male or female teacher?",
     a: `Yes. ${TEACHER_RULE} Tell us your preference when you enroll.`,
   },
-  { status: "draft", q: "One-on-one or group?", a: "Both. Choose one-on-one or a small group when you enroll." },
+  // Final (owner, 27 Nov 2026: the /faq answers approved).
+  { status: "live", q: "One-on-one or group?", a: "Both. Choose one-on-one or a small group when you enroll." },
   {
-    status: "draft",
+    status: "live",
     q: "What if a class is cancelled?",
     // Tuition & Refund Policy, 16 Nov 2026 (CONTENT-ADDENDUM.md §2). Never promise make-ups beyond it.
     a: "If your teacher or we cancel a class and it isn’t made up, it is refunded or taken off your next month.",
   },
   // courseRules.certificate (live), so the course pages and /faq give one answer (owner, 26 Nov 2026).
-  { status: "draft", q: "Is there a certificate?", a: `Yes. ${courseRules.certificate.text}` },
+  { status: "live", q: "Is there a certificate?", a: `Yes. ${courseRules.certificate.text}` },
   {
-    status: "draft",
+    status: "live",
     q: "Can we change days or the course later?",
     a: "Yes. The new monthly amount starts on the next 1st of the month, and we confirm it with you first.",
   },
 ] as const;
 
 /**
- * "We match you with a teacher" (CONTENT-ADDENDUM.md §3.4, draft), with the
+ * "We match you with a teacher" (CONTENT-ADDENDUM.md §3.4), with the
  * owner's exact rule on teacher gender (20 Nov 2026) in place of the
- * addendum's "girls and young children".
+ * addendum's "girls and young children". Final with the /faq answers
+ * (owner, 27 Nov 2026).
  */
 export const teacherMatching = {
-  status: "draft",
+  status: "live",
   text: `We match by the student’s level, the teacher gender the family prefers and the days and times that suit the family. ${TEACHER_RULE}`,
 } as const;
 

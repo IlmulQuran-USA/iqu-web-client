@@ -18,9 +18,10 @@ import { howToAsk } from "./scholarship";
  * src/content/faq.test.ts fails if one question ever has two answers.
  *
  * New answers are only live text (quoted, with the WordPress source) or a
- * sentence built from settled rules (PRODUCT.md, pricing.ts), marked draft
- * for the owner. Nothing unsourced: "What happens after I enroll?" stays
- * pending (program-page.ts afterEnrolFaq) and is not shown.
+ * sentence built from settled rules (PRODUCT.md, pricing.ts). The owner
+ * approved every answer as final on 27 Nov 2026; a new answer starts as draft
+ * again. Nothing unsourced: "What happens after I enroll?" stays pending
+ * (program-page.ts afterEnrolFaq) and is not shown.
  *
  * Inline text may hold [label](href) links (rendered by InlineText; plain in
  * the FAQPage JSON-LD).
@@ -106,7 +107,7 @@ export const faqGroups: FaqGroup[] = [
         q: "Do you teach families outside the United States and Canada?",
         // Live Privacy Policy: "new students live in the United States or Canada, where our classes are offered" (PLUGIN-INVENTORY §1).
         a: "No. Our classes are offered to families who live in the United States or Canada.",
-        status: "draft",
+        status: "live",
       },
       reuse(homeFaq.items, "What is the youngest age you teach?", "youngest-age", { label: "All courses", href: "/courses" }),
       {
@@ -116,7 +117,7 @@ export const faqGroups: FaqGroup[] = [
         // progress saves on the family's device (decision 10).
         a: "Fill in our enrollment form. For monthly classes it has five short steps: the student, the course, the schedule, the fee and a final review; the Weekend and Summer programs need fewer. Your answers are saved on this device as you go.",
         link: enroll,
-        status: "draft",
+        status: "live",
       },
       reuse(homeFaq.items, "Is the first month really free?", "first-month-free", enroll),
       {
@@ -156,7 +157,7 @@ export const faqGroups: FaqGroup[] = [
         // PRODUCT.md decision 2: "No sibling discount. Every child pays the full fee."
         a: "No. Every child pays the full fee for their course. Families who need help can ask for a reduced fee or a full scholarship.",
         link: help,
-        status: "draft",
+        status: "live",
       },
     ],
   },
@@ -170,14 +171,14 @@ export const faqGroups: FaqGroup[] = [
         q: "Which time zone are class times in?",
         // PRODUCT.md "Time zones": every time carries its zone label, ET, CT, MT, PT and AT; the family picks its zone in /enroll.
         a: "Yours. When you enroll you choose your time zone, and every class time we show carries its zone: Eastern (ET), Central (CT), Mountain (MT), Pacific (PT) or Atlantic (AT).",
-        status: "draft",
+        status: "live",
       },
       {
         id: "class-length",
         q: "How long is each class?",
         // pricing.ts sessionLengths (the live plugin's list); Home cost answer: "class length does not change the price".
         a: `Classes are ${sessionLengths} long. You choose the length when you enroll, and it does not change the price.`,
-        status: "draft",
+        status: "live",
       },
       reuse(courseFaq, "One-on-one or group?", "one-on-one-or-group"),
       {
@@ -210,7 +211,7 @@ export const faqGroups: FaqGroup[] = [
         q: "How do you choose a teacher for my child?",
         // courses.ts teacherMatching (CONTENT-ADDENDUM §3.4 with the owner's teacher rule).
         a: teacherMatching.text,
-        status: "draft",
+        status: "live",
       },
       {
         id: "who-teaches",
@@ -218,7 +219,7 @@ export const faqGroups: FaqGroup[] = [
         // site.ts mission (live): "Live Quran and Islamic classes taught by qualified Huffaz, Ulama and Mufti…".
         a: "Qualified Huffaz, Ulama and Mufti. Each teacher has a profile with the courses they teach and the languages they speak.",
         link: { label: "Meet our teachers", href: "/instructors" },
-        status: "draft",
+        status: "live",
       },
     ],
   },
@@ -304,7 +305,7 @@ export const faqGroups: FaqGroup[] = [
         // program-page.ts weekendFaq: the same first sentence, without "the schedule above", which only makes sense there.
         a: weekendFaq.find((i) => i.q === "What time are the classes where we live?")!.a.split(". ")[0] + ".",
         link: { label: programs.weekend.label, href: programs.weekend.href },
-        status: "draft",
+        status: "live",
       },
       reuse(summerFaq, "What does Summer Ilm Camp cost?", "summer-cost", { label: programs.summer.label, href: programs.summer.href }),
       { ...reuse(summerFaq, "Which level will my child join?", "summer-levels"), q: "Which Summer Ilm Camp level will my child join?" },
@@ -314,7 +315,7 @@ export const faqGroups: FaqGroup[] = [
         q: "What language are the Weekend and Summer programs taught in?",
         // program-page.ts LANGUAGE_FAQ: the live course records list English for both programs.
         a: "English.",
-        status: "draft",
+        status: "live",
       },
     ],
   },

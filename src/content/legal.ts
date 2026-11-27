@@ -10,9 +10,10 @@ import { PENDING, site } from "./site.ts";
  * with the live wording (`old`) and the reason:
  *   - status "live": settled by PRODUCT.md / PLUGIN-INVENTORY.md (the billing
  *     rules on the Tuition page). Not marked on the page.
- *   - status "draft": proposed (the Privacy updates for how the new site
- *     works). Marked on the page and listed by `npm run content:check`, so
- *     none ships before the owner approves it.
+ *   - status "draft": proposed. Marked on the page and listed by
+ *     `npm run content:check`, so none ships before the owner approves it.
+ *     (The Privacy updates for how the new site works were approved as final
+ *     on 27 Nov 2026; none is draft now.)
  * A "remove" change keeps the live text here, so the record stays complete:
  * a draft removal is shown struck through, a live one is not rendered.
  *
@@ -49,8 +50,8 @@ export type LegalDoc = {
   /** Meta description. */
   description: string;
   /**
-   * "Last updated", as 30 Aug 2026. Privacy, Refund and Accessibility show the
-   * cutover date (owner, 26 Nov 2026): [pending] until that day.
+   * "Last updated", as 30 Aug 2026. All four pages: LEGAL_UPDATED (owner,
+   * 27 Nov 2026), re-checked on switch day (cutover runbook).
    */
   updated: string;
   /** "draft" for a page with no live equivalent that the owner has not approved. */
@@ -63,6 +64,12 @@ export type LegalDoc = {
 
 const EMAIL = "[info@ilmulquranus.org](mailto:info@ilmulquranus.org)";
 
+/**
+ * "Last updated" on all four legal pages: the owner approved them as final on
+ * 27 Nov 2026. The cutover runbook re-checks this date on switch day.
+ */
+export const LEGAL_UPDATED = "27 Nov 2026";
+
 /* ── Privacy Policy (live page 3, last updated November 10, 2026) ─────────── */
 
 export const privacyPolicy: LegalDoc = {
@@ -72,8 +79,8 @@ export const privacyPolicy: LegalDoc = {
   lead: "How we collect, use and protect your family’s information.",
   description:
     "How Ilm-Ul-Quran USA collects, uses and protects your family’s information: what we collect, who we share it with, cookies, children’s privacy and your rights.",
-  // The cutover date (owner, 26 Nov 2026), when the proposed changes below take effect.
-  updated: PENDING,
+  // Final with every change below (owner, 27 Nov 2026).
+  updated: LEGAL_UPDATED,
   status: "live",
   source: { wpId: 3, url: "https://ilmulquranus.org/privacy-policy/", updated: "10 Nov 2026" },
   intro: [],
@@ -104,7 +111,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Enrollment record:** when you submit an enrollment form, we save the country estimated from the IP address of the device used, and your choice for marketing cookies in the cookie banner, together with the enrollment. We do not save the IP address or the browser information. If you accepted marketing cookies, we also save Meta's cookie identifiers with the enrollment (see Meta, below).",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "edit",
                 label: "Enrollment record: no IP address or browser information saved",
                 old: "Enrollment record: when you submit an enrollment form, we save the IP address and browser information of the device used, the country estimated from that IP address, and your choice for marketing cookies in the cookie banner, together with the enrollment.",
@@ -115,7 +122,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Messages you send us** through our contact form: your name, email address, phone number if you give one, the topic and your message. They are emailed to our team, and the website does not keep a copy once the email has been sent.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: contact form messages",
                 old: null,
@@ -126,7 +133,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Teacher applications** sent through our [Teach with us](/teach) page: your name, email address, WhatsApp number, country, gender, the courses and languages you can teach, your qualifications and Ijazah, your teaching experience, when and from where you can teach, and, if you give them, a link to a recitation sample, references and a message. We keep them to review your application and send them to our team by email and Telegram.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: teacher applications (/teach)",
                 old: null,
@@ -159,7 +166,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "To confirm that new students live in the United States or Canada, where our classes are offered. We check the country code of the phone number, the country estimated from the IP address, and the country of the card added on Stripe. The country is estimated from the IP address by our website host, Vercel, as the form is sent; we keep only the country, not the IP address. If the checks do not match, our team reviews the enrollment or adds the family to a waitlist.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "edit",
                 label: "Location check: country from Vercel, not MaxMind",
                 old: "… The IP country is looked up on our own server using the MaxMind GeoLite2 database; your IP address is not sent to MaxMind. If the checks do not match, our team reviews the enrollment or adds the family to a waitlist.",
@@ -170,7 +177,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "To limit repeated or automated form submissions. For this we count submissions by a scrambled (hashed) form of the IP address and email address; the IP address and email address themselves are not saved for this.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: rate limits use hashed IP and email",
                 old: null,
@@ -208,7 +215,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Meta** — measures the results of our Facebook and Instagram advertisements. In your browser this is done by the Meta Pixel. Our server also sends Meta a notice (Meta Conversions API) when an enrollment form is submitted, when a card or bank account is added for monthly tuition, and when a Summer program payment is completed. Each notice contains: the email address, phone number and country, and the parent's or guardian's name (or an adult student's own name), all in scrambled (hashed) form; for the enrollment notice, the IP address and browser information of the device used to send the form, passed to Meta at that moment and not saved by us; Meta's own cookie identifiers, including the ad click ID when you arrived from an ad; and the program name and amount. We never send a child's name, a student's date of birth or age, notes or payment details. No notice is sent unless you chose “Accept” for marketing cookies, and none for students added by our team. Meta uses these notices to match them to its users and report advertising results to us.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "edit",
                 label: "Meta: IP passed at sending, not saved; notices only after Accept",
                 old: "… the IP address and browser information saved with the enrollment; … No notice is sent if you chose “Deny” for marketing cookies, or for students added by our team.",
@@ -219,7 +226,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**MaxMind** — provides the GeoLite2 location database that we keep on our own server. We do not send your information to MaxMind. This website includes GeoLite2 data created by MaxMind, available from [maxmind.com](https://www.maxmind.com).",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "remove",
                 label: "Remove MaxMind once the WordPress enrollment form is off",
                 old: "MaxMind — provides the GeoLite2 location database that we keep on our own server. We do not send your information to MaxMind. This website includes GeoLite2 data created by MaxMind, available from maxmind.com.",
@@ -233,7 +240,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Vercel** — hosts this website, and estimates each visitor's country from their IP address (see the location check above).",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "edit",
                 label: "Website host: Vercel, Neon, and WordPress while pages move",
                 old: "Our website host — stores the website and its database.",
@@ -244,7 +251,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Neon** — stores our website database.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: Neon (database)",
                 old: null,
@@ -254,7 +261,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Our WordPress host** — stores donation records and the payment pages that have not yet moved to this website.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: WordPress host while pages move",
                 old: null,
@@ -274,7 +281,7 @@ export const privacyPolicy: LegalDoc = {
           type: "p",
           text: "Our website uses cookies for basic functions, for statistics (Google Analytics) and for advertising measurement (Meta Pixel). When you first visit, a cookie banner lets you accept or decline non-essential cookies, and “Cookie settings” at the bottom of every page lets you choose each kind and change your choice at any time. Functional cookies are always on: they keep the site working, protect our forms from spam (Google reCAPTCHA) and remember your cookie choices. Where we can tell which country you are in, Google Analytics runs unless you decline it; in Québec, and where we cannot tell, it runs only if you accept it. If your browser sends a Global Privacy Control signal, we treat it as declining both analytics and marketing until you choose otherwise. The Meta Pixel never runs unless you accept marketing cookies (“Accept all”, or Marketing in Cookie settings), and without that choice our server does not send Meta any notice about your enrollment. Your choices are kept in cookies on your device for 365 days. Embedded content from other websites, such as videos or donation forms, may set its own cookies. Your choice is saved with your enrollment and also applies to the notices sent later, when payment is set up or completed. The location check described above is part of processing an enrollment and is not affected by this choice.",
           change: {
-            status: "draft",
+            status: "live",
             kind: "edit",
             label: "Cookies: what the new banner does (analytics on unless declined where the country is known; Meta only after Accept)",
             old: "Our website uses cookies for basic functions, for statistics (Google Analytics) and for advertising measurement (Meta Pixel). When you first visit, a cookie banner lets you accept or refuse non-essential cookies, and you can change your choice at any time from the same banner. Embedded content from other websites, such as videos or donation forms, may set its own cookies. If you choose “Deny” for marketing cookies in the cookie banner, the Meta Pixel is blocked and our server does not send Meta any notice about your enrollment. Your choice is saved with your enrollment and also applies to the notices sent later, when payment is set up or completed. The location check described above is part of processing an enrollment and is not affected by this choice.",
@@ -288,7 +295,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Functional (always on):** iqu_statistics_consent and iqu_marketing_consent (your choices, 365 days); iqu_country (the two-letter code of the country you are in, and whether you are in Québec, used to choose the defaults above, deleted when you close your browser; we never keep the IP address for this); Google reCAPTCHA on our forms.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: the functional cookies, by name",
                 old: null,
@@ -298,7 +305,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Analytics:** Google Analytics (_ga, _ga_*, set by Google for up to 2 years). Removed from your browser when you decline.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: the analytics cookies, by name",
                 old: null,
@@ -308,7 +315,7 @@ export const privacyPolicy: LegalDoc = {
             {
               text: "**Marketing:** Meta Pixel (_fbp for 3 months and _fbc for up to 2 years, set by Meta). Removed from your browser when you decline.",
               change: {
-                status: "draft",
+                status: "live",
                 kind: "add",
                 label: "New: the marketing cookies, by name",
                 old: null,
@@ -321,7 +328,7 @@ export const privacyPolicy: LegalDoc = {
           type: "p",
           text: "**Saved on your device.** While you fill in the enrollment form, your answers are saved in your browser on this device, so you can come back to them. They are not sent to us until you submit the form. After you submit, the parent or guardian's name, contact details, country and time zone stay in your browser so that enrolling a brother or sister starts already filled in; they are removed once used. Choosing “Start over” on the form, or clearing your browser's data for this website, removes them.",
           change: {
-            status: "draft",
+            status: "live",
             kind: "add",
             label: "New: enrollment draft saved on the device",
             old: null,
@@ -409,7 +416,8 @@ export const termsAndConditions: LegalDoc = {
   lead: "The rules for using our website, classes and services.",
   description:
     "The terms for using the Ilm-Ul-Quran USA website, classes and services: conduct, tuition and payments, donations, attendance, privacy and content use.",
-  updated: "6 Oct 2026",
+  // Final as it is (owner, 27 Nov 2026); the live page's own date stays in `source`.
+  updated: LEGAL_UPDATED,
   status: "live",
   source: { wpId: 443, url: "https://ilmulquranus.org/terms-and-conditions/", updated: "6 Oct 2026" },
   intro: [
@@ -575,8 +583,8 @@ export const refundPolicy: LegalDoc = {
   lead: "How monthly tuition, payments and refunds work.",
   description:
     "How monthly tuition, payments and refunds work at Ilm-Ul-Quran USA: the free first month, billing on the 1st, failed payments, pausing or stopping, and refunds.",
-  // The cutover date (owner, 26 Nov 2026): the billing-day corrections below go live with the new site.
-  updated: PENDING,
+  // Final as it is (owner, 27 Nov 2026), with the billing-day corrections below.
+  updated: LEGAL_UPDATED,
   status: "live",
   source: { wpId: 1366, url: "https://ilmulquranus.org/tuition-refund-policy/", updated: "16 Nov 2026" },
   intro: [
@@ -860,7 +868,7 @@ export const refundPolicy: LegalDoc = {
   ],
 };
 
-/* ── Accessibility statement (no live page: a draft for the owner) ────────── */
+/* ── Accessibility statement (no live page; final, owner 27 Nov 2026) ─────── */
 
 const contactLines = [
   site.email ? `Email: [${site.email}](mailto:${site.email})` : `Email: ${PENDING}`,
@@ -870,9 +878,9 @@ const contactLines = [
 ];
 
 /**
- * No live equivalent. A draft that makes no conformance claim: it states the
- * goal and how to report a problem (contact details from site.ts). Listed by
- * content:check until the owner approves it.
+ * No live equivalent. Makes no conformance claim: it states the goal and how
+ * to report a problem (contact details from site.ts). Approved as final by the
+ * owner, 27 Nov 2026.
  */
 export const accessibilityStatement: LegalDoc = {
   slug: "accessibility",
@@ -881,8 +889,8 @@ export const accessibilityStatement: LegalDoc = {
   lead: "Our goal for this website, and how to tell us about a problem.",
   description:
     "Ilm-Ul-Quran USA wants every family to be able to use this website. Our accessibility goal, the services we do not control, and how to report a problem.",
-  updated: PENDING,
-  status: "draft",
+  updated: LEGAL_UPDATED,
+  status: "live",
   source: null,
   intro: [
     {
