@@ -24,6 +24,7 @@ import {
 import { courses } from "@/content/courses";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
+import { itemListLd, jsonLdHtml } from "@/lib/structured-data";
 
 /*
  * Course catalog (spec §7.2; plan approved by the owner, 21 Nov 2026).
@@ -47,20 +48,12 @@ export const metadata = pageMetadata({
 
 /** ItemList structured data. Islamic Studies stays out while its page is noindex. */
 function itemListJsonLd() {
-  const url = `https://${site.domain}`;
   const noindex = new Set(courses.filter((c) => c.content.noindex).map((c) => c.id));
   const rows = catalogGroups.flatMap((g) => g.rows).filter((r) => !noindex.has(r.id as never));
-  return {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: `${catalogHeader.title} at ${site.name}`,
-    itemListElement: rows.map((row, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      name: row.name,
-      url: `${url}${row.href}`,
-    })),
-  };
+  return itemListLd(
+    `${catalogHeader.title} at ${site.name}`,
+    rows.map((row) => ({ name: row.name, path: row.href })),
+  );
 }
 
 export default async function CatalogPage({ searchParams }: PageProps<"/courses">) {
@@ -72,7 +65,7 @@ export default async function CatalogPage({ searchParams }: PageProps<"/courses"
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd()).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(itemListJsonLd()) }}
       />
       {/* No hero CTA here: the header CTA is filled from the server and yields only to the final band. */}
       <Header yieldCtaTo={FINAL_CTA_ID} />

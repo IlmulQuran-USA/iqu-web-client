@@ -21,8 +21,8 @@ import {
 } from "@/components/program/ProgramSections";
 import { programList, type Program } from "@/content/courses";
 import { descriptionOf, finalCtaOf, programBySlug, seasonForSchema, sectionsOf, stickyOf } from "@/content/program-page";
-import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
+import { courseLd, jsonLdHtml } from "@/lib/structured-data";
 import { newsletterConfig } from "@/lib/server/brevo";
 
 /*
@@ -52,28 +52,15 @@ export async function generateMetadata({ params }: PageProps<"/programs/[slug]">
 
 /** Course + Offer structured data. No AggregateRating: there are no reviews. Dates only for an open run. */
 function programJsonLd(program: Program) {
-  const url = `https://${site.domain}`;
   const season = seasonForSchema(program);
-  return {
-    "@context": "https://schema.org",
-    "@type": "Course",
+  return courseLd({
     name: program.label,
     description: descriptionOf(program),
-    url: `${url}${program.href}`,
-    provider: { "@type": "Organization", name: site.name, url },
-    inLanguage: "en",
-    offers: {
-      "@type": "Offer",
-      category: program.fee === 0 ? "Free" : "Paid",
-      price: program.fee,
-      priceCurrency: "USD",
-    },
-    hasCourseInstance: {
-      "@type": "CourseInstance",
-      courseMode: "Online",
-      ...(season ? { startDate: season.start, endDate: season.end } : {}),
-    },
-  };
+    path: program.href,
+    price: program.fee,
+    free: program.fee === 0,
+    instance: season ? { startDate: season.start, endDate: season.end } : undefined,
+  });
 }
 
 export default async function ProgramPage({ params }: PageProps<"/programs/[slug]">) {
@@ -91,7 +78,7 @@ export default async function ProgramPage({ params }: PageProps<"/programs/[slug
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(programJsonLd(program)).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(programJsonLd(program)) }}
       />
       <Header yieldCtaTo={[PROGRAM_RAIL_ID, FINAL_CTA_ID]} yieldOnLoad />
       <main id="main-content" aria-labelledby="program-title">

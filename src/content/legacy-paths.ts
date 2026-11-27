@@ -1,3 +1,5 @@
+import { liveAttachments, liveContent } from "./legacy-inventory.ts";
+import { isPlanned } from "./planned-pages.ts";
 import { monthlyCourses, programs, type CourseId, type ProgramId } from "./pricing.ts";
 
 /*
@@ -63,25 +65,12 @@ export const liveInstructorPaths: Record<string, string> = {
   "/instructor/mufti-muaj-al-juhany": "mufti-muaj-al-juhany",
 };
 
-export function instructorSlugRedirects() {
-  return [
-    ...Object.entries(renamedInstructorSlugs).map(([from, to]) => ({
-      source: `/instructors/${from}`,
-      destination: `/instructors/${to}`,
-      statusCode: 301 as const,
-    })),
-    // Every live profile to its own new profile, before the catch-all below.
-    ...Object.entries(liveInstructorPaths).map(([from, to]) => ({
-      source: from,
-      destination: `/instructors/${to}`,
-      statusCode: 301 as const,
-    })),
-    // Anything else under /instructor/ (an unknown or future slug) goes to the
-    // directory, never to a 404 (owner plan, 22 Nov 2026). The live directory moves too.
-    { source: "/instructor/:slug", destination: "/instructors", statusCode: 301 as const },
-    { source: "/instructor", destination: "/instructors", statusCode: 301 as const },
-  ];
-}
+/*
+ * Each live profile goes to its own new profile, and a renamed new slug to its
+ * current one (legacyRedirectMap below). Anything else under /instructor/ (an
+ * unknown or future slug) goes to the directory, never to a 404 (owner plan,
+ * 22 Nov 2026): the /instructor namespace rule in src/lib/legacy-redirect.ts.
+ */
 
 /**
  * Other live paths that move to a program page (spec §7.0 route map: "/summer-program
@@ -129,4 +118,155 @@ export const livePolicyPaths: Record<string, string> = {
 
 export function legalRedirects() {
   return Object.entries(livePolicyPaths).map(([source, destination]) => ({ source, destination, statusCode: 301 as const }));
+}
+
+/* ── The full redirect map for the domain switch (owner, 27 Nov 2026) ──────
+ *
+ * Every public URL of the live WordPress site (inventory, read-only, 27 Nov
+ * 2026: F:/iqu-setup/reports/seo-parity.md) maps to its best new page. The
+ * proxy answers each one in ONE 301 hop, with or without the trailing slash
+ * WordPress used (src/lib/legacy-redirect.ts). Paths are written without the
+ * trailing slash. A target is always a final URL: never itself redirected.
+ */
+
+/** A planned page while it is not built yet, then the page itself (planned-pages.ts). */
+const builtOr = (href: string, fallback: string) => (isPlanned(href) ? fallback : href);
+
+/** Every published WordPress page (19, plus /home and the Rank Math redirect for /sample-page). */
+export const livePagePaths: Record<string, string> = {
+  "/": "/",
+  "/home": "/", // the front page's own slug; WordPress sends it to /
+  "/sample-page": "/", // Rank Math redirect #1 (89 hits)
+  "/about": "/about",
+  "/courses": "/courses",
+  "/instructors": "/instructors",
+  "/contact": "/contact",
+  "/donate": "/donate",
+  "/enroll": "/enroll", // the old newsletter page (noindex on live); the form lives here now
+  "/enroll-for-free": "/enroll",
+  "/student-registration": "/enroll",
+  "/weekend-program": "/programs/weekend-ilm-program",
+  // No results page yet (spec "camp results"): the camp's own page is the closest parent.
+  "/summer-program-results": "/programs/summer-ilm-camp",
+  // Leftover shop pages (noindex on live): a family there was choosing a course.
+  "/cart": "/courses",
+  "/checkout": "/courses",
+  "/instructor-registration": builtOr("/teach", "/contact"),
+  // The live LMS dashboard (noindex): the portal's sign-in once it exists, until then how to reach the team.
+  "/dashboard": builtOr("/login", "/contact"),
+  ...livePolicyPaths,
+};
+
+/** Archives, feeds and author pages: no equivalent, so the closest parent page. */
+export const liveArchivePaths: Record<string, string> = {
+  "/course": "/courses",
+  "/instructor": "/instructors",
+  "/ilm_ul_quran_course_cats": "/courses",
+  "/ilm_ul_quran_course_cats/adults": "/courses",
+  "/ilm_ul_quran_course_cats/female": "/courses",
+  "/ilm_ul_quran_course_cats/kids": "/courses",
+  "/ilm_ul_quran_course_cats/male": "/courses",
+  "/ilm_ul_quran_course_cats/popular": "/courses",
+  "/ilm_ul_quran_course_cats/quran": "/courses",
+  "/iq_instructor_cats": "/instructors",
+  "/iq_instructor_cats/female": "/instructors",
+  "/iq_instructor_cats/male": "/instructors",
+  "/iq_instructor_cats/home-page-teachers": "/instructors",
+  // Empty post categories (noindex on live): the blog once it exists; nothing else fits until then.
+  "/category": builtOr("/blog", "/"),
+  "/category/quran": builtOr("/blog", "/"),
+  "/category/ramadan": builtOr("/blog", "/"),
+  "/category/salaat": builtOr("/blog", "/"),
+  "/category/social-work": builtOr("/blog", "/"),
+  "/category/uncategorized": builtOr("/blog", "/"),
+  // The two author archives belong to two teachers: their profiles.
+  "/author/faijullah": "/instructors/mufti-muhammad-faijullah",
+  "/author/nurulahsan": "/instructors/hafez-nurul-ahsan",
+  "/feed": "/",
+  "/feed/json": "/",
+  "/comments/feed": "/",
+  "/course/feed": "/courses",
+  "/instructor/feed": "/instructors",
+};
+
+/** Misses in the live 404 log (Rank Math, 27 Nov 2026) that have an obvious home. */
+export const live404Fixes: Record<string, string> = {
+  "/contact-us": "/contact",
+  "/contactus": "/contact",
+  "/register": "/enroll",
+  "/registration": "/enroll",
+  "/blog": builtOr("/blog", "/"),
+  "/teach-with-us": builtOr("/teach", "/contact"),
+  "/careers": builtOr("/teach", "/contact"),
+  "/join-us": builtOr("/teach", "/contact"),
+  "/about/null": "/about",
+};
+
+/**
+ * The live file-like URLs, for next.config.ts (the proxy never sees paths
+ * with a dot): Rank Math's sitemaps → /sitemap.xml on the public site only
+ * (staging serves no sitemap), and Rank Math redirect #2, the
+ * apple-touch-icon variants (40 hits) → the site's Apple icon.
+ */
+export const liveSitemapPaths = [
+  "/sitemap_index.xml",
+  "/page-sitemap.xml",
+  "/post-sitemap.xml",
+  "/ilm_ul_quran_course-sitemap.xml",
+  "/iq_instructor-sitemap.xml",
+  "/category-sitemap.xml",
+  "/author-sitemap.xml",
+  "/wp-sitemap.xml",
+] as const;
+
+export function fileRedirects(production: boolean) {
+  return [
+    ...(production ? liveSitemapPaths.map((source) => ({ source, destination: "/sitemap.xml", statusCode: 301 as const })) : []),
+    {
+      source: "/:icon(apple-touch-icon(?:-precomposed|-\\d+x\\d+(?:-precomposed)?)?\\.png)",
+      destination: "/apple-icon.png",
+      statusCode: 301 as const,
+    },
+  ];
+}
+
+/** Live course, program and instructor paths, as path → new page. */
+function contentPaths(): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const r of legacyCourseRedirects()) out[r.source] = r.destination;
+  for (const [from, to] of Object.entries(liveInstructorPaths)) out[from] = `/instructors/${to}`;
+  for (const [from, to] of Object.entries(renamedInstructorSlugs)) out[`/instructors/${from}`] = `/instructors/${to}`;
+  return out;
+}
+
+let cache: { paths: Map<string, string>; ids: Map<number, string> } | null = null;
+
+/**
+ * The whole map: live path → new page, and WordPress ID → new page (for
+ * /?p=…, /?page_id=… and /?attachment_id=… links). Attachment pages follow
+ * their parent (Rank Math redirected them to it on live); an attachment with
+ * no public parent goes home, as on live (attachment_redirect_default).
+ */
+export function legacyRedirectMap() {
+  if (cache) return cache;
+  const paths = new Map<string, string>(Object.entries({ ...contentPaths(), ...livePagePaths, ...liveArchivePaths, ...live404Fixes }));
+  const ids = new Map<number, string>();
+  for (const [id, , path] of liveContent) {
+    const to = paths.get(path);
+    if (!to) throw new Error(`Live ${path} (WordPress ID ${id}) has no new page: add it to src/content/legacy-paths.ts`);
+    ids.set(id, to);
+  }
+  const byId = new Map(liveAttachments.map((a) => [a[0], a] as const));
+  const targetOf = (id: number, depth = 0): string => {
+    if (ids.has(id)) return ids.get(id)!;
+    const att = byId.get(id);
+    return att && att[2] && depth < 5 ? targetOf(att[2], depth + 1) : "/";
+  };
+  for (const [id, path, parent] of liveAttachments) {
+    const to = parent ? targetOf(parent) : "/";
+    ids.set(id, to);
+    if (!path.includes("?")) paths.set(path, to);
+  }
+  cache = { paths, ids };
+  return cache;
 }

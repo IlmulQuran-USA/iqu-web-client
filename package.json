@@ -17,7 +17,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:check": "drizzle-kit check",
-    "migrate:wp": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/migrate-wp.ts"
+    "migrate:wp": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/migrate-wp.ts",
+    "seo:check": "node --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seo-check.mjs",
+    "seo:inventory": "node scripts/legacy-inventory.mjs",
+    "seo:dates": "node scripts/sitemap-dates.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "1.2.0",

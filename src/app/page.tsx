@@ -14,10 +14,10 @@ import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { finalCta } from "@/content/home";
 import { socialLinks } from "@/content/navigation";
-import { site } from "@/content/site";
 import { Reveal } from "@/components/motion/Reveal";
 import { getHomeHero } from "@/lib/content/home-hero";
 import { pageMetadata } from "@/lib/metadata";
+import { jsonLdHtml, organizationLd } from "@/lib/structured-data";
 
 // Owner, 21 Nov 2026: the Home title and description, as supplied.
 export const metadata = pageMetadata({
@@ -37,33 +37,6 @@ export const metadata = pageMetadata({
  * newsletter band already takes the page's one tint section (DESIGN.md §2).
  */
 
-/** Organization structured data (spec §7.1 SEO), built only from site facts. */
-function organizationJsonLd() {
-  const url = `https://${site.domain}`;
-  return {
-    "@context": "https://schema.org",
-    "@type": ["Organization", "EducationalOrganization"],
-    name: site.name,
-    legalName: site.legalName,
-    url,
-    logo: `${url}/brand/logo-header.svg`,
-    description: site.mission,
-    nonprofitStatus: "Nonprofit501c3",
-    taxID: site.ein,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: site.address.line1,
-      addressLocality: site.address.locality,
-      addressRegion: site.address.region,
-      postalCode: site.address.postalCode,
-      addressCountry: site.address.country,
-    },
-    ...(site.phone ? { telephone: site.phone.href.replace("tel:", "") } : {}),
-    ...(site.email ? { email: site.email } : {}),
-    sameAs: socialLinks.filter((l) => l.external).map((l) => l.href),
-  };
-}
-
 export default async function HomePage() {
   const hero = await getHomeHero();
 
@@ -72,7 +45,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(organizationLd(socialLinks.filter((l) => l.external).map((l) => l.href))) }}
       />
       <Header yieldCtaTo={[HERO_CTAS_ID, FINAL_CTA_ID]} yieldOnLoad />
       <main id="main-content" className="flex flex-col">

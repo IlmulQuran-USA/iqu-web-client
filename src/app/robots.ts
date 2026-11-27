@@ -1,19 +1,18 @@
 import type { MetadataRoute } from "next";
+import { robotsRules } from "@/content/sitemap";
+import { isProductionSite, siteUrl } from "@/lib/site-env";
 
 /**
- * /robots.txt: "User-agent: *" / "Allow: /" on every site, staging included.
+ * /robots.txt (rules: src/content/sitemap.ts).
  *
- * Staging (dev.ilmulquranus.org, previews) stays out of search through
- * noindex, not through robots.txt (DEPLOYMENT.md): every page carries
- * <meta name="robots" content="noindex, nofollow"> (src/lib/metadata.ts) and
- * every response the X-Robots-Tag header (next.config.ts). Google can only see
- * a noindex on a page it is allowed to crawl, and link-preview bots
- * (Facebook, WhatsApp, LinkedIn, X, Telegram, Slack) honour robots.txt, so a
- * Disallow would break link previews without keeping pages out of the index.
+ * Staging (dev.ilmulquranus.org, previews): "Disallow: /" (owner, 27 Nov
+ * 2026), together with the noindex meta tag (src/lib/metadata.ts) and the
+ * X-Robots-Tag header on every response (next.config.ts). Trade-off, accepted:
+ * link-preview bots that honour robots.txt (Facebook, WhatsApp, LinkedIn…)
+ * show no preview for dev links.
  *
- * No sitemap line yet: there is no sitemap, and staging never serves one.
- * Add it here for production at launch (DEPLOYMENT.md §7).
+ * Public site: allow all but /api/, /dev/ and /preview/, and the sitemap.
  */
 export default function robots(): MetadataRoute.Robots {
-  return { rules: { userAgent: "*", allow: "/" } };
+  return robotsRules(isProductionSite(), siteUrl().origin);
 }

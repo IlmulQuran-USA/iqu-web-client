@@ -15,7 +15,8 @@
  *   statistics   opt-out where the country is known (GA4 runs until the visitor declines),
  *   marketing    opt-in everywhere (the Pixel never runs before "Accept").
  * When the country is unknown (no x-vercel-ip-country), the strictest model:
- * both opt-in. A browser that sends Global Privacy Control is treated as a
+ * both opt-in. Québec (x-vercel-ip-country-region QC) gets the same strict
+ * model; the rest of Canada keeps the Canadian one (owner, 27 Nov 2026). A browser that sends Global Privacy Control is treated as a
  * decline of everything that is not functional, until the visitor chooses.
  *
  * Choices are first-party cookies, kept 365 days (the live Complianz
@@ -32,7 +33,7 @@ export type Consent = Choice | "unknown";
 export const COOKIES = {
   statistics: "iqu_statistics_consent",
   marketing: "iqu_marketing_consent",
-  /** The visitor's country (ISO 3166 alpha-2), set by src/proxy.ts from x-vercel-ip-country. */
+  /** The visitor's country (ISO 3166 alpha-2, or "CA-QC" in Québec), set by src/proxy.ts from Vercel's IP headers. */
   country: "iqu_country",
 } as const;
 
@@ -49,18 +50,29 @@ export const CONSENT_EVENT = "iqu:consent";
 /** The live Complianz cookie lifetime: 365 days. */
 export const CONSENT_MAX_AGE = 365 * 24 * 60 * 60;
 
-/** Live Complianz regions; every other country gets the US model (other_region_behaviour: us). */
-const REGION_OF: Record<string, "us" | "ca"> = { US: "us", CA: "ca" };
+/**
+ * Live Complianz regions; every other country gets the US model
+ * (other_region_behaviour: us). Québec (owner, 27 Nov 2026; Law 25) is the
+ * one subdivision with its own model: analytics opt-in there too. The proxy
+ * stores "CA-QC" for it (x-vercel-ip-country-region) and only the country
+ * code anywhere else.
+ */
+export type Region = "us" | "ca" | "qc" | "unknown";
+const REGION_OF: Record<string, Region> = { US: "us", CA: "ca", "CA-QC": "qc" };
 const KNOWN: Model = { statistics: "opt-out", marketing: "opt-in" };
-const MODELS: Record<"us" | "ca" | "unknown", Model> = {
-  us: KNOWN,
-  ca: KNOWN,
-  unknown: { statistics: "opt-in", marketing: "opt-in" },
-};
+const STRICT: Model = { statistics: "opt-in", marketing: "opt-in" };
+const MODELS: Record<Region, Model> = { us: KNOWN, ca: KNOWN, qc: STRICT, unknown: STRICT };
 
-export function regionFor(country: string | undefined): "us" | "ca" | "unknown" {
-  if (!country || !/^[A-Z]{2}$/.test(country)) return "unknown";
-  return REGION_OF[country] ?? "us";
+/** The cookie value for a visitor: the country code, or "CA-QC" in Québec. Null when the country is unknown. */
+export function locationCode(country: string | null | undefined, region: string | null | undefined): string | null {
+  const c = country?.toUpperCase();
+  if (!c || !/^[A-Z]{2}$/.test(c)) return null;
+  return c === "CA" && region?.toUpperCase() === "QC" ? "CA-QC" : c;
+}
+
+export function regionFor(code: string | undefined): Region {
+  if (!code || !/^[A-Z]{2}(-QC)?$/.test(code)) return "unknown";
+  return REGION_OF[code] ?? "us";
 }
 
 export function modelFor(country: string | undefined): Model {

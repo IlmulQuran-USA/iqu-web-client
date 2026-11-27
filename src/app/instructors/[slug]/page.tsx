@@ -8,9 +8,9 @@ import { MotionProvider } from "@/components/motion/MotionProvider";
 import { Header } from "@/components/layout/Header";
 import { nextStepOf, offeringsOf, profileDescription, roleOf } from "@/content/instructors-page";
 import { instructorById, instructors } from "@/content/instructors";
-import { site } from "@/content/site";
 import type { Instructor } from "@/content/types";
 import { pageMetadata } from "@/lib/metadata";
+import { jsonLdHtml, personLd } from "@/lib/structured-data";
 
 /*
  * Instructor profile (spec §7.5; plan approved by the owner, 22 Nov 2026).
@@ -37,19 +37,15 @@ export async function generateMetadata({ params }: PageProps<"/instructors/[slug
 
 /** Person structured data (spec §7.5 "Schema": Person + worksFor Organization). No ratings: there are none. */
 function personJsonLd(person: Instructor) {
-  const url = `https://${site.domain}`;
-  return {
-    "@context": "https://schema.org",
-    "@type": "Person",
+  return personLd({
     name: person.name,
     jobTitle: roleOf(person),
-    url: `${url}/instructors/${person.id}`,
-    knowsLanguage: person.languages,
-    ...(person.bio.status !== "pending" ? { description: person.bio.text } : {}),
-    ...(person.photo ? { image: `${url}${person.photo.src}` } : {}),
-    worksFor: { "@type": "EducationalOrganization", name: site.name, url },
+    path: `/instructors/${person.id}`,
+    languages: person.languages,
+    description: person.bio.status !== "pending" ? person.bio.text : undefined,
+    image: person.photo?.src,
     knowsAbout: offeringsOf(person).map((o) => o.row.name),
-  };
+  });
 }
 
 export default async function InstructorPage({ params }: PageProps<"/instructors/[slug]">) {
@@ -62,7 +58,7 @@ export default async function InstructorPage({ params }: PageProps<"/instructors
         <script
           type="application/ld+json"
           // Escape "<" so the JSON can never close the script element.
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd(person)).replace(/</g, "\\u003c") }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(personJsonLd(person)) }}
         />
       )}
       {/* The profile's own button is in the first view, so the header CTA starts yielded. */}

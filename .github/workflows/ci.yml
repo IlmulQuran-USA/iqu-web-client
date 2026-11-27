@@ -71,6 +71,13 @@ jobs:
         # CLAUDE.md §4 Performance; F:/iqu-setup/reports/js-budget.md.
         run: npm run budget:js
 
+      - name: SEO check
+        # On the same staging build: every sitemap page has a title, description,
+        # canonical, og:image, one h1 and valid JSON-LD; every live WordPress URL
+        # (src/content/legacy-inventory.ts) answers one 301 to a 200; robots.txt
+        # is Disallow: / and every response says noindex. F:/iqu-setup/reports/seo-parity.md.
+        run: npm run seo:check
+
       - name: Content check (non-blocking)
         # Lists draft, pending and sample content. Informational until launch.
         continue-on-error: true

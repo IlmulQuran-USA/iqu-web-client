@@ -14,6 +14,7 @@ import { courses, type Course } from "@/content/courses";
 import { fromPrice } from "@/content/pricing";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
+import { courseLd, jsonLdHtml } from "@/lib/structured-data";
 
 /*
  * Course detail (spec §7.3; plan approved by the owner, 20 Nov 2026). One
@@ -49,23 +50,7 @@ export async function generateMetadata({ params }: PageProps<"/courses/[slug]">)
 
 /** Course + Offer structured data (spec §7.3 "Schema"). No AggregateRating: there are no reviews. */
 function courseJsonLd(course: Course) {
-  const url = `https://${site.domain}`;
-  return {
-    "@context": "https://schema.org",
-    "@type": "Course",
-    name: course.label,
-    description: description(course),
-    url: `${url}${course.href}`,
-    provider: { "@type": "Organization", name: site.name, url },
-    inLanguage: "en",
-    offers: {
-      "@type": "Offer",
-      category: "Paid",
-      price: fromPrice(course),
-      priceCurrency: "USD",
-    },
-    hasCourseInstance: { "@type": "CourseInstance", courseMode: "Online" },
-  };
+  return courseLd({ name: course.label, description: description(course), path: course.href, price: fromPrice(course) });
 }
 
 export default async function CoursePage({ params }: PageProps<"/courses/[slug]">) {
@@ -80,7 +65,7 @@ export default async function CoursePage({ params }: PageProps<"/courses/[slug]"
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd(course)).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(courseJsonLd(course)) }}
       />
       <Header yieldCtaTo={[COURSE_RAIL_ID, FINAL_CTA_ID]} yieldOnLoad />
       <main id="main-content" aria-labelledby="course-title">

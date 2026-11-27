@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { searchTitles } from "@/content/seo";
 import { site } from "@/content/site";
 import { isProductionSite } from "@/lib/site-env";
 
@@ -71,6 +72,8 @@ export function pageMetadata({
   if (description.length > MAX_DESCRIPTION) {
     throw new Error(`Description for ${path} is ${description.length} characters (max ${MAX_DESCRIPTION}): ${description}`);
   }
+  // Search titles that keep the live site's ranking phrases (src/content/seo.ts); the page heading is unchanged.
+  title = searchTitles[path] ?? title;
   const fullTitle = typeof title === "string" ? TITLE_TEMPLATE.replace("%s", title) : title.absolute;
   return {
     title,

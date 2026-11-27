@@ -9,6 +9,7 @@ import { directoryFilter, directoryHeader, directoryMeta, roleOf } from "@/conte
 import { instructors } from "@/content/instructors";
 import { site } from "@/content/site";
 import { pageMetadata } from "@/lib/metadata";
+import { itemListLd, jsonLdHtml } from "@/lib/structured-data";
 
 /*
  * Instructor directory (spec §7.4; plan approved by the owner, 22 Nov 2026).
@@ -30,19 +31,12 @@ export const instant = false;
 
 /** ItemList of Person profiles. Hafezah Humayra Afrin stays out while her profile is noindex. */
 function itemListJsonLd() {
-  const url = `https://${site.domain}`;
-  return {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: `Teachers at ${site.name}`,
-    itemListElement: instructors
+  return itemListLd(
+    `Teachers at ${site.name}`,
+    instructors
       .filter((p) => !p.noindex)
-      .map((p, i) => ({
-        "@type": "ListItem",
-        position: i + 1,
-        item: { "@type": "Person", name: p.name, jobTitle: roleOf(p), url: `${url}/instructors/${p.id}` },
-      })),
-  };
+      .map((p) => ({ name: p.name, path: `/instructors/${p.id}`, item: { "@type": "Person", name: p.name, jobTitle: roleOf(p) } })),
+  );
 }
 
 export default async function InstructorsPage({ searchParams }: PageProps<"/instructors">) {
@@ -53,7 +47,7 @@ export default async function InstructorsPage({ searchParams }: PageProps<"/inst
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd()).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(itemListJsonLd()) }}
       />
       {/* No hero CTA here: the header CTA is filled from the server and yields only to the final band. */}
       <Header yieldCtaTo={FINAL_CTA_ID} />

@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
-// 301s from the live WordPress course URLs (COURSE-CONTENT.md §11, C6), from
-// renamed instructor slugs, and from the live policy pages to /legal/*. The
-// module imports only ./pricing, so the config loader can read it.
-import { instructorSlugRedirects, legacyCourseRedirects, legalRedirects } from "./src/content/legacy-paths";
+// The live WordPress URLs are redirected by src/proxy.ts (one 301 hop, with or
+// without the trailing slash); only the file-like ones (sitemaps, icons) are
+// here. The module imports only data modules, so the config loader can read it.
+import { fileRedirects } from "./src/content/legacy-paths";
 // Staging (dev.ilmulquranus.org) and previews must never be indexed. Anything
 // but NEXT_PUBLIC_SITE_ENV=production is staging (DEPLOYMENT.md).
 import { isProductionSite, NOINDEX_HEADER } from "./src/lib/site-env";
@@ -30,8 +30,12 @@ const nextConfig: NextConfig = {
   // next/image only serves listed qualities: 75 (default) and 90 for the Home
   // dashboard screenshots, whose small UI text needs it (owner, 21 Nov 2026).
   images: { qualities: [75, 90] },
+  // Trailing slashes are handled by src/proxy.ts: a live WordPress URL ("/about/")
+  // gets ONE 301 to its final page; any other "/x/" gets the same 308 to "/x"
+  // Next.js would give (src/lib/legacy-redirect.ts). Owner, 27 Nov 2026.
+  skipTrailingSlashRedirect: true,
   async redirects() {
-    return [...legacyCourseRedirects(), ...instructorSlugRedirects(), ...legalRedirects()];
+    return fileRedirects(productionSite);
   },
   // Staging: X-Robots-Tag on every response, pages and static files alike.
   async headers() {

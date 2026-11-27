@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { allowed, CONSENT_MAX_AGE, consentFrom, COOKIES, hasChosen, modelFor, parseCookies, regionFor, storedChoice, TAGS } from "./consent.ts";
+import { allowed, CONSENT_MAX_AGE, consentFrom, COOKIES, hasChosen, locationCode, modelFor, parseCookies, regionFor, storedChoice, TAGS } from "./consent.ts";
 
 const jar = (cookies: Record<string, string>) => (name: string) => cookies[name];
 
@@ -14,6 +14,25 @@ test("regions as live Complianz: US and CA, every other country gets the US mode
   // Owner, 27 Nov 2026 ("hybrid"): statistics opt-out where the country is known, marketing opt-in everywhere.
   for (const c of ["US", "CA", "BD"]) assert.deepEqual(modelFor(c), { statistics: "opt-out", marketing: "opt-in" });
   assert.deepEqual(modelFor(undefined), { statistics: "opt-in", marketing: "opt-in" });
+});
+
+test("Québec (x-vercel-ip-country-region QC): analytics opt-in; the rest of Canada unchanged", () => {
+  // What the proxy stores: the country code, or "CA-QC" in Québec only.
+  assert.equal(locationCode("CA", "QC"), "CA-QC");
+  assert.equal(locationCode("ca", "qc"), "CA-QC");
+  assert.equal(locationCode("CA", "ON"), "CA");
+  assert.equal(locationCode("CA", null), "CA");
+  assert.equal(locationCode("US", "QC"), "US"); // "QC" means Québec only in Canada
+  assert.equal(locationCode(null, "QC"), null);
+  assert.equal(locationCode("XYZ", null), null);
+  assert.equal(regionFor("CA-QC"), "qc");
+  assert.equal(regionFor("US-QC"), "us"); // never stored; read as the country
+  assert.equal(regionFor("CA-ON"), "unknown"); // never stored; not a shape the proxy writes
+  assert.deepEqual(modelFor("CA-QC"), { statistics: "opt-in", marketing: "opt-in" });
+  assert.equal(allowed(jar({ iqu_country: "CA-QC" }), "statistics"), false);
+  assert.equal(allowed(jar({ iqu_country: "CA" }), "statistics"), true);
+  // An explicit choice still wins in Québec.
+  assert.equal(allowed(jar({ iqu_country: "CA-QC", iqu_statistics_consent: "granted" }), "statistics"), true);
 });
 
 test("before any choice: GA4 runs in known countries, never the Pixel; nothing when the country is unknown", () => {

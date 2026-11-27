@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { courses } from "@/content/courses";
-import { fromPrice, usd } from "@/content/pricing";
+import { fromPrice, programs, usd } from "@/content/pricing";
 import { site } from "@/content/site";
 import { robotsFor, socialDefaults, TITLE_TEMPLATE } from "@/lib/metadata";
 
@@ -17,11 +17,23 @@ export const metadata: Metadata = {
   robots: robotsFor({ index: false, follow: true }),
 };
 
+/** The programs, the teachers, help and enrollment: the pages old links most often meant. */
+const helpfulLinks = [
+  { label: programs.weekend.label, href: programs.weekend.href },
+  { label: programs.summer.label, href: programs.summer.href },
+  { label: "Our teachers", href: "/instructors" },
+  { label: "Frequently asked questions", href: "/faq" },
+  { label: "Contact us", href: "/contact" },
+  { label: "Start free trial", href: "/enroll" },
+];
+
 /**
  * The site's 404 (critique, owner 20 Nov 2026): old WordPress links and
  * mistyped course URLs land here with the header, the footer and a way on,
  * not on the framework's bare page. Lists every course that has a page, in
- * the Home price-list style, and links back to Home.
+ * the Home price-list style, links back to Home, and offers the programs,
+ * teachers, FAQ, contact and enrollment. Every live WordPress URL is
+ * redirected before it could get here (src/lib/legacy-redirect.ts).
  */
 export default function NotFound() {
   return (
@@ -41,6 +53,24 @@ export default function NotFound() {
               Go to the home page
               <ArrowRight aria-hidden="true" strokeWidth={1.5} className="size-4" />
             </Link>
+            {/* Where most old links were headed (the live site's most visited pages; owner, 27 Nov 2026). No search box. */}
+            <nav aria-labelledby="not-found-more" className="mt-10">
+              <h2 id="not-found-more" className="font-sans text-ui font-medium text-ink-muted">
+                Other places to look
+              </h2>
+              <ul className="mt-2 flex flex-col">
+                {helpfulLinks.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="inline-flex min-h-11 items-center rounded-chip text-body text-link underline decoration-1 underline-offset-2 hov:decoration-2"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
           <nav aria-labelledby="not-found-courses" className="lg:col-span-7">
             <h2 id="not-found-courses" className="font-sans text-ui font-medium text-ink-muted">

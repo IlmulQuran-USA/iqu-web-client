@@ -8,6 +8,7 @@ import { TextLink } from "@/components/ui/TextLink";
 import { faqContact, faqEntries, faqGroups, faqHeader, faqMeta } from "@/content/faq";
 import { finalCta } from "@/content/home";
 import { pageMetadata } from "@/lib/metadata";
+import { faqPageLd, jsonLdHtml } from "@/lib/structured-data";
 
 /*
  * FAQ — /faq (spec §7.14; owner, 26 Nov 2026). The owner's seven groups, a
@@ -28,18 +29,7 @@ export const metadata = pageMetadata({ title: faqMeta.title, description: faqMet
 /** FAQPage structured data: every question with its answer as plain text. */
 function faqJsonLd() {
   const plain = (s: string) => s.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqEntries.map((item) => ({
-      "@type": "Question",
-      name: item.q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: [item.a, ...(item.points ?? []), item.after ?? ""].filter(Boolean).map(plain).join(" "),
-      },
-    })),
-  };
+  return faqPageLd(faqEntries.map((item) => ({ q: item.q, text: [item.a, ...(item.points ?? []), item.after ?? ""].filter(Boolean).map(plain).join(" ") })));
 }
 
 export default function FaqPage() {
@@ -48,7 +38,7 @@ export default function FaqPage() {
       <script
         type="application/ld+json"
         // Escape "<" so the JSON can never close the script element.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd()).replace(/</g, "\\u003c") }}
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(faqJsonLd()) }}
       />
       <Header yieldCtaTo={FINAL_CTA_ID} />
       <main id="main-content" className="flex-1">

@@ -1,15 +1,22 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { Fragment } from "react";
+import { breadcrumbLd, jsonLdHtml } from "@/lib/structured-data";
 
 /**
  * Breadcrumb (spec §6.3): the trail to the current page. Every link is a
  * 44 px target (CLAUDE.md §4); the current page is plain text marked
- * aria-current. Separators are decorative.
+ * aria-current. Separators are decorative. It also writes the matching
+ * BreadcrumbList structured data, so every page with a trail has it.
  */
 export function Breadcrumb({ items }: { items: { label: string; href?: string }[] }) {
   return (
     <nav aria-label="Breadcrumb">
+      <script
+        type="application/ld+json"
+        // Escape "<" so the JSON can never close the script element.
+        dangerouslySetInnerHTML={{ __html: jsonLdHtml(breadcrumbLd(items)) }}
+      />
       <ol className="flex flex-wrap items-center text-ui text-ink-muted">
         {items.map((item, i) => (
           <Fragment key={item.label}>

@@ -64,12 +64,14 @@ Staging shows sample content and repeats text from the live WordPress site, so s
 - every response, pages and static files alike, sends `X-Robots-Tag: noindex, nofollow` (`next.config.ts` › `headers`);
 - no sitemap is served: `/sitemap*.xml` and `/sitemap/*` answer 404 (`next.config.ts` › `rewrites`).
 
-`/robots.txt` is `User-Agent: *` / `Allow: /` on staging too (`src/app/robots.ts`). That is deliberate: Google can only see a noindex on a page it may crawl, and link-preview bots (Facebook, WhatsApp, LinkedIn, X, Telegram, Slack) honour robots.txt, so a `Disallow` would break link previews without keeping pages out of the index.
+- `/robots.txt` is `User-Agent: *` / `Disallow: /` (`src/app/robots.ts`, owner, 27 Nov 2026).
 
-A missing, empty or misspelt value counts as staging, so a misconfiguration can't expose staging. To check a deployment:
+Trade-offs of the `Disallow`, accepted by the owner: link-preview bots that honour robots.txt (Facebook, WhatsApp, LinkedIn, X, Telegram, Slack) show no preview for dev links, and a URL Google already knew could stay listed without a snippet, because a crawler that may not fetch the page never sees its noindex. Until 27 Nov 2026 staging was `Allow: /` for those reasons; dev was never indexed (noindex meta and header on every response since launch).
+
+A missing, empty or misspelt value counts as staging, so a misconfiguration can't expose staging. To check a deployment (or run `npm run seo:check` on a build):
 
 ```sh
-curl -s https://dev.ilmulquranus.org/robots.txt          # Allow: /
+curl -s https://dev.ilmulquranus.org/robots.txt          # Disallow: /
 curl -s https://dev.ilmulquranus.org/ | grep -o '<meta name="robots"[^>]*>' # noindex, nofollow
 curl -sI https://dev.ilmulquranus.org/ | grep -i x-robots # noindex, nofollow
 ```
@@ -126,5 +128,6 @@ curl -H "Authorization: Bearer $CRON_SECRET" https://dev.ilmulquranus.org/api/cr
 When this project replaces WordPress at `ilmulquranus.org`:
 
 1. Set `NEXT_PUBLIC_SITE_ENV=production` and `NEXT_PUBLIC_SITE_URL=https://ilmulquranus.org` for the environment that serves the public domain only, never for previews, and redeploy.
-2. Add a sitemap and the `Sitemap:` line in `src/app/robots.ts`.
-3. Keep `dev.ilmulquranus.org` on a separate project or environment with `staging`, so it stays out of search results.
+2. The sitemap and the `Sitemap:` line are built in and appear on their own with `production` (`src/content/sitemap.ts`). Before switch day, refresh the two generated inputs and commit them: `npm run seo:inventory` (every live WordPress URL, for the redirect map) and `npm run seo:dates` (each page's `<lastmod>`). Then a production build must pass `NEXT_PUBLIC_SITE_ENV=production npm run seo:check`.
+3. Every live WordPress URL answers ONE 301 to its new page (`src/lib/legacy-redirect.ts`, `src/proxy.ts`); the Rank Math sitemaps 301 to `/sitemap.xml`. Submit `https://ilmulquranus.org/sitemap.xml` in Google Search Console on switch day.
+4. Keep `dev.ilmulquranus.org` on a separate project or environment with `staging`, so it stays out of search results.
